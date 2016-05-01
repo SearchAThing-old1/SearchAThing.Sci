@@ -38,7 +38,7 @@ namespace SearchAThing.Sci.Examples
         static void Main(string[] args)
         {
 
-
+            Console.WriteLine((1.0).Convert(MeasureUnit.m, MeasureUnit.mm));
 
         }
 
