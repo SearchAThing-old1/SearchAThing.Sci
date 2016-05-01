@@ -38,20 +38,25 @@ namespace SearchAThing.Sci
         Time
     };
 
+    // keep in sync (*) don't change previous order, append only
+    public enum LengthMeasureUnit
+    {
+        mm,        
+        cm,
+        dm,
+        m
+    };
+
+    // keep in sync (*) don't change previous order, append only
+    public enum TimeMeasureUnit
+    {
+        s,
+        m,
+        h
+    };
+
     public static class MUManager
     {
-
-        static double[,] _LengthConvMatrix;
-
-        static double[] LengthConvFactors = new double[]
-        {
-            // keep in sync (*)
-
-            1, // mm -> mm
-            1e1, // dm -> mm
-            1e2, // cm -> mm
-            1e3 // m -> mm
-        };
 
         static double[,] BuildConvMatrix(double[] convFactors)
         {
@@ -63,17 +68,42 @@ namespace SearchAThing.Sci
             for (int r = 1; r < convFactors.Length; ++r) m[r, 0] = convFactors[r];
 
             // fill diag
-            for (int r = 0; r < LengthConvFactors.Length; ++r) m[r, r] = 1;
+            for (int r = 0; r < convFactors.Length; ++r) m[r, r] = 1;
 
             // fill lower triangle
-            for (int c = 1; c < LengthConvFactors.Length - 1; ++c)
+            for (int c = 1; c < convFactors.Length - 1; ++c)
             {
-
+                for (int r = c; r < convFactors.Length; ++r)
+                {
+                    m[r, c] = m[r, 0] / m[c, 0];
+                }
             }
 
+            // fill upper triangle
+            for (int c = 1; c < convFactors.Length; ++c)
+            {
+                for (int r = 0; r < c; ++r)
+                {
+                    m[r, c] = 1.0 / m[c, r];
+                }
+            }
 
             return m;
         }
+
+        #region Length
+
+        static double[,] _LengthConvMatrix;
+
+        static double[] LengthConvFactors = new double[]
+        {
+            // keep in sync (*)
+
+            1, // mm -> mm
+            1e1, // dm -> mm
+            1e2, // cm -> mm
+            1e3 // m -> mm
+        };        
 
         internal static double[,] LengthConvMatrix
         {
@@ -87,29 +117,48 @@ namespace SearchAThing.Sci
             }
         }
 
-    };
+        #endregion
 
-    public enum LengthMeasureUnit
-    {
-        mm,
-        dm,
-        cm,
-        m
-    };
+        #region Time
 
-    public enum TimeMeasureUnit
-    {
-        s,
-        m,
-        h
+        static double[,] _TimeConvMatrix;
+
+        static double[] TimeConvFactors = new double[]
+        {
+            // keep in sync (*)
+
+            1, // s -> s
+            60, // m -> s
+            3600 // h -> s            
+        };
+
+        internal static double[,] TimeConvMatrix
+        {
+            get
+            {
+                if (_TimeConvMatrix == null)
+                {
+                    _TimeConvMatrix = BuildConvMatrix(TimeConvFactors);
+                }
+                return _TimeConvMatrix;
+            }
+        }
+
+        #endregion
+
     };
 
     public static partial class Ext
     {
 
-        public static double Convert(this double value, LengthMeasureUnit from, LengthMeasureUnit to)
+        public static double LengthConvert(this double value, LengthMeasureUnit from, LengthMeasureUnit to)
         {
             return value * MUManager.LengthConvMatrix[(int)from, (int)to];
+        }
+
+        public static double TimeConvert(this double value, TimeMeasureUnit from, TimeMeasureUnit to)
+        {
+            return value * MUManager.TimeConvMatrix[(int)from, (int)to];
         }
 
     };

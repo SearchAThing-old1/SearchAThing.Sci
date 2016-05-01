@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchAThing.Sci", "SearchAThing.Sci\SearchAThing.Sci.csproj", "{F9D7F0EE-D4FF-4455-87BE-08539D2D1982}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchAThing.Sci.Examples", "..\SearchAThing.Sci.Examples\SearchAThing.Sci.Examples.csproj", "{91735FF3-D2E5-43F4-8F44-6F6805066626}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchAThing.Sci.Examples", "SearchAThing.Sci.Examples\SearchAThing.Sci.Examples.csproj", "{91735FF3-D2E5-43F4-8F44-6F6805066626}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
