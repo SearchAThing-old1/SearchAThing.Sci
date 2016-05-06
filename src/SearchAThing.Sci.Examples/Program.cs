@@ -26,20 +26,56 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using SearchAThing.Core;
+using static SearchAThing.Sci.MUCollection;
 
 namespace SearchAThing.Sci.Examples
 {
+
+    [DataContract(IsReference = true)]
+    class SampleProject : Project
+    {
+
+        [DataMember]
+        public double A;
+
+        [DataMember]
+        public double B;
+
+    };
 
     class Program
     {
 
         static void Main(string[] args)
-        {
+        {            
+            var la = 2 * mm;
+            var lb = 5 * m;
+            var lc = 2.4 * km;
 
-            Console.WriteLine($"1m={(1.0).LengthConvert(LengthMeasureUnit.m, LengthMeasureUnit.cm)} cm");
-            Console.WriteLine($"1s={(1.0).TimeConvert(TimeMeasureUnit.s, TimeMeasureUnit.h)} h");
+            var km_to_m = Length.ConvertFactor(km, m);
+
+            // write a project to xml
+            {
+                var binary = false;
+                var knownTypes = new List<Type>() { typeof(Project), typeof(SampleProject) };
+
+                {
+                    var prj = new SampleProject();
+                    prj.A = 1;
+                    prj.B = 22;
+                    prj.Save("test.xml", binary, knownTypes);
+                }
+
+                {
+                    var prj = "test.xml".Deserialize<SampleProject>(binary, knownTypes);
+                    Console.WriteLine($"prj read back data A={prj.A} B={prj.B}");
+                }
+
+            }
 
         }
 

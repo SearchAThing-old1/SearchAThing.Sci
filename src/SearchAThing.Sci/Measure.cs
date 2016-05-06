@@ -23,17 +23,20 @@
 */
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace SearchAThing.Sci
 {
 
-    public class MUDomain
-    {        
+    public class Measure
+    {
+
+        public double Value { get; private set; }
+        public MeasureUnit MU { get; private set; }
+
+        public Measure(double value, MeasureUnit mu)
+        {
+            Value = value;
+            MU = mu;
+        }        
 
     }
 

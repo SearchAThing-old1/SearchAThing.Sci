@@ -35,6 +35,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,6 +51,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\SearchAThing.Core\SearchAThing.Core\SearchAThing.Core.csproj">
+      <Project>{8162a30e-a46d-4a78-ba12-1f376ac6f1b4}</Project>
+      <Name>SearchAThing.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SearchAThing.Sci\SearchAThing.Sci.csproj">
       <Project>{f9d7f0ee-d4ff-4455-87be-08539d2d1982}</Project>
       <Name>SearchAThing.Sci</Name>

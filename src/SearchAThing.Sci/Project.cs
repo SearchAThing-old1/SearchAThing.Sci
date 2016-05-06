@@ -29,17 +29,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SearchAThing.Sci.Examples
+using SearchAThing.Core;
+using System.Runtime.Serialization;
+using System.Collections.ObjectModel;
+
+namespace SearchAThing.Sci
 {
 
-    class Program
+    [DataContract(IsReference = true)]
+    public class Project
     {
 
-        static void Main(string[] args)
+        public void Save(string dstPathfilename, bool binary = true, IEnumerable<Type> knownTypes = null)
         {
-
-            Console.WriteLine((1.0).Convert(MeasureUnit.m, MeasureUnit.mm));
-
+            this.Serialize(dstPathfilename, binary, knownTypes);
         }
 
     }

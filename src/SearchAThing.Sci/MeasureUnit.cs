@@ -26,139 +26,58 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SearchAThing.Sci
 {
 
-    public enum PhysicalQuantity
+    public class MeasureUnit
     {
-        Length,
-        Time
-    };
+        /// <summary>
+        /// all measure units for any physical quantity
+        /// this list is used to avoid double registration of a measure unit with same name
+        /// for a given physical quantity
+        /// </summary>
+        static List<MeasureUnit> AllMeasureUnits = new List<MeasureUnit>();
 
-    // keep in sync (*) don't change previous order, append only
-    public enum LengthMeasureUnit
-    {
-        mm,        
-        cm,
-        dm,
-        m
-    };
+        static Dictionary<int, int> global_static_id_counter = new Dictionary<int, int>();
 
-    // keep in sync (*) don't change previous order, append only
-    public enum TimeMeasureUnit
-    {
-        s,
-        m,
-        h
-    };
+        internal int id;
 
-    public static class MUManager
-    {
+        public string Name { get; private set; }
 
-        static double[,] BuildConvMatrix(double[] convFactors)
+        public PhysicalQuantity PhysicalQuantity { get; private set; }
+
+        public MeasureUnit(PhysicalQuantity physicalQuantity, string name, MeasureUnit convRefUnit = null, double convRefFactor = 0)
         {
-            var m = new double[convFactors.Length, convFactors.Length];
+            PhysicalQuantity = physicalQuantity;
 
-            // https://searchathing.com/?p=1326#MeasureUnitConversionMatrixStructure
+            if (AllMeasureUnits
+                .Where(r => r.PhysicalQuantity.id == physicalQuantity.id)
+                .Any(r => r.Name == name))
+                throw new Exception($"A registered measure unit [{name}] already exists for the physical quantity [{physicalQuantity.Name}]");
 
-            // fill first column
-            for (int r = 1; r < convFactors.Length; ++r) m[r, 0] = convFactors[r];
+            if (convRefUnit == null && physicalQuantity.ReferenceMeasureUnit != null)
+                throw new Exception(
+                    $"A reference measure unit [{physicalQuantity.ReferenceMeasureUnit}] already exists for the physical quantity [{physicalQuantity.Name}]" +
+                    $"Need to specify a valid existing convRefUnit with related convRefFactor to specify measure unit scale factor");
 
-            // fill diag
-            for (int r = 0; r < convFactors.Length; ++r) m[r, r] = 1;
+            if (global_static_id_counter.ContainsKey(physicalQuantity.id))
+                id = ++global_static_id_counter[physicalQuantity.id];
+            else
+                global_static_id_counter.Add(physicalQuantity.id, id = 0);
 
-            // fill lower triangle
-            for (int c = 1; c < convFactors.Length - 1; ++c)
-            {
-                for (int r = c; r < convFactors.Length; ++r)
-                {
-                    m[r, c] = m[r, 0] / m[c, 0];
-                }
-            }
+            Name = name;
+            PhysicalQuantity = PhysicalQuantity;
 
-            // fill upper triangle
-            for (int c = 1; c < convFactors.Length; ++c)
-            {
-                for (int r = 0; r < c; ++r)
-                {
-                    m[r, c] = 1.0 / m[c, r];
-                }
-            }
-
-            return m;
+            physicalQuantity.RegisterMeasureUnit(this, convRefUnit, convRefFactor);
         }
 
-        #region Length
-
-        static double[,] _LengthConvMatrix;
-
-        static double[] LengthConvFactors = new double[]
+        /// <summary>
+        /// Builds a Measure object of value * given mu
+        /// </summary>        
+        public static Measure operator *(double value, MeasureUnit mu)
         {
-            // keep in sync (*)
-
-            1, // mm -> mm
-            1e1, // dm -> mm
-            1e2, // cm -> mm
-            1e3 // m -> mm
-        };        
-
-        internal static double[,] LengthConvMatrix
-        {
-            get
-            {
-                if (_LengthConvMatrix == null)
-                {
-                    _LengthConvMatrix = BuildConvMatrix(LengthConvFactors);
-                }
-                return _LengthConvMatrix;
-            }
-        }
-
-        #endregion
-
-        #region Time
-
-        static double[,] _TimeConvMatrix;
-
-        static double[] TimeConvFactors = new double[]
-        {
-            // keep in sync (*)
-
-            1, // s -> s
-            60, // m -> s
-            3600 // h -> s            
-        };
-
-        internal static double[,] TimeConvMatrix
-        {
-            get
-            {
-                if (_TimeConvMatrix == null)
-                {
-                    _TimeConvMatrix = BuildConvMatrix(TimeConvFactors);
-                }
-                return _TimeConvMatrix;
-            }
-        }
-
-        #endregion
-
-    };
-
-    public static partial class Ext
-    {
-
-        public static double LengthConvert(this double value, LengthMeasureUnit from, LengthMeasureUnit to)
-        {
-            return value * MUManager.LengthConvMatrix[(int)from, (int)to];
-        }
-
-        public static double TimeConvert(this double value, TimeMeasureUnit from, TimeMeasureUnit to)
-        {
-            return value * MUManager.TimeConvMatrix[(int)from, (int)to];
+            return new Measure(value, mu);
         }
 
     };
