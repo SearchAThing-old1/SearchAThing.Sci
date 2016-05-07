@@ -89,6 +89,17 @@ namespace SearchAThing.Sci
         {
             return id == other.id;
         }
+
+        public double Tolerance(IModel model)
+        {
+            var mudomain = model.MUDomain.ByPhysicalQuantity(PhysicalQuantity);
+
+            if (mudomain.MU.id == id)
+                return mudomain.Value;
+            else
+                return mudomain.ConvertTo(this).Value;
+        }
+
     };
 
 }

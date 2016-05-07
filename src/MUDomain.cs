@@ -28,12 +28,86 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Math;
 
 namespace SearchAThing.Sci
 {
 
+    // TODO //*
+
+    /// <summary>
+    /// Measures here contains information about implicit measure unit
+    /// and value of the tolerance
+    /// </summary>
     public class MUDomain
-    {        
+    {
+
+        /// <summary>
+        /// Implicit measure unit for Length and its tolerance
+        /// </summary>
+        public Measure Length { get; private set; }
+
+        /// <summary>
+        /// Implicit measure unit for Mass and its tolerance
+        /// </summary>
+        public Measure Mass { get; private set; }
+
+        /// <summary>
+        /// Implicit measure unit for Time and its tolerance
+        /// </summary>
+        public Measure Time { get; private set; }
+
+        /// <summary>
+        /// Implicit measure unit for Temperature and its tolerance
+        /// </summary>
+        public Measure Temperature { get; private set; }
+
+        /// <summary>
+        /// Implicit measure unit for PlaneAngle and its tolerance
+        /// </summary>
+        public Measure PlaneAngle { get; private set; }
+
+        /// <summary>
+        /// Implicit measure unit for Acceleration and its tolerance
+        /// </summary>
+        public Measure Acceleration { get; private set; }
+
+        /// <summary>
+        /// Implicit measure unit for Force and its tolerance
+        /// </summary>
+        public Measure Force { get; private set; }
+
+        /// <summary>
+        /// Implicit measure unit for Speed and its tolerance
+        /// </summary>
+        public Measure Speed { get; private set; }
+
+        public void SetLength(Measure length) { Length = length; }
+
+        public MUDomain()
+        {
+            Length = new Measure(1e-1, MUCollection.Length.mm);
+
+            PlaneAngle = new Measure(PI / 180.0 / 10.0, MUCollection.PlaneAngle.rad);
+
+            //...
+        }
+
+        public Measure ByPhysicalQuantity(PhysicalQuantity physicalQuantity)
+        {
+            var id = physicalQuantity.id;
+
+            if (Length.MU.PhysicalQuantity.id == id) return Length;
+//*            else if (Mass.MU.PhysicalQuantity.id == id) return Mass;
+//*            else if (Time.MU.PhysicalQuantity.id == id) return Time;
+//*            else if (Temperature.MU.PhysicalQuantity.id == id) return Temperature;
+            else if (PlaneAngle.MU.PhysicalQuantity.id == id) return PlaneAngle;
+//*            else if (Acceleration.MU.PhysicalQuantity.id == id) return Acceleration;
+//*            else if (Force.MU.PhysicalQuantity.id == id) return Force;
+//*            else if (Speed.MU.PhysicalQuantity.id == id) return Speed;
+
+            throw new NotImplementedException($"unable to find measure domain for given physical quantity {physicalQuantity}");
+        }
 
     }
 

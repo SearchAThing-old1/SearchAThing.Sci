@@ -31,34 +31,10 @@ using static System.Math;
 namespace SearchAThing.Sci
 {
 
-    public static partial class Extensions
+    public interface IModel
     {
 
-        public static bool EqualsTol(this double x, double y, double tol)
-        {
-            return Abs(x - y) <= tol;
-        }
-
-        public static bool EqualsAutoTol(this double x, double y)
-        {
-            return x.EqualsTol(y, Abs(x * 1e-6));
-        }
-
-        // tolerance helpers for len type
-
-        /// <summary>
-        /// States if x equals y apart the Length tolerance specified through the domain model.
-        /// x,y length measure unit implicitly from the my domain.
-        /// </summary>        
-        public static bool EqualsTolLen(this double x, double y, IModel model)
-        {
-            return Abs(x - y) <= model.MUDomain.Length.Value;
-        }
-
-        public static bool EqualsTolNormLen(this double x, double y, IModel model)
-        {
-            return Abs(x - y) <= 1e-4;
-        }
+        MUDomain MUDomain { get; }
 
     }
 

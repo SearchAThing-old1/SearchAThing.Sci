@@ -185,6 +185,28 @@ namespace SearchAThing.Sci
 
         #endregion
 
+        #region PlaneAngle
+
+        public static class PlaneAngle
+        {
+
+            static MeasureUnit _rad;
+            public static MeasureUnit rad
+            {
+                get
+                {
+                    if (_rad == null)
+                    {
+                        _rad = new MeasureUnit(PQCollection.PlaneAngle, "rad");
+                    }
+                    return _rad;
+                }
+            }
+
+        }
+
+        #endregion
+
     }
 
 }
