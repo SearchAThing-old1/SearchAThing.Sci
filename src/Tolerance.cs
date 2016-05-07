@@ -26,64 +26,24 @@
 using System;
 using System.Linq;
 using SearchAThing.Core;
+using static System.Math;
 
 namespace SearchAThing.Sci
 {
 
-    public class Measure
+    public static partial class Extensions
     {
 
-        public double Value { get; private set; }
-        public MeasureUnit MU { get; private set; }
-
-        public Measure(double value, MeasureUnit mu)
+        public static bool EqualsTol(this double x, double y, double tol)
         {
-            Value = value;
-            MU = mu;
+            return Abs(x - y) <= tol;
         }
 
-        public Measure ConvertTo(MeasureUnit toMU)
+        public static bool EqualsAutoTol(this double x, double y)
         {
-            return new Measure(Value * MU.PhysicalQuantity.ConvertFactor(MU, toMU), toMU);
+            return x.EqualsTol(y, Abs(x * 1e-6));
         }
 
-        public override string ToString()
-        {
-            return $"{Value} {MU}";
-        }
-
-        public static Measure TryParse(PhysicalQuantity pq, string text)
-        {
-            if (pq.Equals(PQCollection.Adimensional))
-            {
-                double n;
-                if (double.TryParse(text, out n)) return new Measure(n, MUCollection.Adimensional.adim);
-            }
-            else
-            {
-                var s = text.Trim();
-
-                MeasureUnit mu = null;
-
-                foreach (var _mu in pq.MeasureUnits)
-                {
-                    if (s.EndsWith(_mu.ToString()))
-                    {
-                        mu = _mu;
-                        break;
-                    }
-                }
-
-                if (mu == null) return null;
-
-                s = s.StripEnd(mu.ToString());
-
-                double n;
-                if (double.TryParse(s, out n)) return new Measure(n, mu);
-            }
-
-            return null;
-        }
     }
 
 }

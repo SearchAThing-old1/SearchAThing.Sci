@@ -127,9 +127,13 @@ namespace SearchAThing.Sci
 
         public bool Equals(PhysicalQuantity other)
         {
-            return Name.Equals(other.Name);
+            return id == other.id;
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
     };
 
 }

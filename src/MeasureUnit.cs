@@ -30,7 +30,7 @@ using System.Linq;
 namespace SearchAThing.Sci
 {
 
-    public class MeasureUnit
+    public class MeasureUnit : IEquatable<MeasureUnit>
     {
         /// <summary>
         /// all measure units for any physical quantity
@@ -80,6 +80,15 @@ namespace SearchAThing.Sci
             return new Measure(value, mu);
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
+        public bool Equals(MeasureUnit other)
+        {
+            return id == other.id;
+        }
     };
 
 }

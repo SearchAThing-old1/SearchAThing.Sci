@@ -41,8 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Tolerance.cs" />
     <Compile Include="Measure.cs" />
     <Compile Include="MUCollection.cs" />
+    <Compile Include="PQCollection.cs" />
     <Compile Include="PhysicalQuantity.cs" />
     <Compile Include="MeasureUnit.cs" />
     <Compile Include="MUDomain.cs" />

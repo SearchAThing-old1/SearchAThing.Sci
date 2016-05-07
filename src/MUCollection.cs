@@ -26,6 +26,7 @@
 using SearchAThing.Core;
 using System;
 using System.Collections.Generic;
+using static SearchAThing.Sci.PQCollection;
 
 namespace SearchAThing.Sci
 {
@@ -34,64 +35,155 @@ namespace SearchAThing.Sci
     {
 
         //-------------------------------------------------------------------
-        // Physical Quantities
-        //-------------------------------------------------------------------
-
-        static PhysicalQuantity length;
-        public static PhysicalQuantity Length
-        {
-            get
-            {
-                if (length == null)
-                {
-                    length = new PhysicalQuantity("Length");
-                }
-                return length;
-            }
-        }
-
-        //-------------------------------------------------------------------
         // Measure Units
         //-------------------------------------------------------------------
 
-        static MeasureUnit _mm;
-        public static MeasureUnit mm
+        public static class Adimensional
         {
-            get
+            static MeasureUnit _adimensional;
+            public static MeasureUnit adim
             {
-                if (_mm == null)
+                get
                 {
-                    _mm = new MeasureUnit(Length, "mm");
+                    if (_adimensional == null)
+                    {
+                        _adimensional = new MeasureUnit(PQCollection.Adimensional, "adim");
+                    }
+                    return _adimensional;
                 }
-                return _mm;
             }
         }
 
-        static MeasureUnit _m;
-        public static MeasureUnit m
+        #region Length
+
+        public static class Length
         {
-            get
+
+            static MeasureUnit _mm;
+            public static MeasureUnit mm
             {
-                if (_m == null)
+                get
                 {
-                    _m = new MeasureUnit(Length, "m", mm, 1e3);
+                    if (_mm == null)
+                    {
+                        _mm = new MeasureUnit(PQCollection.Length, "mm");
+                    }
+                    return _mm;
                 }
-                return _m;
             }
+
+            static MeasureUnit _m;
+            public static MeasureUnit m
+            {
+                get
+                {
+                    if (_m == null)
+                    {
+                        _m = new MeasureUnit(PQCollection.Length, "m", mm, 1e3);
+                    }
+                    return _m;
+                }
+            }
+
+            static MeasureUnit _km;
+            public static MeasureUnit km
+            {
+                get
+                {
+                    if (_km == null)
+                    {
+                        _km = new MeasureUnit(PQCollection.Length, "km", m, 1e3);
+                    }
+                    return _km;
+                }
+            }
+
         }
 
-        static MeasureUnit _km;
-        public static MeasureUnit km
+        #endregion
+
+        #region Mass
+
+        public static class Mass
         {
-            get
+
+            static MeasureUnit _g;
+            public static MeasureUnit g
             {
-                if (_km == null)
+                get
                 {
-                    _km = new MeasureUnit(Length, "km", m, 1e3);
+                    if (_g == null)
+                    {
+                        _g = new MeasureUnit(PQCollection.Mass, "g");
+                    }
+                    return _g;
                 }
-                return _km;
             }
+
+            static MeasureUnit _kg;
+            public static MeasureUnit kg
+            {
+                get
+                {
+                    if (_kg == null)
+                    {
+                        _kg = new MeasureUnit(PQCollection.Mass, "kg", g, 1e3);
+                    }
+                    return _kg;
+                }
+            }
+
         }
+
+        #endregion
+
+        #region Time
+
+        public static class Time
+        {
+
+            static MeasureUnit _sec;
+            public static MeasureUnit sec
+            {
+                get
+                {
+                    if (_sec == null)
+                    {
+                        _sec = new MeasureUnit(PQCollection.Time, "sec");
+                    }
+                    return _sec;
+                }
+            }
+
+            static MeasureUnit _min;
+            public static MeasureUnit min
+            {
+                get
+                {
+                    if (_min == null)
+                    {
+                        _min = new MeasureUnit(PQCollection.Time, "min", sec, 60);
+                    }
+                    return _min;
+                }
+            }
+
+            static MeasureUnit _hr;
+            public static MeasureUnit hr
+            {
+                get
+                {
+                    if (_hr == null)
+                    {
+                        _hr = new MeasureUnit(PQCollection.Time, "hr", min, 60);
+                    }
+                    return _hr;
+                }
+            }
+
+        }
+
+        #endregion
 
     }
 
