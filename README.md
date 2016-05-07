@@ -1,6 +1,6 @@
 This Sci library is a work in progress.
 
-First a short requisites design document already uploaded [SearchAThing.Sci - Requisites.docx](https://github.com/devel0/SearchAThing.Sci/blob/master/SearchAThing.Sci%20-%20Requisites.docx).
+First a short requisites design document already uploaded [SearchAThing.Sci - Requisites.docx](https://github.com/devel0/SearchAThing.Sci/blob/master/doc/SearchAThing.Sci%20-%20Requisites.docx).
 
 Then the design of abstract classes with unit tests within the implementation.
 
