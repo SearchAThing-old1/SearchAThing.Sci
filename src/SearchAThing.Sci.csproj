@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{91735FF3-D2E5-43F4-8F44-6F6805066626}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{F9D7F0EE-D4FF-4455-87BE-08539D2D1982}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SearchAThing.Sci.Examples</RootNamespace>
-    <AssemblyName>SearchAThing.Sci.Examples</AssemblyName>
+    <RootNamespace>SearchAThing.Sci</RootNamespace>
+    <AssemblyName>SearchAThing.Sci</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -44,20 +41,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="Measure.cs" />
+    <Compile Include="MUCollection.cs" />
+    <Compile Include="PhysicalQuantity.cs" />
+    <Compile Include="MeasureUnit.cs" />
+    <Compile Include="MUDomain.cs" />
+    <Compile Include="Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\SearchAThing.Core\SearchAThing.Core\SearchAThing.Core.csproj">
+    <ProjectReference Include="..\..\SearchAThing.Core\src\SearchAThing.Core.csproj">
       <Project>{8162a30e-a46d-4a78-ba12-1f376ac6f1b4}</Project>
       <Name>SearchAThing.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SearchAThing.Sci\SearchAThing.Sci.csproj">
-      <Project>{f9d7f0ee-d4ff-4455-87be-08539d2d1982}</Project>
-      <Name>SearchAThing.Sci</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
