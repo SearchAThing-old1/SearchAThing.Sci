@@ -31,21 +31,28 @@ using static System.Math;
 namespace SearchAThing.Sci
 {
 
+    public enum Line3DConstructMode { PointAndVector };
+
     public class Line3D
     {
 
         public Vector3D From { get; private set; }
-        public Vector3D To { get; private set; }
+        public Vector3D V { get; private set; }
+        public Vector3D To { get { return From + V; } }
 
         public Line3D(Vector3D from, Vector3D to)
         {
             From = from;
-            To = to;
+            V = to - from;
         }
 
-        public double Length { get { return From.Distance(To); } }
+        public Line3D(Vector3D from, Vector3D v, Line3DConstructMode mode)
+        {
+            From = from;
+            V = v;
+        }
 
-
+        public double Length { get { return V.Length; } }
 
     }
 
