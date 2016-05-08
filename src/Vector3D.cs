@@ -108,7 +108,7 @@ namespace SearchAThing.Sci
             var dp = this.DotProduct(to);
 
             // alfa = acos(dp / (|a| |b|))
-            var w = dp / (Length * to.Length);            
+            var w = dp / (Length * to.Length);
 
             return Acos(w);
         }
@@ -124,6 +124,10 @@ namespace SearchAThing.Sci
             return DotProduct(to) / Length * Normalized();
         }
 
+        public bool Concordant(Vector3D other)
+        {
+            return DotProduct(other) > 0;
+        }
 
         public static Vector3D operator +(Vector3D a, Vector3D b)
         {
