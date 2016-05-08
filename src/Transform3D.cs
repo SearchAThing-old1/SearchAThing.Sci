@@ -48,27 +48,27 @@ namespace SearchAThing.Sci
 
         public Transform3D()
         {
-            m = new sMatrix3D();            
+            m = new sMatrix3D();
         }
 
-        public void RotateAboutXAxis(double angleDeg)
+        public void RotateAboutXAxis(double angleRad)
         {
-            m.Rotate(new sQuaternion(sXAxis, angleDeg));
+            m.Rotate(new sQuaternion(sXAxis, angleRad.ToDeg()));
         }
 
-        public void RotateAboutYAxis(double angleDeg)
+        public void RotateAboutYAxis(double angleRad)
         {
-            m.Rotate(new sQuaternion(sYAxis, angleDeg));
+            m.Rotate(new sQuaternion(sYAxis, angleRad.ToDeg()));
         }
 
-        public void RotateAboutZAxis(double angleDeg)
-        {            
-            m.Rotate(new sQuaternion(sZAxis, angleDeg));
-        }
-
-        public void RotateAboutAxis(Vector3D axis, double angleDeg)
+        public void RotateAboutZAxis(double angleRad)
         {
-            m.Rotate(new sQuaternion(new sVector3D(axis.X, axis.Y, axis.Z), angleDeg));
+            m.Rotate(new sQuaternion(sZAxis, angleRad.ToDeg()));
+        }
+
+        public void RotateAboutAxis(Vector3D axis, double angleRad)
+        {
+            m.Rotate(new sQuaternion(new sVector3D(axis.X, axis.Y, axis.Z), angleRad.ToDeg()));
         }
 
         public Vector3D Apply(Vector3D v)

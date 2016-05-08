@@ -152,31 +152,31 @@ namespace SearchAThing.Sci
                 return 2 * PI - AngleRad(to, model);
         }
 
-        public Vector3D RotateAboutXAxis(double angleDeg)
+        public Vector3D RotateAboutXAxis(double angleRad)
         {
             var t = new Transform3D();
-            t.RotateAboutXAxis(angleDeg);
+            t.RotateAboutXAxis(angleRad);
             return t.Apply(this);
         }
 
-        public Vector3D RotateAboutYAxis(double angleDeg)
+        public Vector3D RotateAboutYAxis(double angleRad)
         {
             var t = new Transform3D();
-            t.RotateAboutYAxis(angleDeg);
+            t.RotateAboutYAxis(angleRad);
             return t.Apply(this);
         }
 
-        public Vector3D RotateAboutZAxis(double angleDeg)
+        public Vector3D RotateAboutZAxis(double angleRad)
         {
             var t = new Transform3D();
-            t.RotateAboutZAxis(angleDeg);
+            t.RotateAboutZAxis(angleRad);
             return t.Apply(this);
         }
 
-        public Vector3D RotateAboutAxis(Vector3D axis, double angleDeg)
+        public Vector3D RotateAboutAxis(Vector3D axis, double angleRad)
         {
             var t = new Transform3D();
-            t.RotateAboutAxis(axis, angleDeg);
+            t.RotateAboutAxis(axis, angleRad);
             return t.Apply(this);
         }
 
@@ -184,7 +184,7 @@ namespace SearchAThing.Sci
         {
             var angle = from.AngleRad(to, model);
             var N = from.CrossProduct(to);
-            return this.RotateAboutAxis(N, angle.ToDeg());
+            return this.RotateAboutAxis(N, angle);
         }
 
         public static Vector3D operator +(Vector3D a, Vector3D b)
