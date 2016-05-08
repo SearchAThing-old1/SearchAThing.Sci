@@ -113,6 +113,18 @@ namespace SearchAThing.Sci
             return Acos(w);
         }
 
+        /// <summary>
+        /// project this vector to the other given,
+        /// the resulting vector will be colinear the given one
+        /// </summary>        
+        public Vector3D Project(Vector3D to)
+        {
+            // https://en.wikipedia.org/wiki/Vector_projection
+
+            return DotProduct(to) / Length * Normalized();
+        }
+
+
         public static Vector3D operator +(Vector3D a, Vector3D b)
         {
             return new Vector3D(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
