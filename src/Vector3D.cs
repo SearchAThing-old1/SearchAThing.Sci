@@ -187,6 +187,42 @@ namespace SearchAThing.Sci
             return this.RotateAboutAxis(N, angle);
         }
 
+        public bool IsParallelTo(Vector3D other, IModel model)
+        {
+            // two vectors a,b are parallel if there is a factor c such that a=cb
+            // but first we need to exclude test over null components
+
+            var tol = Min(Length, other.Length) < 1.5 ? Constants.NormalizedLengthTolerance : model.MUDomain.Length.Value;
+
+            var nullSum = 0;
+
+            var xNull = false;
+            var yNull = false;
+            var zNull = false;
+
+            if (X.EqualsTol(0, tol) && other.X.EqualsTol(0, tol)) { xNull = true; ++nullSum; }
+            if (Y.EqualsTol(0, tol) && other.Y.EqualsTol(0, tol)) { yNull = true; ++nullSum; }
+            if (Z.EqualsTol(0, tol) && other.Z.EqualsTol(0, tol)) { zNull = true; ++nullSum; }
+
+            if (nullSum == 0) // 3-d
+            {
+                var c = X / other.X;
+                return c.EqualsTol(Y / other.Y, tol) && c.EqualsTol(Z / other.Z, tol);
+            }
+            else if (nullSum == 1) // 2-d
+            {
+                if (xNull) return (Y / other.Y).EqualsTol(Z / other.Z, tol);
+                if (yNull) return (X / other.X).EqualsTol(Z / other.Z, tol);
+                if (zNull) return (X / other.X).EqualsTol(Y / other.Y, tol);
+            }
+            else if (nullSum == 2) // 1-d
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public static Vector3D operator +(Vector3D a, Vector3D b)
         {
             return new Vector3D(a.X + b.X, a.Y + b.Y, a.Z + b.Z);

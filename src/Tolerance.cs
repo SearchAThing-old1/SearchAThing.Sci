@@ -77,7 +77,7 @@ namespace SearchAThing.Sci
 
         public static bool EqualsTolNormLen(this double x, double y, IModel model)
         {
-            return Abs(x - y) <= 1e-4;
+            return Abs(x - y) <= Constants.NormalizedLengthTolerance;
         }
 
         public static bool GreatThanTolLen(this double x, double y, IModel model)

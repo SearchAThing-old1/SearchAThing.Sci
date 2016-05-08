@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="SampleModel.cs" />
     <Compile Include="Line3D.cs" />
     <Compile Include="IModel.cs" />
