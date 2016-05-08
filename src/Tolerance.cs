@@ -44,6 +44,26 @@ namespace SearchAThing.Sci
             return x.EqualsTol(y, Abs(x * 1e-6));
         }
 
+        public static bool GreatThanTol(this double x, double y, double tol)
+        {
+            return x > y && !x.EqualsTol(y, tol);
+        }
+
+        public static bool GreatThanOrEqualsTol(this double x, double y, double tol)
+        {
+            return x > y || x.EqualsTol(y, tol);
+        }
+
+        public static bool LessThanTol(this double x, double y, double tol)
+        {
+            return x < y && !x.EqualsTol(y, tol);
+        }
+
+        public static bool LessThanOrEqualsTol(this double x, double y, double tol)
+        {
+            return x < y || x.EqualsTol(y, tol);
+        }
+
         // tolerance helpers for len type
 
         /// <summary>
@@ -58,6 +78,26 @@ namespace SearchAThing.Sci
         public static bool EqualsTolNormLen(this double x, double y, IModel model)
         {
             return Abs(x - y) <= 1e-4;
+        }
+
+        public static bool GreatThanTolLen(this double x, double y, IModel model)
+        {
+            return x > y && !x.EqualsTolLen(y, model);
+        }
+
+        public static bool GreatThanOrEqualsTolLen(this double x, double y, IModel model)
+        {
+            return x > y || x.EqualsTolLen(y, model);
+        }
+
+        public static bool LessThanTolLen(this double x, double y, IModel model)
+        {
+            return x < y && !x.EqualsTolLen(y, model);
+        }
+
+        public static bool LessThanOrEqualsTolLen(this double x, double y, IModel model)
+        {
+            return x < y || x.EqualsTolLen(y, model);
         }
 
     }
