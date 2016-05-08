@@ -30,6 +30,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -41,9 +42,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers.cs" />
     <Compile Include="SampleModel.cs" />
     <Compile Include="Line3D.cs" />
     <Compile Include="IModel.cs" />
+    <Compile Include="Transform3D.cs" />
     <Compile Include="Vector3D.cs" />
     <Compile Include="Tolerance.cs" />
     <Compile Include="Measure.cs" />

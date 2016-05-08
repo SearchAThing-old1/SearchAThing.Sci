@@ -28,6 +28,11 @@ using System.Linq;
 using SearchAThing.Core;
 using static System.Math;
 
+using sVector3D = System.Windows.Media.Media3D.Vector3D;
+using sMatrix3D = System.Windows.Media.Media3D.Matrix3D;
+using sQuaternion = System.Windows.Media.Media3D.Quaternion;
+using System.Globalization;
+
 namespace SearchAThing.Sci
 {
 
@@ -147,6 +152,41 @@ namespace SearchAThing.Sci
                 return 2 * PI - AngleRad(to, model);
         }
 
+        public Vector3D RotateAboutXAxis(double angleDeg)
+        {
+            var t = new Transform3D();
+            t.RotateAboutXAxis(angleDeg);
+            return t.Apply(this);
+        }
+
+        public Vector3D RotateAboutYAxis(double angleDeg)
+        {
+            var t = new Transform3D();
+            t.RotateAboutYAxis(angleDeg);
+            return t.Apply(this);
+        }
+
+        public Vector3D RotateAboutZAxis(double angleDeg)
+        {
+            var t = new Transform3D();
+            t.RotateAboutZAxis(angleDeg);
+            return t.Apply(this);
+        }
+
+        public Vector3D RotateAboutAxis(Vector3D axis, double angleDeg)
+        {
+            var t = new Transform3D();
+            t.RotateAboutAxis(axis, angleDeg);
+            return t.Apply(this);
+        }
+
+        public Vector3D RotateAs(Vector3D from, Vector3D to, IModel model)
+        {
+            var angle = from.AngleRad(to, model);
+            var N = from.CrossProduct(to);
+            return this.RotateAboutAxis(N, angle.ToDeg());
+        }
+
         public static Vector3D operator +(Vector3D a, Vector3D b)
         {
             return new Vector3D(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
@@ -170,6 +210,26 @@ namespace SearchAThing.Sci
         public static Vector3D operator /(double s, Vector3D v)
         {
             return new Vector3D(s / v.X, s / v.Y, s / v.Z);
+        }
+
+        public sVector3D ToSystemVector3D()
+        {
+            return new sVector3D(X, Y, Z);
+        }
+
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.InvariantCulture, "({0},{1},{2})", X, Y, Z);
+        }
+
+    }
+
+    public static partial class Extensions
+    {
+
+        public static Vector3D ToVector3D(this sVector3D v)
+        {
+            return new Vector3D(v.X, v.Y, v.Z);
         }
 
     }
