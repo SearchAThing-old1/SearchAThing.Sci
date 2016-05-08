@@ -34,6 +34,10 @@ namespace SearchAThing.Sci
     public class Vector3D
     {
 
+        public static Vector3D XAxis = new Vector3D(1, 0, 0);
+        public static Vector3D YAxis = new Vector3D(0, 1, 0);
+        public static Vector3D ZAxis = new Vector3D(0, 0, 1);
+
         public double X { get; private set; }
         public double Y { get; private set; }
         public double Z { get; private set; }
@@ -129,9 +133,28 @@ namespace SearchAThing.Sci
             return DotProduct(other) > 0;
         }
 
+        /// <summary>
+        /// Angle (rad) between this going toward the given other vector
+        /// rotating (right-hand-rule) around the given comparing axis
+        /// </summary>        
+        public double AngleToward(Vector3D to, Vector3D refAxis, IModel model)
+        {
+            var c = this.CrossProduct(to);
+
+            if (c.Concordant(refAxis))
+                return this.AngleRad(to, model);
+            else
+                return 2 * PI - AngleRad(to, model);
+        }
+
         public static Vector3D operator +(Vector3D a, Vector3D b)
         {
             return new Vector3D(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+        }
+
+        public static Vector3D operator -(Vector3D a)
+        {
+            return -1.0 * a;
         }
 
         public static Vector3D operator -(Vector3D a, Vector3D b)
