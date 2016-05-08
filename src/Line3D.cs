@@ -42,8 +42,10 @@ namespace SearchAThing.Sci
             From = from;
             To = to;
         }
-        
-        //public double Length { get { return from        
+
+        public double Length { get { return From.Distance(To); } }
+
+
 
     }
 
