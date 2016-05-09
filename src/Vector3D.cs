@@ -52,20 +52,18 @@ namespace SearchAThing.Sci
             X = x; Y = y; Z = z;
         }
 
-        public bool EqualsTolLen(Vector3D other, IModel model)
-        {
-            return
-                X.EqualsTolLen(other.X, model) &&
-                Y.EqualsTolLen(other.Y, model) &&
-                Z.EqualsTolLen(other.Z, model);
-        }
+        public bool IsZeroLength { get { return (X + Y + Z).EqualsTol(Constants.NormalizedLengthTolerance, 0); } }
 
-        public bool EqualsTolNormLen(Vector3D other, IModel model)
+        /// <summary>
+        /// Note: tol must be Constant.NormalizedLengthTolerance
+        /// if comparing normalized vectors
+        /// </summary>        
+        public bool EqualsTol(double tol, Vector3D other)
         {
             return
-                X.EqualsTolNormLen(other.X, model) &&
-                Y.EqualsTolNormLen(other.Y, model) &&
-                Z.EqualsTolNormLen(other.Z, model);
+                X.EqualsTol(tol, other.X) &&
+                Y.EqualsTol(tol, other.Y) &&
+                Z.EqualsTol(tol, other.Z);
         }
 
         public double Length { get { return Sqrt(X * X + Y * Y + Z * Z); } }
@@ -108,10 +106,12 @@ namespace SearchAThing.Sci
 
         /// <summary>
         /// Angle (rad) between this and other given vector.
+        /// Note: tol must be Constant.NormalizedLengthTolerance
+        /// if comparing normalized vectors
         /// </summary>        
-        public double AngleRad(Vector3D to, IModel model)
+        public double AngleRad(double tolLen, Vector3D to)
         {
-            if (this.EqualsTolLen(to, model)) return 0;
+            if (this.EqualsTol(tolLen, to)) return 0;
 
             // dp = |a| |b| cos(alfa)
             var dp = this.DotProduct(to);
@@ -133,23 +133,29 @@ namespace SearchAThing.Sci
             return DotProduct(to) / Length * Normalized();
         }
 
-        public bool Concordant(Vector3D other)
+        /// <summary>
+        /// Note: tol must be Constant.NormalizedLengthTolerance
+        /// if comparing normalized vectors
+        /// </summary>        
+        public bool Concordant(double tol, Vector3D other)
         {
-            return DotProduct(other) > 0;
+            return DotProduct(other) > tol;
         }
 
         /// <summary>
         /// Angle (rad) between this going toward the given other vector
         /// rotating (right-hand-rule) around the given comparing axis
+        /// Note: tol must be Constant.NormalizedLengthTolerance
+        /// if comparing normalized vectors
         /// </summary>        
-        public double AngleToward(Vector3D to, Vector3D refAxis, IModel model)
+        public double AngleToward(double tolLen, Vector3D to, Vector3D refAxis)
         {
             var c = this.CrossProduct(to);
 
-            if (c.Concordant(refAxis))
-                return this.AngleRad(to, model);
+            if (c.Concordant(tolLen, refAxis))
+                return this.AngleRad(tolLen, to);
             else
-                return 2 * PI - AngleRad(to, model);
+                return 2 * PI - AngleRad(tolLen, to);
         }
 
         public Vector3D RotateAboutXAxis(double angleRad)
@@ -180,19 +186,25 @@ namespace SearchAThing.Sci
             return t.Apply(this);
         }
 
-        public Vector3D RotateAs(Vector3D from, Vector3D to, IModel model)
+        /// <summary>
+        /// Note: tol must be Constant.NormalizedLengthTolerance
+        /// if comparing normalized vectors
+        /// </summary>        
+        public Vector3D RotateAs(double tol, Vector3D from, Vector3D to)
         {
-            var angle = from.AngleRad(to, model);
+            var angle = from.AngleRad(tol, to);
             var N = from.CrossProduct(to);
             return this.RotateAboutAxis(N, angle);
         }
 
-        public bool IsParallelTo(Vector3D other, IModel model)
+        /// <summary>
+        /// Note: tol must be Constant.NormalizedLengthTolerance
+        /// if comparing normalized vectors
+        /// </summary>        
+        public bool IsParallelTo(double tol, Vector3D other)
         {
             // two vectors a,b are parallel if there is a factor c such that a=cb
             // but first we need to exclude test over null components
-
-            var tol = Min(Length, other.Length) < 1.5 ? Constants.NormalizedLengthTolerance : model.MUDomain.Length.Value;
 
             var nullSum = 0;
 
@@ -200,20 +212,20 @@ namespace SearchAThing.Sci
             var yNull = false;
             var zNull = false;
 
-            if (X.EqualsTol(0, tol) && other.X.EqualsTol(0, tol)) { xNull = true; ++nullSum; }
-            if (Y.EqualsTol(0, tol) && other.Y.EqualsTol(0, tol)) { yNull = true; ++nullSum; }
-            if (Z.EqualsTol(0, tol) && other.Z.EqualsTol(0, tol)) { zNull = true; ++nullSum; }
+            if (X.EqualsTol(tol, 0) && other.X.EqualsTol(tol, 0)) { xNull = true; ++nullSum; }
+            if (Y.EqualsTol(tol, 0) && other.Y.EqualsTol(tol, 0)) { yNull = true; ++nullSum; }
+            if (Z.EqualsTol(tol, 0) && other.Z.EqualsTol(tol, 0)) { zNull = true; ++nullSum; }
 
             if (nullSum == 0) // 3-d
             {
                 var c = X / other.X;
-                return c.EqualsTol(Y / other.Y, tol) && c.EqualsTol(Z / other.Z, tol);
+                return c.EqualsTol(tol, Y / other.Y) && c.EqualsTol(tol, Z / other.Z);
             }
             else if (nullSum == 1) // 2-d
             {
-                if (xNull) return (Y / other.Y).EqualsTol(Z / other.Z, tol);
-                if (yNull) return (X / other.X).EqualsTol(Z / other.Z, tol);
-                if (zNull) return (X / other.X).EqualsTol(Y / other.Y, tol);
+                if (xNull) return (Y / other.Y).EqualsTol(tol, Z / other.Z);
+                if (yNull) return (X / other.X).EqualsTol(tol, Z / other.Z);
+                if (zNull) return (X / other.X).EqualsTol(tol, Y / other.Y);
             }
             else if (nullSum == 2) // 1-d
             {

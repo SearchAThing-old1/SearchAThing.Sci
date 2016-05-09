@@ -54,6 +54,22 @@ namespace SearchAThing.Sci
 
         public double Length { get { return V.Length; } }
 
+        /*
+        /// <summary>
+        /// Note: tol must be Constant.NormalizedLengthTolerance
+        /// if comparing normalized vectors
+        /// </summary>        
+        public bool LineContainsPoint(double tol, Vector3D p)
+        {
+            // line contains given point if there is a scalar s
+            // for which p = From + s * V
+
+            // to find out the scalar we need to test the first non null component
+            
+            
+        }
+        */
+
     }
 
 }

@@ -34,7 +34,7 @@ namespace SearchAThing.Sci
     public static partial class Extensions
     {
 
-        public static bool EqualsTol(this double x, double y, double tol)
+        public static bool EqualsTol(this double x, double tol, double y)
         {
             return Abs(x - y) <= tol;
         }
@@ -44,61 +44,25 @@ namespace SearchAThing.Sci
             return x.EqualsTol(y, Abs(x * 1e-6));
         }
 
-        public static bool GreatThanTol(this double x, double y, double tol)
+        public static bool GreatThanTol(this double x, double tol, double y)
         {
-            return x > y && !x.EqualsTol(y, tol);
+            return x > y && !x.EqualsTol(tol, y);
         }
 
-        public static bool GreatThanOrEqualsTol(this double x, double y, double tol)
+        public static bool GreatThanOrEqualsTol(this double x, double tol, double y)
         {
-            return x > y || x.EqualsTol(y, tol);
+            return x > y || x.EqualsTol(tol, y);
         }
 
-        public static bool LessThanTol(this double x, double y, double tol)
+        public static bool LessThanTol(this double x, double tol, double y)
         {
-            return x < y && !x.EqualsTol(y, tol);
+            return x < y && !x.EqualsTol(tol, y);
         }
 
-        public static bool LessThanOrEqualsTol(this double x, double y, double tol)
+        public static bool LessThanOrEqualsTol(this double x, double tol, double y)
         {
-            return x < y || x.EqualsTol(y, tol);
-        }
-
-        // tolerance helpers for len type
-
-        /// <summary>
-        /// States if x equals y apart the Length tolerance specified through the domain model.
-        /// x,y length measure unit implicitly from the my domain.
-        /// </summary>        
-        public static bool EqualsTolLen(this double x, double y, IModel model)
-        {
-            return Abs(x - y) <= model.MUDomain.Length.Value;
-        }
-
-        public static bool EqualsTolNormLen(this double x, double y, IModel model)
-        {
-            return Abs(x - y) <= Constants.NormalizedLengthTolerance;
-        }
-
-        public static bool GreatThanTolLen(this double x, double y, IModel model)
-        {
-            return x > y && !x.EqualsTolLen(y, model);
-        }
-
-        public static bool GreatThanOrEqualsTolLen(this double x, double y, IModel model)
-        {
-            return x > y || x.EqualsTolLen(y, model);
-        }
-
-        public static bool LessThanTolLen(this double x, double y, IModel model)
-        {
-            return x < y && !x.EqualsTolLen(y, model);
-        }
-
-        public static bool LessThanOrEqualsTolLen(this double x, double y, IModel model)
-        {
-            return x < y || x.EqualsTolLen(y, model);
-        }
+            return x < y || x.EqualsTol(tol, y);
+        }        
 
     }
 
