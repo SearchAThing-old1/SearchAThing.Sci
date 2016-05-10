@@ -27,6 +27,7 @@ using System;
 using System.Linq;
 using SearchAThing.Core;
 using static System.Math;
+using System.Globalization;
 
 namespace SearchAThing.Sci
 {
@@ -48,6 +49,13 @@ namespace SearchAThing.Sci
         public static double ToRad(this double angleGrad)
         {
             return angleGrad / 180.0 * PI;
+        }
+
+        /// <summary>
+        /// Return an invariant string representation rounded to given dec.        
+        public static string Stringify(this double x, int dec)
+        {
+            return string.Format(CultureInfo.InvariantCulture, "{0}", Round(x, dec));
         }
 
     }

@@ -312,6 +312,15 @@ namespace SearchAThing.Sci
             return string.Format(CultureInfo.InvariantCulture, "({0},{1},{2})", X, Y, Z);
         }
 
+        /// <summary>
+        /// string representation rounded to given decimal
+        /// Note: a given decimal+1 preround is done (see unit test)
+        /// </summary>        
+        public string Stringify(int dec)
+        {
+            return $"{X.Stringify(dec)}_{Y.Stringify(dec)}_{Z.Stringify(dec)}";
+        }
+
     }
 
     public static partial class Extensions
