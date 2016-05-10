@@ -35,6 +35,9 @@ namespace SearchAThing.Sci
 
     public class Line3D
     {
+        public static Line3D XAxisLine = new Line3D(Vector3D.Zero, Vector3D.XAxis);
+        public static Line3D YAxisLine = new Line3D(Vector3D.Zero, Vector3D.YAxis);
+        public static Line3D ZAxisLine = new Line3D(Vector3D.Zero, Vector3D.ZAxis);
 
         public Vector3D From { get; private set; }
         public Vector3D V { get; private set; }
@@ -199,6 +202,18 @@ namespace SearchAThing.Sci
             // no intersection
 
             return null;
+        }
+
+        public Line3D Perpendicular(double tol, Vector3D p)
+        {
+            if (LineContainsPoint(tol, p)) return null;
+
+            return new Line3D(p, p.Project(V));
+        }
+
+        public override string ToString()
+        {
+            return $"{From}-{To}";
         }
 
     }

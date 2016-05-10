@@ -135,8 +135,9 @@ namespace SearchAThing.Sci
         public Vector3D Project(Vector3D to)
         {
             // https://en.wikipedia.org/wiki/Vector_projection
+            // http://math.oregonstate.edu/bridge/papers/dot+cross.pdf (fig.1)
 
-            return DotProduct(to) / Length * Normalized();
+            return DotProduct(to) / to.Length * to.Normalized();
         }
 
         /// <summary>
@@ -239,7 +240,7 @@ namespace SearchAThing.Sci
             }
 
             return false;
-        }
+        }        
 
         public static Vector3D operator +(Vector3D a, Vector3D b)
         {
