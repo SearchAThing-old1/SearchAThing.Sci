@@ -240,32 +240,67 @@ namespace SearchAThing.Sci
             }
 
             return false;
-        }        
+        }
 
+        #region operators
+
+        /// <summary>
+        /// sum
+        /// </summary>        
         public static Vector3D operator +(Vector3D a, Vector3D b)
         {
             return new Vector3D(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
         }
 
+        /// <summary>
+        /// negate
+        /// </summary>        
         public static Vector3D operator -(Vector3D a)
         {
             return -1.0 * a;
         }
 
+        /// <summary>
+        /// sub
+        /// </summary>        
         public static Vector3D operator -(Vector3D a, Vector3D b)
         {
             return new Vector3D(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
         }
 
+        /// <summary>
+        /// scalar mul
+        /// </summary>        
         public static Vector3D operator *(double s, Vector3D v)
         {
             return new Vector3D(s * v.X, s * v.Y, s * v.Z);
         }
 
+        /// <summary>
+        /// scalar mul
+        /// </summary>        
+        public static Vector3D operator *(Vector3D v, double s)
+        {
+            return new Vector3D(s * v.X, s * v.Y, s * v.Z);
+        }
+
+        /// <summary>
+        /// scalar div
+        /// </summary>        
         public static Vector3D operator /(double s, Vector3D v)
         {
             return new Vector3D(s / v.X, s / v.Y, s / v.Z);
         }
+
+        /// <summary>
+        /// scalar div
+        /// </summary>        
+        public static Vector3D operator /(Vector3D v, double s)
+        {
+            return new Vector3D(s / v.X, s / v.Y, s / v.Z);
+        }
+
+        #endregion
 
         public sVector3D ToSystemVector3D()
         {
