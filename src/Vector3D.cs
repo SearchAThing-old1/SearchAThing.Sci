@@ -39,6 +39,7 @@ namespace SearchAThing.Sci
     public class Vector3D
     {
 
+        public static Vector3D Zero = new Vector3D(0, 0, 0);
         public static Vector3D XAxis = new Vector3D(1, 0, 0);
         public static Vector3D YAxis = new Vector3D(0, 1, 0);
         public static Vector3D ZAxis = new Vector3D(0, 0, 1);
@@ -64,6 +65,11 @@ namespace SearchAThing.Sci
                 X.EqualsTol(tol, other.X) &&
                 Y.EqualsTol(tol, other.Y) &&
                 Z.EqualsTol(tol, other.Z);
+        }
+
+        public bool EqualsTol(double tol, double x, double y, double z)
+        {
+            return X.EqualsTol(tol, x) && Y.EqualsTol(tol, y) && Z.EqualsTol(tol, z);
         }
 
         public double Length { get { return Sqrt(X * X + Y * Y + Z * Z); } }
