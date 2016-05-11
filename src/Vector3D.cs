@@ -246,6 +246,16 @@ namespace SearchAThing.Sci
             return false;
         }
 
+        public Vector3D ToUCS(CoordinateSystem cs)
+        {
+            return cs.ToUCS(this);
+        }
+
+        public Vector3D ToWCS(CoordinateSystem cs)
+        {
+            return cs.ToWCS(this);
+        }
+
         #region operators
 
         /// <summary>
