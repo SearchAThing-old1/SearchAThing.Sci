@@ -48,6 +48,10 @@ namespace SearchAThing.Sci
         public double Y { get; private set; }
         public double Z { get; private set; }
 
+        public Vector3D()
+        {
+        }
+
         public Vector3D(double x, double y, double z)
         {
             X = x; Y = y; Z = z;
@@ -95,7 +99,7 @@ namespace SearchAThing.Sci
         }
 
         /// <summary>
-        /// Cross product
+        /// Cross product ( note that resulting vector is not subjected to normalization )
         /// a x b = |a| |b| sin(alfa) N
         /// a x b = |  x  y  z |
         ///         | ax ay az |
@@ -243,6 +247,20 @@ namespace SearchAThing.Sci
         }
 
         #region operators
+
+        /// <summary>
+        /// indexed vector component
+        /// </summary>        
+        public double this[int index]
+        {
+            get
+            {
+                if (index == 0) return X;
+                if (index == 1) return Y;
+                if (index == 2) return Z;
+                throw new ArgumentOutOfRangeException("invalid index must between 0-2");
+            }
+        }
 
         /// <summary>
         /// sum
