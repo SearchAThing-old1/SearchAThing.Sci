@@ -117,7 +117,7 @@ namespace SearchAThing.Sci
         /// Find intersection of two 3d lines
         /// </summary>        
         public Vector3D Intersect(double tol, Line3D other)
-        {            
+        {
             var f1x = From.X;
             var f1y = From.Y;
             var f1z = From.Z;
@@ -209,6 +209,11 @@ namespace SearchAThing.Sci
             if (LineContainsPoint(tol, p)) return null;
 
             return new Line3D(p, p.Project(V));
+        }
+
+        public bool Colinear(double tol, Line3D other)
+        {
+            return LineContainsPoint(tol, other.From) && LineContainsPoint(tol, other.To);
         }
 
         public override string ToString()
