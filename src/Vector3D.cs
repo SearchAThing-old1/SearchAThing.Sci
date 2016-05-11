@@ -325,7 +325,7 @@ namespace SearchAThing.Sci
         /// </summary>        
         public static Vector3D operator /(Vector3D v, double s)
         {
-            return new Vector3D(s / v.X, s / v.Y, s / v.Z);
+            return new Vector3D(v.X / s, v.Y / s, v.Z / s);
         }
 
         #endregion
