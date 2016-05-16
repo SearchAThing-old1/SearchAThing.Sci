@@ -45,6 +45,7 @@
     <Compile Include="CoordinateSystem.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="BBox3D.cs" />
     <Compile Include="Polygon.cs" />
     <Compile Include="Matrix3D.cs" />
     <Compile Include="SampleModel.cs" />
