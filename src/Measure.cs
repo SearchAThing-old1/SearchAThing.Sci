@@ -42,6 +42,14 @@ namespace SearchAThing.Sci
             MU = mu;
         }
 
+        /// <summary>
+        /// Convert to the implicit measure of the given mu domain
+        /// </summary>
+        public Measure ConvertTo(MUDomain mud)
+        {
+            return ConvertTo(mud.ByPhysicalQuantity(MU.PhysicalQuantity).MU);
+        }
+
         public Measure ConvertTo(MeasureUnit toMU)
         {
             return new Measure(Value * MU.PhysicalQuantity.ConvertFactor(MU, toMU), toMU);
