@@ -185,6 +185,28 @@ namespace SearchAThing.Sci
 
         #endregion
 
+        #region Temperature
+
+        public static class Temperature
+        {
+
+            static MeasureUnit _C;
+            public static MeasureUnit C
+            {
+                get
+                {
+                    if (_C == null)
+                    {
+                        _C = new MeasureUnit(PQCollection.Temperature, "C");
+                    }
+                    return _C;
+                }
+            } 
+
+        }
+
+        #endregion
+
         #region PlaneAngle
 
         public static class PlaneAngle
@@ -200,6 +222,94 @@ namespace SearchAThing.Sci
                         _rad = new MeasureUnit(PQCollection.PlaneAngle, "rad");
                     }
                     return _rad;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region Pressure
+
+        public static class Pressure
+        {
+
+            static MeasureUnit _Pa;
+            public static MeasureUnit Pa
+            {
+                get
+                {
+                    if (_Pa == null)
+                    {
+                        _Pa = new MeasureUnit(PQCollection.Pressure, "Pa");
+                    }
+                    return _Pa;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region Acceleration
+
+        public static class Acceleration
+        {
+
+            static MeasureUnit _m_s2;
+            public static MeasureUnit m_s2
+            {
+                get
+                {
+                    if (_m_s2 == null)
+                    {
+                        _m_s2 = new MeasureUnit(PQCollection.Acceleration, "m_s2");
+                    }
+                    return _m_s2;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region Force
+
+        public static class Force
+        {
+
+            static MeasureUnit _N;
+            public static MeasureUnit N
+            {
+                get
+                {
+                    if (_N == null)
+                    {
+                        _N = new MeasureUnit(PQCollection.Force, "N");
+                    }
+                    return _N;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region Speed
+
+        public static class Speed
+        {
+
+            static MeasureUnit _m_s;
+            public static MeasureUnit m_s
+            {
+                get
+                {
+                    if (_m_s == null)
+                    {
+                        _m_s = new MeasureUnit(PQCollection.Speed, "m_s");
+                    }
+                    return _m_s;
                 }
             }
 
