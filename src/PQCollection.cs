@@ -52,6 +52,7 @@ namespace SearchAThing.Sci
                     physicalQuantities.Add(Temperature);
 
                     physicalQuantities.Add(PlaneAngle);
+                    physicalQuantities.Add(Pressure);
                     physicalQuantities.Add(Acceleration);
                     physicalQuantities.Add(Force);
                     physicalQuantities.Add(Speed);
@@ -385,7 +386,6 @@ namespace SearchAThing.Sci
         }
         */
 
-        /*
         static PhysicalQuantity pressure;
         public static PhysicalQuantity Pressure
         {
@@ -396,7 +396,6 @@ namespace SearchAThing.Sci
                 return pressure;
             }
         }
-        */
 
         // pop
 
@@ -432,6 +431,16 @@ namespace SearchAThing.Sci
         // spin
 
         // strain
+        static PhysicalQuantity strain;
+        public static PhysicalQuantity Strain
+        {
+            get
+            {
+                if (strain == null) strain = new PhysicalQuantity("Strain");
+
+                return strain;
+            }
+        }
 
         /*
         static PhysicalQuantity stress;
