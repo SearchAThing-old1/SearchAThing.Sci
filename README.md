@@ -16,6 +16,13 @@ In general this library would help to manage common aspect of sci projects such 
 
 Blog about this project available here https://searchathing.com/?p=1326
 
+## Dependencies
+
+Just clone these repo in the parent folder where SearchAThing.Sci is:
+
+- [MIConvexHull](https://github.com/gusmanb/MIConvexHull.git) git clone of the codeplex [official repo](http://miconvexhull.codeplex.com/)
+- [netDxf](https://git01.codeplex.com/netdxf)
+
 ## Examples
 
 Examples are available [here](https://github.com/devel0/SearchAThing.Sci.Examples)
