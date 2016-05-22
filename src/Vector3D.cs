@@ -359,6 +359,11 @@ namespace SearchAThing.Sci
             return new Vector3D(v.X, v.Y, v.Z);
         }
 
+        public static netDxf.Vector3 ToVector3(this Vector3D v)
+        {
+            return new netDxf.Vector3(v.X, v.Y, v.Z);
+        }
+
     }
 
 }
