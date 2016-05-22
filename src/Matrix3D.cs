@@ -207,8 +207,16 @@ namespace SearchAThing.Sci
         /// </summary>        
         public Vector3D Solve(double a, double b, double c)
         {
+            return Solve(new Vector3D(a, b, c));
+        }
+
+        /// <summary>
+        /// Solve linear system of eq represented by this matrix
+        /// defined n known term.
+        public Vector3D Solve(Vector3D n)
+        {
             // Ax = B -> x = A^(-1)B
-            return Inverse() * new Vector3D(a, b, c);
+            return Inverse() * n;
         }
 
         #region operators
