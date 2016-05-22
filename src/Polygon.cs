@@ -76,7 +76,66 @@ namespace SearchAThing.Sci
             }
 
             return new Vector3D(x / (6 * area), y / (6 * area), 0);
-        }        
+        }
+
+        /// <summary>
+        /// yields an ienumerable of polygon segments corresponding to the given polygon pts ( z is not considered )
+        /// works even last point not equals the first one
+        /// </summary>       
+        public static IEnumerable<Line3D> PolygonSegments(this IEnumerable<Vector3D> pts, double tol)
+        {
+            Vector3D first = null;
+            Vector3D prev = null;
+
+            foreach (var p in pts)
+            {
+                if (first == null)
+                {
+                    first = prev = p;
+                    continue;
+                }
+
+                var seg = new Line3D(prev, p);
+                prev = p;
+
+                yield return seg;
+            }
+
+            if (!prev.EqualsTol(tol, first)) yield return new Line3D(prev, first);
+        }
+
+        /// <summary>
+        /// states if the given polygon contains the test point ( z not considered )
+        /// https://en.wikipedia.org/wiki/Point_in_polygon
+        /// By default check the point contained in the polygon perimeter.
+        /// </summary>        
+        /// <param name="excludePerimeter">Exclude check point contained in the perimeter</param>
+        public static bool ContainsPoint(this List<Vector3D> pts, double tol, Vector3D pt, bool excludePerimeter = false)
+        {
+            var ray = new Line3D(pt, Vector3D.XAxis, Line3DConstructMode.PointAndVector);
+
+            var segs = pts.PolygonSegments(tol);
+
+            var intCnt = 0;
+
+            foreach (var seg in segs)
+            {
+                if (seg.SegmentContainsPoint(tol, pt))
+                {
+                    if (excludePerimeter) return false;
+                    return true;
+                }
+
+                Vector3D ip = null;
+                var segMinY = Min(seg.From.Y, seg.To.Y);
+                var segMaxY = Max(seg.From.Y, seg.To.Y);
+                if (pt.Y.GreatThanOrEqualsTol(tol, segMinY) && pt.Y.LessThanOrEqualsTol(tol, segMaxY))
+                    ip = ray.Intersect(tol, seg);
+                if (ip != null && pt.X.GreatThanOrEqualsTol(tol, ip.X) && seg.SegmentContainsPoint(tol, ip)) ++intCnt;
+            }
+
+            return intCnt % 2 != 0;
+        }
 
     }
 
