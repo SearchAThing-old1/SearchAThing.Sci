@@ -197,9 +197,67 @@ namespace SearchAThing.Sci
                 {
                     if (_C == null)
                     {
-                        _C = new MeasureUnit(PQCollection.Temperature, "C");
+                        _C = new MeasureUnit(PQCollection.Temperature, "C", NonLinearConvFunctor);
                     }
                     return _C;
+                }
+            }
+
+            static MeasureUnit _K;
+            public static MeasureUnit K
+            {
+                get
+                {
+                    if (_K == null)
+                    {
+                        _K = new MeasureUnit(PQCollection.Temperature, "K", NonLinearConvFunctor);
+                    }
+                    return _K;
+                }
+            }
+
+            static MeasureUnit _F;
+            public static MeasureUnit F
+            {
+                get
+                {
+                    if (_F == null)
+                    {
+                        _F = new MeasureUnit(PQCollection.Temperature, "F", NonLinearConvFunctor);
+                    }
+                    return _F;
+                }
+            }
+
+            static Func<MeasureUnit, MeasureUnit, double, double> _nonLinearConvFunctor;
+            public static Func<MeasureUnit, MeasureUnit, double, double> NonLinearConvFunctor
+            {
+                get
+                {
+                    if (_nonLinearConvFunctor == null)
+                    {
+                        _nonLinearConvFunctor = (muFrom, muTo, valueFrom) =>
+                        {
+                            if (muFrom == C)
+                            {
+                                if (muTo == K) return valueFrom + 273.15;
+                                if (muTo == F) return valueFrom * (9.0 / 5) + 32;
+                            }
+                            else if (muFrom == K)
+                            {
+                                if (muTo == C) return valueFrom - 273.15;
+                                if (muTo == F) return valueFrom * (9.0 / 5) - 459.67;
+                            }
+                            else if (muFrom == F)
+                            {
+                                if (muTo == C) return (valueFrom - 32) * (5.0 / 9);
+                                if (muTo == K) return (valueFrom + 459.67) * (5.0 / 9);
+                            }
+
+                            throw new NotImplementedException($"not yet implemented non linear conversion from [{muFrom}] to [{muTo}]");
+                        };
+                    }
+                    return _nonLinearConvFunctor;
                 }
             }
 

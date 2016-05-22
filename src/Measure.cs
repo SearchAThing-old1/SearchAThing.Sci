@@ -57,7 +57,10 @@ namespace SearchAThing.Sci
 
         public Measure ConvertTo(MeasureUnit toMU)
         {
-            return new Measure(Value * MU.PhysicalQuantity.ConvertFactor(MU, toMU), toMU);
+            if (MU.PhysicalQuantity.MUConversionType == MeasureUnitConversionTypeEnum.NonLinear)
+                return new Measure(MU.PhysicalQuantity.NonLinearConversionFunctor(MU, toMU, Value), toMU);
+            else
+                return new Measure(Value * MU.PhysicalQuantity.ConvertFactor(MU, toMU), toMU);
         }
 
         public override string ToString()

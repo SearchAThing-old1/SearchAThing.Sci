@@ -131,7 +131,7 @@ namespace SearchAThing.Sci
         {
             get
             {
-                if (temperature == null) temperature = new PhysicalQuantity("Temperature");
+                if (temperature == null) temperature = new PhysicalQuantity("Temperature", MeasureUnitConversionTypeEnum.NonLinear);
 
                 return temperature;
             }

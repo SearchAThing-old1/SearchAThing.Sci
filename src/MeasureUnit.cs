@@ -53,7 +53,7 @@ namespace SearchAThing.Sci
         [DataMember]
         public PhysicalQuantity PhysicalQuantity { get; private set; }
 
-        public MeasureUnit(PhysicalQuantity physicalQuantity, string name, MeasureUnit convRefUnit = null, double convRefFactor = 0)
+        void Init(PhysicalQuantity physicalQuantity, string name, MeasureUnit convRefUnit = null)
         {
             PhysicalQuantity = physicalQuantity;
 
@@ -62,9 +62,10 @@ namespace SearchAThing.Sci
                 .Any(r => r.Name == name))
                 throw new Exception($"A registered measure unit [{name}] already exists for the physical quantity [{physicalQuantity.Name}]");
 
-            if (convRefUnit == null && physicalQuantity.ReferenceMeasureUnit != null)
+            if (physicalQuantity.MUConversionType == MeasureUnitConversionTypeEnum.Linear &&
+                convRefUnit == null && physicalQuantity.LinearConversionRefMU != null)
                 throw new Exception(
-                    $"A reference measure unit [{physicalQuantity.ReferenceMeasureUnit}] already exists for the physical quantity [{physicalQuantity.Name}]" +
+                    $"A reference measure unit [{physicalQuantity.LinearConversionRefMU}] already exists for the physical quantity [{physicalQuantity.Name}]" +
                     $"Need to specify a valid existing convRefUnit with related convRefFactor to specify measure unit scale factor");
 
             if (global_static_id_counter.ContainsKey(physicalQuantity.id))
@@ -74,8 +75,20 @@ namespace SearchAThing.Sci
 
             Name = name;
             PhysicalQuantity = PhysicalQuantity;
+        }
+
+        public MeasureUnit(PhysicalQuantity physicalQuantity, string name, MeasureUnit convRefUnit = null, double convRefFactor = 0)
+        {
+            Init(physicalQuantity, name, convRefUnit);
 
             physicalQuantity.RegisterMeasureUnit(this, convRefUnit, convRefFactor);
+        }
+
+        public MeasureUnit(PhysicalQuantity physicalQuantity, string name, Func<MeasureUnit, MeasureUnit, double, double> convRefFunctor)
+        {
+            Init(physicalQuantity, name);
+
+            physicalQuantity.RegisterMeasureUnit(this, convRefFunctor);
         }
 
         /// <summary>
