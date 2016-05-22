@@ -201,7 +201,7 @@ namespace SearchAThing.Sci
                     }
                     return _C;
                 }
-            } 
+            }
 
         }
 
@@ -288,6 +288,19 @@ namespace SearchAThing.Sci
                         _N = new MeasureUnit(PQCollection.Force, "N");
                     }
                     return _N;
+                }
+            }
+
+            static MeasureUnit _kN;
+            public static MeasureUnit kN
+            {
+                get
+                {
+                    if (_kN == null)
+                    {
+                        _kN = new MeasureUnit(PQCollection.Force, "kN", N, 1e3);
+                    }
+                    return _kN;
                 }
             }
 
