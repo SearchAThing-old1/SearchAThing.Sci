@@ -216,6 +216,33 @@ namespace SearchAThing.Sci
             return LineContainsPoint(tol, other.From) && LineContainsPoint(tol, other.To);
         }
 
+        public bool IsParallelTo(double tol, Plane3D plane)
+        {
+            return V.IsParallelTo(tol, plane.CS.BaseX) && V.IsParallelTo(tol, plane.CS.BaseY);
+        }
+
+        /// <summary>
+        /// returns null if this line is parallel to the plane,
+        /// the intersection point otherwise
+        /// </summary>        
+        public Vector3D Intersect(double tol, Plane3D plane)
+        {
+            if (IsParallelTo(tol, plane)) return null;
+
+            // O = plane.Origin    Vx = plane.CS.BaseX    Vy = plane.CS.BaseY
+            //
+            // plane : O + alpha * Vx + beta * Vy
+            // line  : From + gamma * V
+            //
+            // => m:{ alpha * Vx + beta * Vy - gamma * V } * s = n:{ From - O }
+
+            var m = Matrix3D.FromVectorsAsColumns(plane.CS.BaseX, plane.CS.BaseY, -V);
+            var n = From - plane.CS.Origin;
+            var s = m.Solve(n);
+
+            return From + s.Z * V;
+        }
+
         public override string ToString()
         {
             return $"{From}-{To}";
