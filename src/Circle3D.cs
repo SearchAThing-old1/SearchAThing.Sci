@@ -44,7 +44,7 @@ namespace SearchAThing.Sci
             CS = cs;
             Radius = r;
         }
-
+      
         /// <summary>
         /// Build 3d circle that intersect p1,p2,p3
         /// ( the inside CS will centered in the circle center and Xaxis toward p1 )
@@ -79,5 +79,17 @@ namespace SearchAThing.Sci
 
     }
 
+    public static partial class Extensions
+    {
+
+        public static Circle3D CircleBy3Points(this IEnumerable<Vector3D> _pts)
+        {
+            var pts = _pts.ToArray();
+            if (pts.Length != 3) throw new Exception("expected 3 points for circle3d");
+
+            return new Circle3D(pts[0], pts[1], pts[2]);
+        }
+
+    }
 
 }
