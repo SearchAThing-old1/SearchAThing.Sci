@@ -27,29 +27,36 @@ using SearchAThing.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace SearchAThing.Sci
 {
 
+    [DataContract(IsReference = true)]
     public class PhysicalQuantity : IEquatable<PhysicalQuantity>
     {
 
         static int global_static_id_counter;
 
+        [DataMember]
         internal int id;
 
         /// <summary>
         /// conversion factor to the ref unit
         /// </summary>
+        [DataMember]
         List<double> convFactors = new List<double>();
 
         double[,] conversionMatrix = null;
 
+        [DataMember]
         public MeasureUnit ReferenceMeasureUnit { get; private set; }
 
+        [DataMember]
         List<MeasureUnit> measureUnits;
         public IEnumerable<MeasureUnit> MeasureUnits { get { return measureUnits; } }
 
+        [DataMember]
         public string Name { get; private set; }
 
         public PhysicalQuantity(string name)
@@ -122,7 +129,7 @@ namespace SearchAThing.Sci
                 {
                     m[r, c] = 1.0 / m[c, r];
                 }
-            }            
+            }
         }
 
         public bool Equals(PhysicalQuantity other)

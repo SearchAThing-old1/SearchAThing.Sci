@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Math;
@@ -33,59 +34,67 @@ using static System.Math;
 namespace SearchAThing.Sci
 {
 
-    // TODO //*
-
     /// <summary>
     /// Measures here contains information about implicit measure unit
     /// and value of the tolerance
     /// </summary>
+    [DataContract(IsReference = true)]
     public class MUDomain
     {
 
         /// <summary>
         /// Implicit measure unit for Length and its tolerance
         /// </summary>
+        [DataMember]
         public Measure Length { get; private set; }
 
         /// <summary>
         /// Implicit measure unit for Mass and its tolerance
         /// </summary>
+        [DataMember]
         public Measure Mass { get; private set; }
 
         /// <summary>
         /// Implicit measure unit for Time and its tolerance
         /// </summary>
+        [DataMember]
         public Measure Time { get; private set; }
 
         /// <summary>
         /// Implicit measure unit for Temperature and its tolerance
         /// </summary>
+        [DataMember]
         public Measure Temperature { get; private set; }
 
         /// <summary>
         /// Implicit measure unit for PlaneAngle and its tolerance
         /// </summary>
+        [DataMember]
         public Measure PlaneAngle { get; private set; }
 
         /// <summary>
         /// Implicit measure unit for Pressure and its tolerance
         /// </summary>
+        [DataMember]
         public Measure Pressure { get; private set; }
 
         /// <summary>
         /// Implicit measure unit for Acceleration and its tolerance
         /// </summary>
+        [DataMember]
         public Measure Acceleration { get; private set; }
 
         /// <summary>
         /// Implicit measure unit for Force and its tolerance
         /// </summary>
+        [DataMember]
         public Measure Force { get; private set; }
 
         /// <summary>
         /// Implicit measure unit for Speed and its tolerance
         /// </summary>
-        public Measure Speed { get; private set; }                          
+        [DataMember]
+        public Measure Speed { get; private set; }
 
         public void SetLength(Measure length) { Length = length; }
 
@@ -95,12 +104,12 @@ namespace SearchAThing.Sci
             Mass = new Measure(1e-1, MUCollection.Mass.g);
             Time = new Measure(1e-1, MUCollection.Time.sec);
             Temperature = new Measure(1e-1, MUCollection.Temperature.C);
-            
+
             PlaneAngle = new Measure(PI / 180.0 / 10.0, MUCollection.PlaneAngle.rad);
             Pressure = new Measure(1e-1, MUCollection.Pressure.Pa);
             Acceleration = new Measure(1e-1, MUCollection.Acceleration.m_s2);
             Force = new Measure(1e-1, MUCollection.Force.N);
-            Speed = new Measure(1e-1, MUCollection.Speed.m_s);            
+            Speed = new Measure(1e-1, MUCollection.Speed.m_s);
         }
 
         public Measure ByPhysicalQuantity(PhysicalQuantity physicalQuantity)

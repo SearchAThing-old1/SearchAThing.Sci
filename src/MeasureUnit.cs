@@ -26,10 +26,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace SearchAThing.Sci
 {
 
+    [DataContract]
     public class MeasureUnit : IEquatable<MeasureUnit>
     {
         /// <summary>
@@ -37,14 +39,18 @@ namespace SearchAThing.Sci
         /// this list is used to avoid double registration of a measure unit with same name
         /// for a given physical quantity
         /// </summary>
+        [DataMember]
         static List<MeasureUnit> AllMeasureUnits = new List<MeasureUnit>();
 
         static Dictionary<int, int> global_static_id_counter = new Dictionary<int, int>();
 
+        [DataMember]
         internal int id;
 
+        [DataMember]
         public string Name { get; private set; }
 
+        [DataMember]
         public PhysicalQuantity PhysicalQuantity { get; private set; }
 
         public MeasureUnit(PhysicalQuantity physicalQuantity, string name, MeasureUnit convRefUnit = null, double convRefFactor = 0)

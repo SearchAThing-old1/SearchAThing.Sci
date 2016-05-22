@@ -26,14 +26,19 @@
 using System;
 using System.Linq;
 using SearchAThing.Core;
+using System.Runtime.Serialization;
 
 namespace SearchAThing.Sci
 {
 
+    [DataContract(IsReference = true)]
     public class Measure
     {
 
+        [DataMember]
         public double Value { get; private set; }
+
+        [DataMember]
         public MeasureUnit MU { get; private set; }
 
         public Measure(double value, MeasureUnit mu)
@@ -57,7 +62,7 @@ namespace SearchAThing.Sci
 
         public override string ToString()
         {
-            return $"{Value} {MU}";
+            return $"{Value}{MU}";
         }
 
         public static Measure TryParse(PhysicalQuantity pq, string text)
