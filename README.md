@@ -19,3 +19,7 @@ Blog about this project available here https://searchathing.com/?p=1326
 ## Examples
 
 Examples are available [here](https://github.com/devel0/SearchAThing.Sci.Examples)
+
+## Unit Tests
+
+Unit tests available [here](https://github.com/devel0/SearchAThing.UnitTest/blob/master/src/Sci.cs) at the fact MeasureUnitTest()
