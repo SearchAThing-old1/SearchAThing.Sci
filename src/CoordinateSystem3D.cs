@@ -33,7 +33,7 @@ using static System.Math;
 namespace SearchAThing.Sci
 {
 
-    public class CoordinateSystem
+    public class CoordinateSystem3D
     {
 
         Matrix3D m;
@@ -44,12 +44,12 @@ namespace SearchAThing.Sci
         public Vector3D BaseY { get; private set; }
         public Vector3D BaseZ { get; private set; }
 
-        public static CoordinateSystem WCS = new CoordinateSystem(Vector3D.Zero, Vector3D.XAxis, Vector3D.YAxis, Vector3D.ZAxis);
+        public static CoordinateSystem3D WCS = new CoordinateSystem3D(Vector3D.Zero, Vector3D.XAxis, Vector3D.YAxis, Vector3D.ZAxis);
 
         /// <summary>
         /// Construct a coordinate system with the given origin and orthonormal bases
         /// </summary>        
-        public CoordinateSystem(Vector3D o, Vector3D baseX, Vector3D baseY, Vector3D baseZ)
+        public CoordinateSystem3D(Vector3D o, Vector3D baseX, Vector3D baseY, Vector3D baseZ)
         {
             Origin = o;
             BaseX = baseX;
@@ -66,7 +66,7 @@ namespace SearchAThing.Sci
         /// BaseZ = v1 x BaseY
         /// BaseY = BaseZ x BaseX
         /// </summary>        
-        public CoordinateSystem(Vector3D o, Vector3D v1, Vector3D v2)
+        public CoordinateSystem3D(Vector3D o, Vector3D v1, Vector3D v2)
         {
             Origin = o;
             BaseX = v1.Normalized();
@@ -88,6 +88,11 @@ namespace SearchAThing.Sci
         public Vector3D ToWCS(Vector3D p)
         {
             return m * p + Origin;
+        }
+
+        public bool IsParallelTo(double tol, CoordinateSystem3D other)
+        {
+            return BaseZ.IsParallelTo(tol, other.BaseZ);
         }
 
     }
