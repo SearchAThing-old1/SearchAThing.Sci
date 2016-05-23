@@ -66,11 +66,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\MIConvexHull\MIConvexHull\MIConvexHull.csproj">
+    <ProjectReference Include="..\..\MIConvexHull\MIConvexHull\MIConvexHull.csproj">
       <Project>{2337776d-7d0c-40aa-a439-c26c3ce24fab}</Project>
       <Name>MIConvexHull</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\netdxf\netDxf\netDxf.csproj">
+    <ProjectReference Include="..\..\netdxf\netDxf\netDxf.csproj">
       <Project>{785380e0-ceb9-4c34-82e5-60d0e33e848e}</Project>
       <Name>netDxf</Name>
     </ProjectReference>
