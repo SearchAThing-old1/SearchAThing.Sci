@@ -28,8 +28,9 @@ using System.Linq;
 using SearchAThing.Core;
 using static System.Math;
 using System.Collections.Generic;
+using SearchAThing.Sci;
 
-namespace SearchAThing.Sci
+namespace SearchAThing
 {
 
     public static partial class Extentions
@@ -39,7 +40,7 @@ namespace SearchAThing.Sci
         /// Area of a polygon (does not consider z)
         /// https://en.wikipedia.org/wiki/Centroid        
         /// </summary>        
-        public static double Area(this List<Vector3D> pts, double tol)
+        public static double Area(this IList<Vector3D> pts, double tol)
         {
             var lastEqualsFirst = pts[pts.Count - 1].EqualsTol(tol, pts[0]);
             double a = 0;
@@ -55,9 +56,22 @@ namespace SearchAThing.Sci
 
         /// <summary>
         /// Centroid of a polygon (does not consider z)
+        /// points must ordered
+        /// ( if have area specify the parameter to avoid recomputation )
         /// https://en.wikipedia.org/wiki/Centroid        
         /// </summary>        
-        public static Vector3D Centroid(this List<Vector3D> pts, double tol, double area)
+        public static Vector3D Centroid(this IList<Vector3D> pts, double tol)
+        {
+            var area = pts.Area(tol);
+            return pts.Centroid(tol, area);
+        }
+
+        /// <summary>
+        /// Centroid of a polygon (does not consider z)
+        /// points must ordered
+        /// https://en.wikipedia.org/wiki/Centroid        
+        /// </summary>        
+        public static Vector3D Centroid(this IList<Vector3D> pts, double tol, double area)
         {
             var lastEqualsFirst = pts[pts.Count - 1].EqualsTol(tol, pts[0]);
             double x = 0;
@@ -76,6 +90,24 @@ namespace SearchAThing.Sci
             }
 
             return new Vector3D(x / (6 * area), y / (6 * area), 0);
+        }
+
+        /// <summary>
+        /// given a set of polygon pts, returns the enumeation of all pts except the last if equals the first
+        /// </summary>        
+        public static IEnumerable<Vector3D> OpenPolyPoints(this IEnumerable<Vector3D> pts, double tol)
+        {
+            Vector3D first = null;
+
+            foreach (var p in pts)
+            {
+                if (first == null)
+                    first = p;
+                else
+                    if (first.EqualsTol(tol, p)) yield break;
+
+                yield return p;
+            }
         }
 
         /// <summary>
@@ -104,13 +136,13 @@ namespace SearchAThing.Sci
             if (!prev.EqualsTol(tol, first)) yield return new Line3D(prev, first);
         }
 
-        /// <summary>
+        /// <summary>        
         /// states if the given polygon contains the test point ( z not considered )
         /// https://en.wikipedia.org/wiki/Point_in_polygon
         /// By default check the point contained in the polygon perimeter.
         /// </summary>        
         /// <param name="excludePerimeter">Exclude check point contained in the perimeter</param>
-        public static bool ContainsPoint(this List<Vector3D> pts, double tol, Vector3D pt, bool excludePerimeter = false)
+        public static bool ContainsPoint(this IList<Vector3D> pts, double tol, Vector3D pt, bool excludePerimeter = false)
         {
             var ray = new Line3D(pt, Vector3D.XAxis, Line3DConstructMode.PointAndVector);
 
@@ -135,6 +167,40 @@ namespace SearchAThing.Sci
             }
 
             return intCnt % 2 != 0;
+        }
+
+        public static IEnumerable<Vector3D> SortPoly(this IList<Vector3D> pts, double tol)
+        {
+            var c = pts.Mean();
+
+            // search non-null ref axis
+            Vector3D N = null;
+            var r = pts.First() - c;
+            foreach (var r2 in pts.Skip(1))
+            {
+                N = r.CrossProduct(r2 - c);
+                if (!N.Length.EqualsTol(tol, 0)) break;
+            }
+
+            var q = pts.Select(p => new
+            {
+                pt = p,
+                ang = r.AngleToward(tol, p - c, N)
+            });
+            var res = q.OrderBy(w => w.ang).Select(w => w.pt);
+
+            return res;
+        }
+
+        public static netDxf.Entities.LwPolyline ToLwPolyline(this IEnumerable<Vector3D> pts, double tol)
+        {
+            return new netDxf.Entities.LwPolyline(pts.OpenPolyPoints(tol).Select(r => r.ToVector2()).ToList(), true);
+        }
+
+        public static netDxf.Entities.LwPolyline ToLwPolyline(this IEnumerable<Line3D> segs, double tol)
+        {
+            var X = segs.Select(w => w.From).OpenPolyPoints(tol);
+            return new netDxf.Entities.LwPolyline(X.Select(r => r.ToVector2()).ToList(), true);
         }
 
     }
