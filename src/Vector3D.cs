@@ -32,6 +32,8 @@ using sVector3D = System.Windows.Media.Media3D.Vector3D;
 using sMatrix3D = System.Windows.Media.Media3D.Matrix3D;
 using sQuaternion = System.Windows.Media.Media3D.Quaternion;
 using System.Globalization;
+using System.Collections.Generic;
+using SearchAThing.Sci;
 
 namespace SearchAThing.Sci
 {
@@ -330,6 +332,34 @@ namespace SearchAThing.Sci
 
         #endregion
 
+        /// <summary>
+        /// Create an array of Vector3D from given list of 2d coords ( eg. { 100, 200, 300, 400 }
+        /// will create follow list of vector3d = { (100,200,0), (300,400,0) }
+        /// </summary>        
+        public static List<Vector3D> From2DCoords(params double[] coords)
+        {
+            var res = new List<Vector3D>();
+
+            for (var i = 0; i < coords.Length; i += 2)
+                res.Add(new Vector3D(coords[i], coords[i + 1], 0));
+
+            return res;
+        }
+
+        /// <summary>
+        /// Create an array of Vector3D from given list of 3d coords ( eg. { 100, 200, 10, 300, 400, 20 }
+        /// will create follow list of vector3d = { (100,200,10), (300,400,20) }
+        /// </summary>        
+        public static List<Vector3D> From3DCoords(params double[] coords)
+        {
+            var res = new List<Vector3D>();
+
+            for (var i = 0; i < coords.Length; i += 3)
+                res.Add(new Vector3D(coords[i], coords[i + 1], coords[i + 2]));
+
+            return res;
+        }
+
         public sVector3D ToSystemVector3D()
         {
             return new sVector3D(X, Y, Z);
@@ -340,6 +370,7 @@ namespace SearchAThing.Sci
             return string.Format(CultureInfo.InvariantCulture, "({0},{1},{2})", X, Y, Z);
         }
 
+        /*
         /// <summary>
         /// string representation rounded to given decimal
         /// Note: a given decimal+1 preround is done (see unit test)
@@ -348,11 +379,81 @@ namespace SearchAThing.Sci
         {
             return $"{X.Stringify(dec)}_{Y.Stringify(dec)}_{Z.Stringify(dec)}";
         }
-
+        */
     }
+
+    public class Vector3DEqualityComparer : IEqualityComparer<Vector3D>
+    {
+        double tol;
+        double tolHc;
+        Dictionary<Vector3D, int> vHc = new Dictionary<Vector3D, int>();
+
+        public Vector3DEqualityComparer(double _tol)
+        {
+            tol = _tol;
+            tolHc = 10 * tol; // to avoid rounding
+        }
+
+        public bool Equals(Vector3D x, Vector3D y)
+        {
+            return x.EqualsTol(tol, y);
+        }
+
+        public int GetHashCode(Vector3D obj)
+        {
+            return (int)((obj.X + obj.Y + obj.Z) / tolHc);
+        }
+    }
+
+}
+
+namespace SearchAThing
+{
 
     public static partial class Extensions
     {
+
+        /// <summary>
+        /// checks two list of vectors are equals and with same order of elements        
+        /// </summary>        
+        public static bool EqualsTol(this IEnumerable<Vector3D> lst, double tol, IEnumerable<Vector3D> other)
+        {
+            var thisEn = lst.GetEnumerator();
+            var otherEn = other.GetEnumerator();
+
+            while (thisEn.MoveNext())
+            {
+                var thisValue = thisEn.Current;
+
+                if (!otherEn.MoveNext()) return false; // other smaller than this
+
+                if (!thisValue.EqualsTol(tol, otherEn.Current)) return false;
+            }
+
+            if (otherEn.MoveNext()) return false; // other greather than this
+
+            return true;
+        }
+
+        public static Vector3D Sum(this IEnumerable<Vector3D> lst)
+        {
+            var s = Vector3D.Zero;
+            foreach (var v in lst) s += v;
+
+            return s;
+        }
+
+        /// <summary>
+        /// mean of given vetor3d list
+        /// </summary>        
+        public static Vector3D Mean(this IEnumerable<Vector3D> lst)
+        {
+            var n = 0;
+            var s = Vector3D.Zero;
+            foreach (var v in lst) { s += v; ++n; }
+
+            return s / n;
+        }
 
         public static Vector3D ToVector3D(this sVector3D v)
         {
@@ -362,6 +463,11 @@ namespace SearchAThing.Sci
         public static netDxf.Vector3 ToVector3(this Vector3D v)
         {
             return new netDxf.Vector3(v.X, v.Y, v.Z);
+        }
+
+        public static netDxf.Vector2 ToVector2(this Vector3D v)
+        {
+            return new netDxf.Vector2(v.X, v.Y);
         }
 
     }
