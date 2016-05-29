@@ -241,7 +241,8 @@ namespace SearchAThing.Sci
             var s = m.Solve(n);
 
             return From + s.Z * V;
-        }
+        }        
+        public Vector3D MidPoint { get { return (From + To) / 2; } }
 
         public override string ToString()
         {
