@@ -27,8 +27,9 @@ using System;
 using System.Linq;
 using SearchAThing.Core;
 using static System.Math;
+using System.Collections.Generic;
 
-namespace SearchAThing.Sci
+namespace SearchAThing
 {
 
     public static partial class Extensions
@@ -62,7 +63,36 @@ namespace SearchAThing.Sci
         public static bool LessThanOrEqualsTol(this double x, double tol, double y)
         {
             return x < y || x.EqualsTol(tol, y);
-        }        
+        }
+
+    }
+
+    namespace Sci
+    {
+
+        public class DoubleEqualityComparer : IEqualityComparer<double>
+        {
+
+            double tol;
+            double tolHc;
+
+            public DoubleEqualityComparer(double _tol)
+            {
+                tol = _tol;
+                tolHc = 10 * tol; // to avoid rounding
+            }
+
+            public bool Equals(double x, double y)
+            {
+                return x.EqualsTol(tol, y);
+            }
+
+            public int GetHashCode(double obj)
+            {
+                return (int)(obj / tolHc);
+            }
+        }
+
 
     }
 
