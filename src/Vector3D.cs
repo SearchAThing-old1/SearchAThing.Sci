@@ -385,8 +385,7 @@ namespace SearchAThing.Sci
     public class Vector3DEqualityComparer : IEqualityComparer<Vector3D>
     {
         double tol;
-        double tolHc;
-        Dictionary<Vector3D, int> vHc = new Dictionary<Vector3D, int>();
+        double tolHc;        
 
         public Vector3DEqualityComparer(double _tol)
         {
@@ -456,6 +455,11 @@ namespace SearchAThing
         }
 
         public static Vector3D ToVector3D(this sVector3D v)
+        {
+            return new Vector3D(v.X, v.Y, v.Z);
+        }
+
+        public static Vector3D ToVector3D(this netDxf.Vector3 v)
         {
             return new Vector3D(v.X, v.Y, v.Z);
         }
