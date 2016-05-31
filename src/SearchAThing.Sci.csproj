@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SearchAThing.Sci</RootNamespace>
     <AssemblyName>SearchAThing.Sci</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Circle3D.cs" />
+    <Compile Include="Fluent.cs" />
     <Compile Include="Plane3D.cs" />
     <Compile Include="CoordinateSystem3D.cs" />
     <Compile Include="Helpers.cs" />
