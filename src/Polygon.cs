@@ -217,17 +217,39 @@ namespace SearchAThing
             yield break;
         }
 
+        /// <summary>
+        /// build 2d dxf polyline
+        /// </summary>        
         public static netDxf.Entities.LwPolyline ToLwPolyline(this IEnumerable<Vector3D> pts, double tol)
         {
             return new netDxf.Entities.LwPolyline(pts.OpenPolyPoints(tol).Select(r => r.ToVector2()).ToList(), true);
         }
 
+        /// <summary>
+        /// build 2d dxf polyline
+        /// </summary>        
         public static netDxf.Entities.LwPolyline ToLwPolyline(this IEnumerable<Line3D> segs, double tol)
         {
             var X = segs.Select(w => w.From).OpenPolyPoints(tol);
             return new netDxf.Entities.LwPolyline(X.Select(r => r.ToVector2()).ToList(), true);
         }
 
+        /// <summary>
+        /// build 3d dxf polyline
+        /// </summary>        
+        public static netDxf.Entities.Polyline ToPolyline(this IEnumerable<Vector3D> pts, double tol)
+        {
+            return new netDxf.Entities.Polyline(pts.OpenPolyPoints(tol).Select(r => r.ToVector3()).ToList(), true);
+        }
+
+        /// <summary>
+        /// build 3d dxf polyline
+        /// </summary>        
+        public static netDxf.Entities.Polyline ToPolyline(this IEnumerable<Line3D> segs, double tol)
+        {
+            var X = segs.Select(w => w.From).OpenPolyPoints(tol);
+            return new netDxf.Entities.Polyline(X.Select(r => r.ToVector3()).ToList(), true);
+        }
         /// <summary>
         /// can generate a Int64MapExceptionRange exception if double values can't fit into a In64 representation.
         /// In that case try with tolerances not too small.
