@@ -59,6 +59,16 @@ namespace SearchAThing.Sci
             X = x; Y = y; Z = z;
         }
 
+        public IEnumerable<double> Coordinates
+        {
+            get
+            {
+                yield return X;
+                yield return Y;
+                yield return Z;
+            }
+        }
+
         public bool IsZeroLength { get { return (X + Y + Z).EqualsTol(Constants.NormalizedLengthTolerance, 0); } }
 
         /// <summary>
@@ -78,7 +88,7 @@ namespace SearchAThing.Sci
             return X.EqualsTol(tol, x) && Y.EqualsTol(tol, y) && Z.EqualsTol(tol, z);
         }
 
-        public double Length { get { return Sqrt(X * X + Y * Y + Z * Z); } }
+        public double Length { get { return Sqrt(X * X + Y * Y + Z * Z); } }       
 
         public Vector3D Normalized()
         {
@@ -331,7 +341,7 @@ namespace SearchAThing.Sci
         }
 
         #endregion
-
+        
         /// <summary>
         /// Create an array of Vector3D from given list of 2d coords ( eg. { 100, 200, 300, 400 }
         /// will create follow list of vector3d = { (100,200,0), (300,400,0) }
