@@ -33,6 +33,29 @@ namespace SearchAThing.Sci
 
     public enum Line3DConstructMode { PointAndVector };
 
+    public enum Line3DSegmentMode
+    {
+        /// <summary>
+        /// infinite line
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// Semi-line start at From
+        /// </summary>
+        From,
+
+        /// <summary>
+        /// Semi-line ending at To
+        /// </summary>
+        To,
+
+        /// <summary>
+        /// Segment from-to
+        /// </summary>
+        FromTo
+    };
+
     public class Line3D
     {
         public static Line3D XAxisLine = new Line3D(Vector3D.Zero, Vector3D.XAxis);
@@ -204,11 +227,41 @@ namespace SearchAThing.Sci
             return null;
         }
 
+        /// <summary>
+        /// Intersects two lines with arbitrary segment mode for each.
+        /// </summary>        
+        public Vector3D Intersect(double tol, Line3D other, bool thisSegment, bool otherSegment)
+        {
+            var i = Intersect(tol, other);
+            if (i == null) return null;
+
+            if (thisSegment && !SegmentContainsPoint(tol, i)) return null;
+            if (otherSegment && !other.SegmentContainsPoint(tol, i)) return null;
+
+            return i;
+        }
+
+        /// <summary>
+        /// Build a perpendicular vector to this one starting from the given point p.
+        /// </summary>        
         public Line3D Perpendicular(double tol, Vector3D p)
         {
             if (LineContainsPoint(tol, p)) return null;
 
             return new Line3D(p, p.Project(V));
+        }
+
+        /// <summary>
+        /// Build a perpendicular vector to this one starting from the given point p
+        /// and with To at the intersection point betweens.
+        /// </summary>        
+        public Line3D PerpendicularToIntersection(double tol, Vector3D p)
+        {
+            if (LineContainsPoint(tol, p)) return null;
+
+            var i = new Line3D(p, p.Project(V)).Intersect(tol, this);
+
+            return new Line3D(p, i);
         }
 
         public bool Colinear(double tol, Line3D other)
@@ -241,7 +294,7 @@ namespace SearchAThing.Sci
             var s = m.Solve(n);
 
             return From + s.Z * V;
-        }        
+        }
         public Vector3D MidPoint { get { return (From + To) / 2; } }
 
         public override string ToString()
