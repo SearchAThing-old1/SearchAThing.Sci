@@ -29,6 +29,7 @@ using SearchAThing.Core;
 using static System.Math;
 using System.Collections.Generic;
 using SearchAThing.Sci;
+using ClipperLib;
 
 namespace SearchAThing
 {
@@ -192,6 +193,30 @@ namespace SearchAThing
             return res;
         }
 
+        /// <summary>
+        /// Find intersection points (0,1,2) of the given line with the given polygon
+        /// TODO unit test
+        /// </summary>        
+        public static IEnumerable<Vector3D> Intersect(this IEnumerable<Line3D> polygonSegments,
+            double tol, Line3D line, Line3DSegmentMode segmentMode)
+        {
+            var lineDir = line.To - line.From;
+            foreach (var s in polygonSegments)
+            {
+                var i = s.Intersect(tol, line, true, false);
+                if (i == null) continue;
+                switch (segmentMode)
+                {
+                    case Line3DSegmentMode.None: yield return i; break;
+                    case Line3DSegmentMode.From: if ((i - line.From).Concordant(tol, lineDir)) yield return i; break;
+                    case Line3DSegmentMode.To: if (!(i - line.To).Concordant(tol, lineDir)) yield return i; break;
+                    case Line3DSegmentMode.FromTo: if (line.SegmentContainsPoint(tol, i)) yield return i; break;
+                }
+            }
+
+            yield break;
+        }
+
         public static netDxf.Entities.LwPolyline ToLwPolyline(this IEnumerable<Vector3D> pts, double tol)
         {
             return new netDxf.Entities.LwPolyline(pts.OpenPolyPoints(tol).Select(r => r.ToVector2()).ToList(), true);
@@ -201,6 +226,30 @@ namespace SearchAThing
         {
             var X = segs.Select(w => w.From).OpenPolyPoints(tol);
             return new netDxf.Entities.LwPolyline(X.Select(r => r.ToVector2()).ToList(), true);
+        }
+
+        /// <summary>
+        /// can generate a Int64MapExceptionRange exception if double values can't fit into a In64 representation.
+        /// In that case try with tolerances not too small.
+        /// </summary>        
+        public static IEnumerable<IEnumerable<Vector3D>> Boolean(this IEnumerable<Vector3D> polyA, double tol, IEnumerable<Vector3D> polyB, ClipType type)
+        {
+            var intmap = new Int64Map(tol, polyA.SelectMany(x => x.Coordinates).Union(polyB.SelectMany(x => x.Coordinates)));
+
+            var clipper = new Clipper();
+            {
+                var path = polyA.Select(p => new IntPoint(intmap.ToInt64(p.X), intmap.ToInt64(p.Y))).ToList();
+                clipper.AddPath(path, PolyType.ptSubject, true);
+            }
+            {
+                var path = polyB.Select(p => new IntPoint(intmap.ToInt64(p.X), intmap.ToInt64(p.Y))).ToList();
+                clipper.AddPath(path, PolyType.ptClip, true);
+            }
+
+            var sol = new List<List<IntPoint>>();
+            clipper.Execute(type, sol);
+
+            return sol.Select(s => s.Select(si => new Vector3D(intmap.FromInt64(si.X), intmap.FromInt64(si.Y), 0)));
         }
 
     }
