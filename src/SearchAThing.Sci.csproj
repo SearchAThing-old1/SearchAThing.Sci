@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Circle3D.cs" />
+    <Compile Include="Fluent.cs" />
     <Compile Include="Int64Map.cs" />
     <Compile Include="Plane3D.cs" />
     <Compile Include="CoordinateSystem3D.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="Mesh2D.cs" />
     <Compile Include="Polygon.cs" />
     <Compile Include="Matrix3D.cs" />
+    <Compile Include="PythonWrapper.cs" />
     <Compile Include="SampleModel.cs" />
     <Compile Include="Line3D.cs" />
     <Compile Include="IModel.cs" />
