@@ -63,16 +63,7 @@ namespace SearchAThing
         public static bool LessThanOrEqualsTol(this double x, double tol, double y)
         {
             return x < y || x.EqualsTol(tol, y);
-        }
-
-        public static int Magnitude(this double value)
-        {
-            if (value == 0) return 0;
-
-            var magnitude = Log10(Abs(value));
-
-            return (int)Truncate(magnitude);
-        }
+        }        
 
     }
 

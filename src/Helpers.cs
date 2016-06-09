@@ -29,7 +29,7 @@ using SearchAThing.Core;
 using static System.Math;
 using System.Globalization;
 
-namespace SearchAThing.Sci
+namespace SearchAThing
 {
 
     public static partial class Extensions
@@ -56,6 +56,29 @@ namespace SearchAThing.Sci
         public static string Stringify(this double x, int dec)
         {
             return string.Format(CultureInfo.InvariantCulture, "{0}", Round(x, dec));
+        }
+
+        /// <summary>
+        /// Magnitude of given number. (eg. 190 -> 1.9e2 -> 2)
+        /// (eg. 0.0034 -> 3.4e-3 -> -3)
+        /// </summary>        
+        public static int Magnitude(this double value)
+        {
+            var a = Abs(value);
+
+            if (a < double.Epsilon) return 0;
+
+            return (int)Floor(Log10(a));
+        }
+
+        /// <summary>
+        /// Round the given value using the multiple basis
+        /// </summary>        
+        public static double MRound(this double value, double multiple)
+        {
+            var p = Round(value / multiple);
+
+            return Truncate(p) * multiple;
         }
 
     }
