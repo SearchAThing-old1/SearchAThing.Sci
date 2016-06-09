@@ -59,6 +59,14 @@ namespace SearchAThing.Sci
             X = x; Y = y; Z = z;
         }
 
+        /// <summary>
+        /// initialize 3d vector with z implicitly 0
+        /// </summary>        
+        public Vector3D(double x, double y)
+        {
+            X = x; Y = y;
+        }
+
         public IEnumerable<double> Coordinates
         {
             get
