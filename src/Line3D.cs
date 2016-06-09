@@ -27,6 +27,7 @@ using System;
 using System.Linq;
 using SearchAThing.Core;
 using static System.Math;
+using System.Collections.Generic;
 
 namespace SearchAThing.Sci
 {
@@ -66,6 +67,15 @@ namespace SearchAThing.Sci
         public Vector3D V { get; private set; }
         public Vector3D To { get { return From + V; } }
 
+        public IEnumerable<Vector3D> Pts
+        {
+            get
+            {
+                yield return From;
+                yield return To;
+            }
+        }
+
         public Line3D(Vector3D from, Vector3D to)
         {
             From = from;
@@ -79,6 +89,28 @@ namespace SearchAThing.Sci
         }
 
         public double Length { get { return V.Length; } }
+
+        /// <summary>
+        /// Checks if two lines are equals ( it checks agains swapped from-to too )
+        /// </summary>        
+        public bool EqualsTol(double tol, Line3D other)
+        {
+            return
+                (From.EqualsTol(tol, other.From) && To.EqualsTol(tol, other.To))
+                ||
+                (From.EqualsTol(tol, other.To) && To.EqualsTol(tol, other.From));
+        }
+
+        /// <summary>
+        /// returns the common point from,to between two lines or null if not consecutives
+        /// </summary>        
+        public Vector3D CommonPoint(double tol, Line3D other)
+        {
+            if (From.EqualsTol(tol, other.From)) return From;
+            if (To.EqualsTol(tol, other.To)) return To;
+
+            return null;
+        }
 
         /// <summary>
         /// Infinite line contains point.
@@ -299,9 +331,33 @@ namespace SearchAThing.Sci
 
         public override string ToString()
         {
-            return $"{From}-{To}";
+            return $"{From}-{To} L={Length}";
         }
 
     }
 
+    public class Line3DEqualityComparer : IEqualityComparer<Line3D>
+    {
+        double tol;
+        double tolHc;
+
+        public Line3DEqualityComparer(double _tol)
+        {
+            tol = _tol;
+            tolHc = 10 * tol; // to avoid rounding
+        }
+
+        public bool Equals(Line3D x, Line3D y)
+        {
+            return x.EqualsTol(tol, y);
+        }
+
+        public int GetHashCode(Line3D obj)
+        {
+            return (int)((
+                (obj.From.X + obj.To.X) / 2 +
+                (obj.From.Y + obj.To.Y) / 2 +
+                (obj.From.Z + obj.To.Z) / 2) / tolHc);
+        }
+    }
 }
