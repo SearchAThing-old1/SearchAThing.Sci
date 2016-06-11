@@ -36,6 +36,20 @@ using System.Collections.ObjectModel;
 namespace SearchAThing
 {
 
+    public class Mesh2DPoly
+    {
+        public List<Vector3D> Poly { get; private set; }
+        public Vector3D Point { get; private set; }
+        public bool PointIsConvexHull { get; private set; }
+
+        public Mesh2DPoly(Vector3D _Point, bool _PointIsConvexHull, List<Vector3D> _Poly)
+        {
+            Point = _Point;
+            PointIsConvexHull = _PointIsConvexHull;
+            Poly = _Poly;
+        }
+    }
+
     public class Mesh2D
     {
 
@@ -44,12 +58,16 @@ namespace SearchAThing
         HashSet<Vector3D> _convexHull = null;
         List<Vector3D> _convexHullPoly = null;
         Dictionary<Vector3D, List<Cell>> _vectorToCell = null;
-        Dictionary<Vector3D, List<Vector3D>> _vectorToPoly = null;
+        Dictionary<Vector3D, Mesh2DPoly> _pointToPoly = null;
         List<Line3D> _closures = null;
+        HashSet<Vector3D> _boundarySplitPts = null;
+        Line3DEqualityComparer lCmp = null;
+        Vector3DEqualityComparer vCmp = null;
 
-        public IEnumerable<Line3D> Closures { get { return _closures; } }
         public IEnumerable<Vector3D> Points { get; private set; }
         public List<Vector3D> Boundary { get; private set; }
+        public IEnumerable<Line3D> Closures { get { return _closures; } }
+        public IEnumerable<Vector3D> BoundarySplitPts { get { return _boundarySplitPts; } }
 
         public IEnumerable<Vector3D> ConvexHull
         {
@@ -62,11 +80,15 @@ namespace SearchAThing
             }
         }
 
-        public IEnumerable<Vector3D> VectorToPoly(Vector3D pt)
+        /// <summary>
+        /// mesh polygon that contains given input mesh point
+        /// note : the point must be one of those in constructor input
+        /// </summary>        
+        public Mesh2DPoly PointToPoly(Vector3D pt)
         {
-            List<Vector3D> lst = null;
-            if (_vectorToPoly.TryGetValue(pt, out lst))
-                return lst;
+            Mesh2DPoly mply = null;
+            if (_pointToPoly.TryGetValue(pt, out mply))
+                return mply;
             else
                 return null;
         }
@@ -88,13 +110,48 @@ namespace SearchAThing
             }
         }
 
-        public Mesh2D(double _tol, IEnumerable<Vector3D> _pts, IEnumerable<Vector3D> _boundaryPts)
+        public IEnumerable<Line3D> AllSegs
+        {
+            get
+            {
+                return Boundary.Union(BoundarySplitPts).ToList().SortPoly(tol).PolygonSegments(tol)
+                    .Union(_pointToPoly.SelectMany(k => k.Value.Poly.PolygonSegments(tol)))
+                    .Union(_closures)
+                    .Distinct(lCmp)
+                    .ToList();
+            }
+        }
+
+        /// <summary>
+        /// Build mesh2-d
+        /// </summary>
+        /// <param name="_tol">lenght tolerance</param>
+        /// <param name="_pts">point inside polygon mesh</param>
+        /// <param name="_boundaryPts">external boundary polygon</param>
+        /// <param name="failedPoints">list of failed points</param>
+        /// <param name="boundaryPolyIntersectToleranceFactor">tolerance factor when detect additional split points on the boundary</param>
+        /// <param name="boundaryPolyBooleanMapToleranceFactor">tolerance factor when map to integer to use boolean poly functions.
+        /// reducer factor should be used to mantain precision.</param>
+        /// <param name="closedPolyToleranceFactor">tolerance factor when detect a polygon is it</param>
+        public Mesh2D(double _tol, IEnumerable<Vector3D> _pts, IEnumerable<Vector3D> _boundaryPts,
+            List<Vector3D> failedPoints = null,
+            double boundaryPolyIntersectToleranceFactor = 10.0,
+            double boundaryPolyBooleanMapToleranceFactor = 1e-1,
+            double closedPolyToleranceFactor = 1.0,
+            bool disableBoundary = false)
         {
             tol = _tol;
+            vCmp = new Vector3DEqualityComparer(tol * 2);
+            lCmp = new Line3DEqualityComparer(tol * 2);
             Points = _pts;
             Boundary = _boundaryPts.OpenPolyPoints(tol).ToList();
             var boundarySegs = Boundary.PolygonSegments(tol);
             _closures = new List<Line3D>();
+            _boundarySplitPts = new HashSet<Vector3D>(vCmp);
+            var extPolys = new List<List<Vector3D>>();
+            var boundaryMean = Boundary.Mean();
+            if (failedPoints != null) failedPoints.Clear();
+            _pointToPoly = new Dictionary<Vector3D, Mesh2DPoly>(vCmp);
 
             var config = new TriangulationComputationConfig
             {
@@ -106,8 +163,6 @@ namespace SearchAThing
             var vs = Points.Select(v => new Vertex(v)).ToList();
 
             _voronoiMesh = VoronoiMesh.Create<Vertex, Cell>(vs, config);
-
-            var vCmp = new Vector3DEqualityComparer(tol);
 
             _vectorToCell = new Dictionary<Vector3D, List<Cell>>(vCmp);
 
@@ -173,9 +228,8 @@ namespace SearchAThing
             }
             #endregion            
 
-            #region build polygons
+            #region build polygons            
             {
-                _vectorToPoly = new Dictionary<Vector3D, List<Vector3D>>();
                 var polyVertexProcessed = new HashSet<Vector3D>(vCmp);
 
                 foreach (var cell in _voronoiMesh.Vertices)
@@ -183,7 +237,7 @@ namespace SearchAThing
                     foreach (var v in cell.Vertices.Select(f => f.V))
                     {
                         if (polyVertexProcessed.Contains(v)) continue;
-                        polyVertexProcessed.Add(v);
+                        polyVertexProcessed.Add(v);                        
 
                         var cells = _vectorToCell[v];
                         if (cells.Count < 3) continue;
@@ -206,14 +260,27 @@ namespace SearchAThing
                                 .Key;
 
                             var polySegs = orderedPts.PolygonSegments(tol);
-                            if (polySegs.Any(ps => boundarySegs.Any(bs => bs.Intersect(tol, ps, true, true) != null)))
+                            if (!disableBoundary && polySegs.Any(ps => boundarySegs.Any(bs => bs.Intersect(tol, ps, true, true) != null)))
                             {
-                                var resPoly = orderedPts.Boolean(tol, Boundary, ClipperLib.ClipType.ctIntersection);
+                                var resPoly = orderedPts.Boolean(tol * boundaryPolyBooleanMapToleranceFactor, Boundary, ClipperLib.ClipType.ctIntersection);
                                 if (resPoly.Count() > 0)
-                                    _vectorToPoly.Add(p, resPoly.First().ToList());
+                                {
+                                    var extPoly = resPoly.First().ToList();
+                                    _pointToPoly.Add(p, new Mesh2DPoly(p, false, extPoly));
+
+                                    // register poly intersect bound points
+                                    foreach (var ep in extPoly)
+                                    {
+                                        if (boundarySegs.Any(f => f.SegmentContainsPoint(tol * boundaryPolyIntersectToleranceFactor, ep)))
+                                            _boundarySplitPts.Add(ep);
+                                    }
+
+                                    // register poly as ext poly
+                                    extPolys.Add(extPoly);
+                                }
                             }
                             else
-                                _vectorToPoly.Add(p, orderedPts);
+                                _pointToPoly.Add(p, new Mesh2DPoly(p, false, orderedPts));
                         }
                     }
 
@@ -223,10 +290,11 @@ namespace SearchAThing
 
             #region cache already polygonalized segments
             var hsSegMid = new HashSet<Vector3D>(vCmp);
+            if (!disableBoundary)
             {
-                foreach (var s in _vectorToPoly)
+                foreach (var s in _pointToPoly)
                 {
-                    foreach (var seg in s.Value.PolygonSegments(tol))
+                    foreach (var seg in s.Value.Poly.PolygonSegments(tol))
                     {
                         hsSegMid.Add(seg.MidPoint);
                     }
@@ -234,7 +302,7 @@ namespace SearchAThing
             }
             #endregion
 
-            #region boundary edges
+            #region boundary edges            
             {
                 // given a triangle
                 //
@@ -250,7 +318,7 @@ namespace SearchAThing
                 //    V[2] |/
                 //
                 // vertices 2d-3d are ordered CCW
-                // adjancies are opposite the vertex                
+                // adjacencie index are opposite the vertex                
 
                 foreach (var cell in _voronoiMesh.Vertices)
                 {
@@ -260,15 +328,35 @@ namespace SearchAThing
                         {
                             var from = cell.Vertices.Select(w => w.V).CircleBy3Points().Center;
 
-                            if (!Boundary.ContainsPoint(tol, from)) continue;
+                            //                            if (!Boundary.ContainsPoint(tol, from)) continue;
 
                             var vExtSeg = cell.Vertices.Where((_, j) => j != i).ToArray();
                             var extSeg = new Line3D(vExtSeg[0].V, vExtSeg[1].V);
 
-                            var perpV = extSeg.PerpendicularToIntersection(tol, from);
+                            var perpV = extSeg.Perpendicular(tol, from);
 
-                            var closureLine = new Line3D(perpV.From, boundarySegs.Intersect(tol, perpV, Line3DSegmentMode.From).First());
-                            _closures.Add(closureLine);                            
+                            var perpVTest = perpV.From + perpV.Dir * (2 * tol);
+                            var perpVTestInv = perpV.From - perpV.Dir * (2 * tol);
+                            if (perpVTest.Distance(boundaryMean) < perpVTestInv.Distance(boundaryMean)) perpV *= -1;
+
+                            if (!disableBoundary)
+                            {
+                                var qi = boundarySegs.Intersect(tol, perpV, Line3DSegmentMode.From);
+                                if (qi.Count() > 0)
+                                {
+                                    var closureLine = new Line3D(perpV.From, qi.First());
+                                    _closures.Add(closureLine);
+
+                                    // add boundary split points
+                                    foreach (var ep in closureLine.Points
+                                        .Where(r => boundarySegs.Any(f => f.SegmentContainsPoint(tol * boundaryPolyIntersectToleranceFactor, r))))
+                                        _boundarySplitPts.Add(ep);
+                                }
+                                //                                else
+                                //                                  _closures.Add(perpV);
+                            }
+                            else
+                                _closures.Add(perpV);
                         }
                     }
                 }
@@ -280,10 +368,90 @@ namespace SearchAThing
                     if (from.EqualsTol(tol, to)) continue;
 
                     if (hsSegMid.Contains((from + to) / 2)) continue;
-                    if (!Boundary.ContainsPoint(tol, from) || !Boundary.ContainsPoint(tol, to)) continue;
+                    //                    if (!Boundary.ContainsPoint(tol, from) || !Boundary.ContainsPoint(tol, to)) continue;
 
-                    _closures.Add(new Line3D(from, to));
+                    var closureLine = new Line3D(from, to);
+
+                    var intersect = boundarySegs.Intersect(tol, closureLine, Line3DSegmentMode.FromTo);
+                    if (intersect.Count() > 0)
+                    {
+                        var ip = intersect.First();
+                        _boundarySplitPts.Add(ip);
+                        if (Boundary.ContainsPoint(tol, closureLine.From))
+                            closureLine = new Line3D(closureLine.From, ip);
+                        else
+                            closureLine = new Line3D(closureLine.To, ip);
+                    }
+
+                    _closures.Add(closureLine);
                 }
+            }
+            #endregion
+
+            #region boundary polys            
+            {
+                var allSegsCount = AllSegs.Count();
+
+                var ds = new DiscreteSpace<Line3D>(tol, AllSegs, (s) => s.Points, 2);
+
+                var dsSearchRadius = AllSegs.Select(w => w.Length).Mean() * 0.5;
+
+                var missingPolyPoints = vs.Where(r => !_pointToPoly.ContainsKey(r.V)).Select(v => v.V).ToList();
+
+                foreach (var mp in missingPolyPoints)
+                {
+                    var sr = dsSearchRadius;
+
+                    while (true)
+                    {
+                        var innerOrdered = ds.GetItemsAt(mp, sr)
+                            .OrderBy(l => l.MidPoint.Distance(mp)).ToList();
+
+                        if (innerOrdered.Count == allSegsCount)
+                        {
+                            // should not happens but if any lets report to this list
+                            if (failedPoints != null) failedPoints.Add(mp);
+                            break;
+                        }
+
+                        var outerOrdered = new List<Line3D>(innerOrdered);
+                        outerOrdered.Reverse();
+
+                        // place check outer vs inner to statistically reduce nr. of checks
+                        var excluded = new List<Line3D>();
+                        foreach (var outer in outerOrdered)
+                        {
+                            foreach (var inner in innerOrdered)
+                            {
+                                if (outer == inner) continue;
+
+                                if (new Line3D(outer.MidPoint, mp).Intersect(tol, inner, true, true) != null)
+                                {
+                                    excluded.Add(outer);
+                                    break;
+                                }
+                            }
+                        }
+
+                        var candidate = outerOrdered.Except(excluded);
+
+                        var candidateCnt = candidate.Count();
+
+                        if (candidateCnt > 0)
+                        {
+                            var closedPoly = candidate.IsAClosedPoly(tol * closedPolyToleranceFactor);
+
+                            if (closedPoly != null)
+                            {
+                                _pointToPoly.Add(mp, new Mesh2DPoly(mp, true, closedPoly.Select(w => w.From).ToList()));
+                                break;
+                            }
+                        }
+
+                        sr *= 2;
+                    }
+                }
+
             }
             #endregion
         }
