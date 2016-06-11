@@ -46,6 +46,10 @@ namespace SearchAThing.Sci
         public double Origin { get; private set; }
         public double Tolerance { get; private set; }
 
+        /// <summary>
+        /// use small tolerance to avoid lost of precision
+        /// Note: too small tolerance can generate Int64MapExceptionRange
+        /// </summary>        
         public Int64Map(double tol, IEnumerable<double> domainValues)
         {
             var min = double.MaxValue;
