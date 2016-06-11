@@ -34,6 +34,7 @@ using sQuaternion = System.Windows.Media.Media3D.Quaternion;
 using System.Globalization;
 using System.Collections.Generic;
 using SearchAThing.Sci;
+using System.Text;
 
 namespace SearchAThing.Sci
 {
@@ -45,6 +46,17 @@ namespace SearchAThing.Sci
         public static Vector3D XAxis = new Vector3D(1, 0, 0);
         public static Vector3D YAxis = new Vector3D(0, 1, 0);
         public static Vector3D ZAxis = new Vector3D(0, 0, 1);
+
+        public static Vector3D Axis(int ord)
+        {
+            switch (ord)
+            {
+                case 0: return XAxis;
+                case 1: return YAxis;
+                case 2: return ZAxis;
+                default: throw new ArgumentException($"invalid ord {ord} must between 0,1,2");
+            }
+        }
 
         public double X { get; private set; }
         public double Y { get; private set; }
@@ -65,6 +77,20 @@ namespace SearchAThing.Sci
         public Vector3D(double x, double y)
         {
             X = x; Y = y;
+        }
+
+        /// <summary>
+        /// retrieve the component (0:X, 1:Y, 2:Z)
+        /// </summary>        
+        public double GetOrd(int ord)
+        {
+            switch (ord)
+            {
+                case 0: return X;
+                case 1: return Y;
+                case 2: return Z;
+                default: throw new ArgumentException($"invalid ord {ord}. Must between one of 0,1,2");
+            }
         }
 
         public IEnumerable<double> Coordinates
@@ -91,12 +117,20 @@ namespace SearchAThing.Sci
                 Z.EqualsTol(tol, other.Z);
         }
 
+        /// <summary>
+        /// checks only x,y
+        /// </summary>        
+        public bool EqualsTol(double tol, double x, double y)
+        {
+            return X.EqualsTol(tol, x) && Y.EqualsTol(tol, y);
+        }
+
         public bool EqualsTol(double tol, double x, double y, double z)
         {
             return X.EqualsTol(tol, x) && Y.EqualsTol(tol, y) && Z.EqualsTol(tol, z);
         }
 
-        public double Length { get { return Sqrt(X * X + Y * Y + Z * Z); } }       
+        public double Length { get { return Sqrt(X * X + Y * Y + Z * Z); } }
 
         public Vector3D Normalized()
         {
@@ -349,7 +383,7 @@ namespace SearchAThing.Sci
         }
 
         #endregion
-        
+
         /// <summary>
         /// Create an array of Vector3D from given list of 2d coords ( eg. { 100, 200, 300, 400 }
         /// will create follow list of vector3d = { (100,200,0), (300,400,0) }
@@ -378,6 +412,27 @@ namespace SearchAThing.Sci
             return res;
         }
 
+        /// <summary>
+        /// Span a set of qty vector3d with random coord between given range.
+        /// Optionally a seed can be specified for rand.
+        /// </summary>        
+        public static IEnumerable<Vector3D> Random(int qty,
+            double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, int seed = 0)
+        {
+            var dx = xmax - xmin;
+            var dy = ymax - ymin;
+            var dz = zmax - zmin;
+
+            var rnd = new Random(seed);
+            for (int i = 0; i < qty; ++i)
+            {
+                yield return new Vector3D(
+                    xmin + dx * rnd.NextDouble(),
+                    ymin + dy * rnd.NextDouble(),
+                    zmin + dz * rnd.NextDouble());
+            }
+        }
+
         public sVector3D ToSystemVector3D()
         {
             return new sVector3D(X, Y, Z);
@@ -385,7 +440,7 @@ namespace SearchAThing.Sci
 
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "({0},{1},{2})", X, Y, Z);
+            return $"({X.ToString(2)}, {Y.ToString(2)}, {Z.ToString(2)})";
         }
 
         /*
@@ -403,7 +458,7 @@ namespace SearchAThing.Sci
     public class Vector3DEqualityComparer : IEqualityComparer<Vector3D>
     {
         double tol;
-        double tolHc;        
+        double tolHc;
 
         public Vector3DEqualityComparer(double _tol)
         {
@@ -427,8 +482,70 @@ namespace SearchAThing.Sci
 namespace SearchAThing
 {
 
+    public enum CadPointMode
+    {
+        Point,
+        Circle
+    };
+
     public static partial class Extensions
     {
+
+        /// <summary>
+        /// produce a string with x1,y1,x2,y2, ...
+        /// </summary>        
+        public static string ToCoordSequence2D(this IEnumerable<Vector3D> points)
+        {
+            var sb = new StringBuilder();
+
+            var en = points.GetEnumerator();
+            
+            if (en.MoveNext())
+            {
+                while (true)
+                {
+                    var p = en.Current;
+                    sb.Append(string.Format(CultureInfo.InvariantCulture, "{0},{1}", p.X, p.Y));
+
+                    if (en.MoveNext())
+                        sb.Append(",");
+                    else
+                        break;
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        public static string ToCadScript(this IEnumerable<Vector3D> points, CadPointMode mode = CadPointMode.Point, double radius = 10)
+        {
+            var sb = new StringBuilder();
+
+            switch (mode)
+            {
+                case CadPointMode.Point:
+                    {
+                        foreach (var p in points)
+                        {
+                            sb.AppendLine(string.Format(CultureInfo.InvariantCulture, "POINT {0},{1},{2}", p.X, p.Y, p.Z));
+                            sb.AppendLine();
+                        }
+                    }
+                    break;
+
+                case CadPointMode.Circle:
+                    {
+                        foreach (var p in points)
+                        {
+                            sb.AppendLine(string.Format(CultureInfo.InvariantCulture, "CIRCLE {0},{1},{2} {3}", p.X, p.Y, p.Z, radius));
+                            sb.AppendLine();
+                        }
+                    }
+                    break;
+            }
+
+            return sb.ToString();
+        }
 
         /// <summary>
         /// checks two list of vectors are equals and with same order of elements        
@@ -458,6 +575,15 @@ namespace SearchAThing
             foreach (var v in lst) s += v;
 
             return s;
+        }
+
+        /// <summary>
+        /// Same as mean
+        /// </summary>
+        [Obsolete("use Mean instead")]
+        public static Vector3D Center(this IEnumerable<Vector3D> lst)
+        {
+            return lst.Mean();
         }
 
         /// <summary>
