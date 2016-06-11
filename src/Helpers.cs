@@ -28,6 +28,7 @@ using System.Linq;
 using SearchAThing.Core;
 using static System.Math;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace SearchAThing
 {
@@ -79,6 +80,25 @@ namespace SearchAThing
             var p = Round(value / multiple);
 
             return Truncate(p) * multiple;
+        }
+
+        public static double Mean(this IEnumerable<double> set)
+        {
+            var v = 0.0;
+            int cnt = 0;
+            foreach (var x in set) { v += x; ++cnt; }
+            return v / cnt;
+        }
+
+        public static string ToString(this double d, int significantDigits)
+        {
+            if (d >= 0)
+                return string.Format(CultureInfo.InvariantCulture, "{0:0.##}", d);
+            else
+            {
+                var decfmt = "#".Repeat(-d.Magnitude());
+                return string.Format(CultureInfo.InvariantCulture, "{0:0." + decfmt + "}", d);
+            }
         }
 
     }
