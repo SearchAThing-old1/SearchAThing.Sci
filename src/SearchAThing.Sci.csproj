@@ -34,6 +34,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -46,6 +47,7 @@
     <Compile Include="Circle3D.cs" />
     <Compile Include="Fluent.cs" />
     <Compile Include="Int64Map.cs" />
+    <Compile Include="DiscreteSpace.cs" />
     <Compile Include="Plane3D.cs" />
     <Compile Include="CoordinateSystem3D.cs" />
     <Compile Include="Helpers.cs" />

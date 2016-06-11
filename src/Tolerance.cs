@@ -63,7 +63,14 @@ namespace SearchAThing
         public static bool LessThanOrEqualsTol(this double x, double tol, double y)
         {
             return x < y || x.EqualsTol(tol, y);
-        }        
+        }
+
+        public static int CompareTol(this double x, double tol, double y)
+        {
+            if (x.EqualsTol(tol, y)) return 0;
+            if (x < y) return -1;
+            return 1; // x > y
+        }
 
     }
 
