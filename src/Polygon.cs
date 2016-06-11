@@ -30,9 +30,23 @@ using static System.Math;
 using System.Collections.Generic;
 using SearchAThing.Sci;
 using ClipperLib;
+using System.Drawing.Drawing2D;
 
 namespace SearchAThing
 {
+
+    public static class Polygon
+    {
+
+        public static IEnumerable<Vector3D> EllipseToPolygon2D(Vector3D center, double width, double height, double flatness = .1)
+        {
+            var gp = new GraphicsPath();
+            gp.AddEllipse((float)(center.X - width / 2), (float)(center.Y - height / 2), (float)width, (float)height);
+            gp.Flatten(new Matrix(), (float)flatness);
+            foreach (var p in gp.PathPoints) yield return new Vector3D(p.X, p.Y, 0);
+        }
+
+    }
 
     public static partial class Extentions
     {
@@ -170,27 +184,113 @@ namespace SearchAThing
             return intCnt % 2 != 0;
         }
 
-        public static IEnumerable<Vector3D> SortPoly(this IList<Vector3D> pts, double tol)
+        public static IEnumerable<Vector3D> SortPoly(this IEnumerable<Vector3D> pts, double tol)
         {
-            var c = pts.Mean();
+            return pts.SortPoly(tol, (p) => p);
+        }
+
+        /// <summary>
+        /// Sort polygon segments so that they can form a polygon ( if they really form one ).
+        /// It will not check for segment versus adjancency
+        /// </summary>        
+        public static IEnumerable<Line3D> SortPoly(this IEnumerable<Line3D> segs, double tol)
+        {
+            return segs.SortPoly(tol, (s) => s.MidPoint);
+        }
+
+        public static IEnumerable<T> SortPoly<T>(this IEnumerable<T> pts, double tol, Func<T, Vector3D> getPoint)
+        {
+            if (pts.Count() == 1) return pts;
+
+            var c = pts.Select(w => getPoint(w)).Mean();
 
             // search non-null ref axis
             Vector3D N = null;
-            var r = pts.First() - c;
+            var r = getPoint(pts.First()) - c;
             foreach (var r2 in pts.Skip(1))
             {
-                N = r.CrossProduct(r2 - c);
+                N = r.CrossProduct(getPoint(r2) - c);
                 if (!N.Length.EqualsTol(tol, 0)) break;
             }
 
             var q = pts.Select(p => new
             {
                 pt = p,
-                ang = r.AngleToward(tol, p - c, N)
+                ang = r.AngleToward(tol, getPoint(p) - c, N)
             });
             var res = q.OrderBy(w => w.ang).Select(w => w.pt);
 
             return res;
+        }
+
+        /// <summary>
+        /// Return the input set of segments until an adjacency between one and next is found.
+        /// It can rectify the versus of line (by default) if needed.
+        /// Note: returned set references can be different if rectifyVersus==true
+        /// </summary>        
+        public static IEnumerable<Line3D> TakeUntilAdjacent(this IEnumerable<Line3D> segs, double tol, bool rectifyVersus = true)
+        {
+            var prev = segs.First();
+            var iter = 0;
+
+            foreach (var cur in segs.Skip(1))
+            {
+                ++iter;
+                if (cur.From.EqualsTol(tol, prev.To))
+                {
+                    if (iter == 1) yield return prev;
+                    yield return cur;
+                    prev = cur;
+                    continue;
+                }
+
+                // take a change to check versus
+                if (rectifyVersus)
+                {
+                    // cur need to be reversed
+                    if (cur.To.EqualsTol(tol, prev.To))
+                    {
+                        if (iter == 1) yield return prev;
+                        prev = cur.Reverse();
+                        yield return prev;
+                        continue;
+                    }
+
+                    // take a change to swap the first segment
+                    if (iter == 1)                        
+                    {
+                        if (prev.From.EqualsTol(tol, cur.From))
+                        {
+                            yield return prev.Reverse();
+                            yield return cur;
+                            prev = cur;
+                            continue;
+                        }
+                        if (prev.From.EqualsTol(tol, cur.To))
+                        {
+                            yield return prev.Reverse();
+                            prev = cur.Reverse();
+                            yield return prev;                            
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Preprocess segs with SortPoly if needed.
+        /// Return the ordered segments poly or null if not a closed poly.
+        /// </summary>        
+        public static IEnumerable<Line3D> IsAClosedPoly(this IEnumerable<Line3D> segs, double tol)
+        {
+            var sply = segs.SortPoly(tol).TakeUntilAdjacent(tol).ToList();
+
+            if (sply.Count != segs.Count()) return null;
+
+            if (!sply.First().From.EqualsTol(tol, sply.Last().To)) return null;
+
+            return sply;
         }
 
         /// <summary>
@@ -253,6 +353,7 @@ namespace SearchAThing
         /// <summary>
         /// can generate a Int64MapExceptionRange exception if double values can't fit into a In64 representation.
         /// In that case try with tolerances not too small.
+        /// It is suggested to use a lenTol/10 to avoid lost of precision during domain conversions.
         /// </summary>        
         public static IEnumerable<IEnumerable<Vector3D>> Boolean(this IEnumerable<Vector3D> polyA, double tol, IEnumerable<Vector3D> polyB, ClipType type)
         {
