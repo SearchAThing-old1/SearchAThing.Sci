@@ -23,13 +23,33 @@
 */
 #endregion
 
-namespace SearchAThing.Sci
+using System.Linq;
+using System.Collections.Generic;
+using netDxf.Entities;
+using netDxf;
+using netDxf.Tables;
+using SearchAThing.Sci;
+
+namespace SearchAThing
 {
 
-    public interface IModel
+    public static partial class Extensions
     {
 
-        MUDomain MUDomain { get; }
+        public static IEnumerable<Face3d> ToFace3DList(this BBox3D bbox)
+        {
+            var d = bbox.Max - bbox.Min;
+            return DxfKit.Cuboid((bbox.Max + bbox.Min) / 2, d);
+        }
+
+        public static IEnumerable<Face3d> DrawCuboid(this BBox3D bbox, DxfObject dxfObj, Layer layer = null)
+        {
+            var ents = bbox.ToFace3DList().ToList();
+
+            dxfObj.AddEntities(ents, layer);
+
+            return ents;
+        }
 
     }
 

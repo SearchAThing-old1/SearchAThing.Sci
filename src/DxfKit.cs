@@ -25,9 +25,6 @@
 
 using System;
 using System.Linq;
-using SearchAThing.Core;
-using static System.Math;
-using System.Globalization;
 using System.Collections.Generic;
 using netDxf.Entities;
 using SearchAThing.Sci;
@@ -37,6 +34,72 @@ using netDxf.Tables;
 
 namespace SearchAThing
 {
+
+    namespace Sci
+    {
+
+        public static partial class DxfKit
+        {
+
+            /// <summary>
+            /// Creates dxf entities for a 3 axis of given length centered in given center point.
+            /// </summary>        
+            public static IEnumerable<Line> Star(Vector3D center, double L)
+            {
+                yield return new Line((center - L / 2 * Vector3D.XAxis).ToVector3(), (center + L / 2 * Vector3D.XAxis).ToVector3());
+                yield return new Line((center - L / 2 * Vector3D.YAxis).ToVector3(), (center + L / 2 * Vector3D.YAxis).ToVector3());
+                yield return new Line((center - L / 2 * Vector3D.ZAxis).ToVector3(), (center + L / 2 * Vector3D.ZAxis).ToVector3());
+            }
+
+            /// <summary>
+            /// Creates dxf entities for a 6 faces of a cube
+            /// </summary>        
+            public static IEnumerable<Face3d> Cube(Vector3D center, double L)
+            {
+                return Cuboid(center, new Vector3D(L, L, L));
+            }
+
+            /// <summary>
+            /// Creates dxf entities for 6 faces of a cuboid
+            /// </summary>        
+            public static IEnumerable<Face3d> Cuboid(Vector3D center, Vector3D size)
+            {
+                var corner = center - size / 2;
+
+                // is this a cuboid ? :)
+                //
+                //       011------------111
+                //      / .            / |
+                //   001------------101  |      z
+                //    |   .          |   |      |    y
+                //    |   .          |   |      |  /
+                //    |  010.........|. 110     | /
+                //    | .            | /        |/
+                //   000------------100         ---------x
+                //
+                var m = new Vector3[2, 2, 2];
+                for (int xi = 0; xi < 2; ++xi)
+                {
+                    for (int yi = 0; yi < 2; ++yi)
+                    {
+                        for (int zi = 0; zi < 2; ++zi)
+                        {
+                            m[xi, yi, zi] = (corner + size.Scalar(xi, yi, zi)).ToVector3();
+                        }
+                    }
+                }
+
+                yield return new Face3d(m[0, 0, 0], m[1, 0, 0], m[1, 0, 1], m[0, 0, 1]); // front
+                yield return new Face3d(m[0, 1, 0], m[0, 1, 1], m[1, 1, 1], m[1, 1, 0]); // back
+                yield return new Face3d(m[0, 0, 0], m[0, 0, 1], m[0, 1, 1], m[0, 1, 0]); // left
+                yield return new Face3d(m[1, 0, 0], m[1, 1, 0], m[1, 1, 1], m[1, 0, 1]); // right
+                yield return new Face3d(m[0, 0, 0], m[0, 1, 0], m[1, 1, 0], m[1, 0, 0]); // bottom
+                yield return new Face3d(m[0, 0, 1], m[1, 0, 1], m[1, 1, 1], m[0, 1, 1]); // top
+            }
+
+        }
+
+    }
 
     public static partial class Extensions
     {
@@ -110,72 +173,6 @@ namespace SearchAThing
             return ents;
         }
 
-    }
-
-    namespace Sci
-    {
-
-        public static partial class DxfKit
-        {
-
-            /// <summary>
-            /// Creates dxf entities for a 3 axis of given length centered in given center point.
-            /// </summary>        
-            public static IEnumerable<Line> Star(Vector3D center, double L)
-            {
-                yield return new Line((center - L / 2 * Vector3D.XAxis).ToVector3(), (center + L / 2 * Vector3D.XAxis).ToVector3());
-                yield return new Line((center - L / 2 * Vector3D.YAxis).ToVector3(), (center + L / 2 * Vector3D.YAxis).ToVector3());
-                yield return new Line((center - L / 2 * Vector3D.ZAxis).ToVector3(), (center + L / 2 * Vector3D.ZAxis).ToVector3());
-            }
-
-            /// <summary>
-            /// Creates dxf entities for a 6 faces of a cube
-            /// </summary>        
-            public static IEnumerable<Face3d> Cube(Vector3D center, double L)
-            {
-                return Cuboid(center, new Vector3D(L, L, L));
-            }
-
-            /// <summary>
-            /// Creates dxf entities for 6 faces of a cuboid
-            /// </summary>        
-            public static IEnumerable<Face3d> Cuboid(Vector3D center, Vector3D size)
-            {
-                var corner = center - size / 2;
-
-                // is this a cuboid ? :)
-                //
-                //       011------------111
-                //      / .            / |
-                //   001------------101  |      z
-                //    |   .          |   |      |    y
-                //    |   .          |   |      |  /
-                //    |  010.........|. 110     | /
-                //    | .            | /        |/
-                //   000------------100         ---------x
-                //
-                var m = new Vector3[2, 2, 2];
-                for (int xi = 0; xi < 2; ++xi)
-                {
-                    for (int yi = 0; yi < 2; ++yi)
-                    {
-                        for (int zi = 0; zi < 2; ++zi)
-                        {
-                            m[xi, yi, zi] = (corner + size.Scalar(xi, yi, zi)).ToVector3();
-                        }
-                    }
-                }
-
-                yield return new Face3d(m[0, 0, 0], m[1, 0, 0], m[1, 0, 1], m[0, 0, 1]); // front
-                yield return new Face3d(m[0, 1, 0], m[0, 1, 1], m[1, 1, 1], m[1, 1, 0]); // back
-                yield return new Face3d(m[0, 0, 0], m[0, 0, 1], m[0, 1, 1], m[0, 1, 0]); // left
-                yield return new Face3d(m[1, 0, 0], m[1, 1, 0], m[1, 1, 1], m[1, 0, 1]); // right
-                yield return new Face3d(m[0, 0, 0], m[0, 1, 0], m[1, 1, 0], m[1, 0, 0]); // bottom
-                yield return new Face3d(m[0, 0, 1], m[1, 0, 1], m[1, 1, 1], m[0, 1, 1]); // top
-            }
-
-        }
-
-    }
+    }   
 
 }

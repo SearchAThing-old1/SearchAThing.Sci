@@ -23,15 +23,11 @@
 */
 #endregion
 
-using System;
 using System.Linq;
-using SearchAThing.Core;
-using static System.Math;
 using System.Collections.Generic;
 using SearchAThing.Sci;
 using MIConvexHull;
 using System.Globalization;
-using System.Collections.ObjectModel;
 
 namespace SearchAThing
 {

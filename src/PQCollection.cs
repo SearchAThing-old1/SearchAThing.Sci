@@ -23,8 +23,6 @@
 */
 #endregion
 
-using SearchAThing.Core;
-using System;
 using System.Collections.Generic;
 
 namespace SearchAThing.Sci

@@ -24,12 +24,7 @@
 #endregion
 
 using System;
-using System.Linq;
-using SearchAThing.Core;
-using static System.Math;
-using System.Collections;
 using System.Collections.Generic;
-using ClipperLib;
 
 namespace SearchAThing.Sci
 {

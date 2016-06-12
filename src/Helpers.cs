@@ -23,8 +23,6 @@
 */
 #endregion
 
-using System;
-using System.Linq;
 using SearchAThing.Core;
 using static System.Math;
 using System.Globalization;

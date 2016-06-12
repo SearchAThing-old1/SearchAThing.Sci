@@ -23,10 +23,7 @@
 */
 #endregion
 
-using SearchAThing.Core;
 using System;
-using System.Collections.Generic;
-using static SearchAThing.Sci.PQCollection;
 
 namespace SearchAThing.Sci
 {
