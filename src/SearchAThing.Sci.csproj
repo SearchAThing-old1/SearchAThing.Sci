@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Circle3D.cs" />
     <Compile Include="Fluent.cs" />
+    <Compile Include="DxfKit.cs" />
     <Compile Include="Int64Map.cs" />
     <Compile Include="DiscreteSpace.cs" />
     <Compile Include="Plane3D.cs" />

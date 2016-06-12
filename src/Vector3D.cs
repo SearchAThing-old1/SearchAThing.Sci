@@ -310,6 +310,14 @@ namespace SearchAThing.Sci
             return cs.ToWCS(this);
         }
 
+        /// <summary>
+        /// Scalar multiply each components
+        /// </summary>                
+        public Vector3D Scalar(double xs, double ys, double zs)
+        {
+            return new Vector3D(X * xs, Y * ys, Z * zs);
+        }
+
         #region operators
 
         /// <summary>
@@ -367,6 +375,15 @@ namespace SearchAThing.Sci
         }
 
         /// <summary>
+        /// scalar multiply vector components V1 * V2 =
+        /// (V1.x * V2.x, V1.y * V2.y, V1.z * V2.z)
+        /// </summary>        
+        public static Vector3D operator *(Vector3D v1, Vector3D v2)
+        {
+            return v1.Scalar(v2.X, v2.Y, v2.Z);
+        }
+
+        /// <summary>
         /// scalar div
         /// </summary>        
         public static Vector3D operator /(double s, Vector3D v)
@@ -410,6 +427,11 @@ namespace SearchAThing.Sci
                 res.Add(new Vector3D(coords[i], coords[i + 1], coords[i + 2]));
 
             return res;
+        }
+
+        public static IEnumerable<Vector3D> Random(int N, double L, int seed = 0)
+        {
+            return Random(N, -L / 2, L / 2, -L / 2, L / 2, -L / 2, L / 2, seed);
         }
 
         /// <summary>
@@ -499,7 +521,7 @@ namespace SearchAThing
             var sb = new StringBuilder();
 
             var en = points.GetEnumerator();
-            
+
             if (en.MoveNext())
             {
                 while (true)
