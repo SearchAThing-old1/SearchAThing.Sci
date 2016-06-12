@@ -29,6 +29,9 @@ using SearchAThing.Core;
 using static System.Math;
 using System.Collections;
 using System.Collections.Generic;
+using netDxf.Entities;
+using netDxf;
+using netDxf.Tables;
 
 namespace SearchAThing.Sci
 {
@@ -121,6 +124,21 @@ namespace SearchAThing.Sci
                 other.Max.X.LessThanOrEqualsTol(tol, Max.X) &&
                 other.Max.Y.LessThanOrEqualsTol(tol, Max.Y) &&
                 other.Max.Z.LessThanOrEqualsTol(tol, Max.Z);
+        }
+
+        public IEnumerable<Face3d> ToFace3DList()
+        {
+            var d = Max - Min;
+            return DxfKit.Cuboid((Max + Min) / 2, d);
+        }
+
+        public IEnumerable<Face3d> DrawCuboid(DxfObject dxfObj, Layer layer = null)
+        {
+            var ents = ToFace3DList().ToList();
+
+            dxfObj.AddEntities(ents, layer);
+
+            return ents;
         }
 
         public override string ToString()
