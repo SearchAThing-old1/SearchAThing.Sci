@@ -44,6 +44,12 @@ namespace SearchAThing.Sci
             Mean = pt;
         }
 
+        public DiscreteSpaceItem(T _Item, Func<T, Vector3D> entPoint)
+        {
+            Item = _Item;
+            Mean = entPoint(Item);
+        }
+
         public DiscreteSpaceItem(T _Item, Func<T, IEnumerable<Vector3D>> entPoints)
         {
             Item = _Item;
@@ -78,16 +84,10 @@ namespace SearchAThing.Sci
         double tol;
         int spaceDim;
 
-        /// <summary>
-        /// Build a discrete space to search within GetItemsAt.
-        /// spaceDim need to equals 3 when using vector in 3d
-        /// </summary>        
-        public DiscreteSpace(double _tol, IEnumerable<T> ents, Func<T, IEnumerable<Vector3D>> entPoints, int _spaceDim)
+        DiscreteSpace(double _tol, List<DiscreteSpaceItem<T>> q, int _spaceDim)
         {
             tol = _tol;
-            spaceDim = _spaceDim;
-
-            var q = ents.Select(ent => new DiscreteSpaceItem<T>(ent, entPoints)).ToList();
+            spaceDim = _spaceDim;            
 
             sorted = new List<DiscreteSpaceItem<T>>[spaceDim];
             cmp = new DiscreteSpaceItemComparer<T>[spaceDim];
@@ -97,6 +97,24 @@ namespace SearchAThing.Sci
                 sorted[ord] = q.OrderBy(w => w.Mean.GetOrd(ord)).ToList();
                 cmp[ord] = new DiscreteSpaceItemComparer<T>(tol, ord);
             }
+        }
+
+        /// <summary>
+        /// Build a discrete space to search within GetItemsAt.
+        /// spaceDim need to equals 3 when using vector in 3d
+        /// </summary>        
+        public DiscreteSpace(double _tol, IEnumerable<T> ents, Func<T, IEnumerable<Vector3D>> entPoints, int _spaceDim) :
+            this(_tol, ents.Select(ent => new DiscreteSpaceItem<T>(ent, entPoints)).ToList(), _spaceDim)
+        {            
+        }
+
+        /// <summary>
+        /// Build a discrete space to search within GetItemsAt.
+        /// spaceDim need to equals 3 when using vector in 3d
+        /// </summary>        
+        public DiscreteSpace(double _tol, IEnumerable<T> ents, Func<T, Vector3D> entPoint, int _spaceDim) :
+            this(_tol, ents.Select(ent => new DiscreteSpaceItem<T>(ent, entPoint)).ToList(), _spaceDim)
+        {
         }
 
         IEnumerable<T> GetItemsAt_R(int ord, double off, double maxDist)
