@@ -1,27 +1,15 @@
 # SearchAThing.Sci
 
-## Introduction
+## Quickstart
 
-This Sci library is a work in progress.
+SearchAThing libraries are a set of of projects, to quickstart with all dependencies the fast way is to clone this project [SearchAThing](https://github.com/devel0/SearchAThing).
 
-First a short requisites design document already uploaded [SearchAThing.Sci - Requisites.docx](https://github.com/devel0/SearchAThing.Sci/blob/master/doc/SearchAThing.Sci%20-%20Requisites.docx).
-
-Then the design of abstract classes with unit tests within the implementation.
-
-In general this library would help to manage common aspect of sci projects such as:
-- measure unit conversion and GUI, file serialization
-- 2d operations (circle, poly, boolean)
-- 3d operations (line, segment, plane, parallel, perp, intersect, quaternion rotation)
-- coordinate system
-
-Blog about this project available here https://searchathing.com/?p=1326
-
-## Dependencies
-
-Just clone these repo in the parent folder where SearchAThing.Sci is:
-
-- [MIConvexHull](https://github.com/gusmanb/MIConvexHull.git) git clone of the codeplex [official repo](http://miconvexhull.codeplex.com/)
-- [netDxf](https://git01.codeplex.com/netdxf)
+```shell
+git clone https://github.com/devel0/SearchAThing.git
+cd SearchAThing
+git submodule init
+git submodule update --remote --merge
+```
 
 ## Examples
 
@@ -29,4 +17,4 @@ Examples are available [here](https://github.com/devel0/SearchAThing.Sci.Example
 
 ## Unit Tests
 
-Unit tests available [here](https://github.com/devel0/SearchAThing.UnitTest/blob/master/src/Sci.cs) at the fact MeasureUnitTest()
+Unit tests available [here](https://github.com/devel0/SearchAThing.UnitTest)
