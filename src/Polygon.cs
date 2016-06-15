@@ -34,15 +34,20 @@ using System.Drawing.Drawing2D;
 namespace SearchAThing
 {
 
-    public static class Polygon
+    namespace Sci
     {
 
-        public static IEnumerable<Vector3D> EllipseToPolygon2D(Vector3D center, double width, double height, double flatness = .1)
+        public static class Polygon
         {
-            var gp = new GraphicsPath();
-            gp.AddEllipse((float)(center.X - width / 2), (float)(center.Y - height / 2), (float)width, (float)height);
-            gp.Flatten(new Matrix(), (float)flatness);
-            foreach (var p in gp.PathPoints) yield return new Vector3D(p.X, p.Y, 0);
+
+            public static IEnumerable<Vector3D> EllipseToPolygon2D(Vector3D center, double width, double height, double flatness = .1)
+            {
+                var gp = new GraphicsPath();
+                gp.AddEllipse((float)(center.X - width / 2), (float)(center.Y - height / 2), (float)width, (float)height);
+                gp.Flatten(new Matrix(), (float)flatness);
+                foreach (var p in gp.PathPoints) yield return new Vector3D(p.X, p.Y, 0);
+            }
+
         }
 
     }
