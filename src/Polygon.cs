@@ -65,7 +65,7 @@ namespace SearchAThing
             if (!lastEqualsFirst)
                 a += pts[pts.Count - 1].X * pts[0].Y - pts[0].X * pts[pts.Count - 1].Y;
 
-            return a / 2;
+            return Abs(a / 2);
         }
 
         /// <summary>
