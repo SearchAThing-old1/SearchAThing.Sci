@@ -29,7 +29,7 @@ namespace SearchAThing.Sci
     public interface IModel
     {
 
-        MUDomain MUDomain { get; }
+        IMUDomain MUDomain { get; }
 
     }
 

@@ -23,18 +23,20 @@
 */
 #endregion
 
+using System;
+
 namespace SearchAThing.Sci
 {
 
     public class SampleModel : IModel
     {
 
-        public MUDomain MUDomain { get; private set; }
+        public IMUDomain MUDomain { get; private set; }
 
         public SampleModel()
         {
             MUDomain = new MUDomain();
-        }
+        }        
 
     }
 

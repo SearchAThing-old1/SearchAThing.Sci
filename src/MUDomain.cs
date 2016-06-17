@@ -23,6 +23,7 @@
 */
 #endregion
 
+using SearchAThing.Sci;
 using System;
 using System.Runtime.Serialization;
 using static System.Math;
@@ -30,12 +31,27 @@ using static System.Math;
 namespace SearchAThing.Sci
 {
 
+    public interface IMUDomain
+    {
+        
+        Measure Length { get; }        
+        Measure Mass { get; }        
+        Measure Time { get; }        
+        Measure Temperature { get; }        
+        Measure PlaneAngle { get; }        
+        Measure Pressure { get; }       
+        Measure Acceleration { get; }        
+        Measure Force { get; }        
+        Measure Speed { get; }
+
+    }
+
     /// <summary>
     /// Measures here contains information about implicit measure unit
     /// and value of the tolerance
     /// </summary>
     [DataContract(IsReference = true)]
-    public class MUDomain
+    public class MUDomain : IMUDomain
     {
 
         /// <summary>
@@ -107,20 +123,24 @@ namespace SearchAThing.Sci
             Force = new Measure(1e-1, MUCollection.Force.N);
             Speed = new Measure(1e-1, MUCollection.Speed.m_s);
         }
+    }
 
-        public Measure ByPhysicalQuantity(PhysicalQuantity physicalQuantity)
+    public static partial class Extensions
+    {         
+
+        public static Measure ByPhysicalQuantity(this IMUDomain mud, PhysicalQuantity physicalQuantity)
         {
             var id = physicalQuantity.id;
 
-            if (Length.MU.PhysicalQuantity.id == id) return Length;
-            else if (Mass.MU.PhysicalQuantity.id == id) return Mass;
-            else if (Time.MU.PhysicalQuantity.id == id) return Time;
-            else if (Temperature.MU.PhysicalQuantity.id == id) return Temperature;
-            else if (PlaneAngle.MU.PhysicalQuantity.id == id) return PlaneAngle;
-            else if (Pressure.MU.PhysicalQuantity.id == id) return Pressure;
-            else if (Acceleration.MU.PhysicalQuantity.id == id) return Acceleration;
-            else if (Force.MU.PhysicalQuantity.id == id) return Force;
-            else if (Speed.MU.PhysicalQuantity.id == id) return Speed;
+            if (mud.Length.MU.PhysicalQuantity.id == id) return mud.Length;
+            else if (mud.Mass.MU.PhysicalQuantity.id == id) return mud.Mass;
+            else if (mud.Time.MU.PhysicalQuantity.id == id) return mud.Time;
+            else if (mud.Temperature.MU.PhysicalQuantity.id == id) return mud.Temperature;
+            else if (mud.PlaneAngle.MU.PhysicalQuantity.id == id) return mud.PlaneAngle;
+            else if (mud.Pressure.MU.PhysicalQuantity.id == id) return mud.Pressure;
+            else if (mud.Acceleration.MU.PhysicalQuantity.id == id) return mud.Acceleration;
+            else if (mud.Force.MU.PhysicalQuantity.id == id) return mud.Force;
+            else if (mud.Speed.MU.PhysicalQuantity.id == id) return mud.Speed;
 
             throw new NotImplementedException($"unable to find measure domain for given physical quantity {physicalQuantity}");
         }

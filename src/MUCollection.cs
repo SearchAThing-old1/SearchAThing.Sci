@@ -302,6 +302,35 @@ namespace SearchAThing.Sci
                 }
             }
 
+            static MeasureUnit _kPa;
+            public static MeasureUnit kPa
+            {
+                get
+                {
+                    if (_kPa == null)
+                    {
+                        _kPa = new MeasureUnit(PQCollection.Pressure, "kPa", Pa, 1e3);
+                    }
+                    return _kPa;
+                }
+            }
+
+            public static MeasureUnit Auto(MeasureUnit force, MeasureUnit length)
+            {
+                #region force=[N]
+                if (force.Equals(Force.N))
+                {
+                    if (length.Equals(Length.m)) return Pa;
+                }
+                #endregion
+                #region force=[kN]
+                else if (force.Equals(Force.kN))
+                {
+                    if (length.Equals(Length.m)) return Pressure.kPa;
+                }
+                #endregion
+                throw new NotImplementedException($"pressure mu automatic not defined for input force=[{force.Name}] and length=[{length.Name}]");
+            }
         }
 
         #endregion

@@ -23,6 +23,7 @@
 */
 #endregion
 
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,6 +44,7 @@ namespace SearchAThing.Sci
 
         static int global_static_id_counter;
 
+        [BsonIgnore]
         [DataMember]
         internal int id;
 
@@ -51,20 +53,24 @@ namespace SearchAThing.Sci
         /// <summary>
         /// conversion factor to the ref unit
         /// </summary>
+        [BsonIgnore]
         [DataMember]
         List<double> linearConvFactors = new List<double>();
 
         double[,] conversionMatrix = null;
 
+        [BsonIgnore]
         [DataMember]
         public MeasureUnit LinearConversionRefMU { get; private set; }
 
         internal Func<MeasureUnit, MeasureUnit, double, double> NonLinearConversionFunctor { get; private set; }
 
+        [BsonIgnore]
         [DataMember]
         List<MeasureUnit> measureUnits;
         public IEnumerable<MeasureUnit> MeasureUnits { get { return measureUnits; } }
 
+        [BsonIgnore]
         [DataMember]
         public string Name { get; private set; }
 

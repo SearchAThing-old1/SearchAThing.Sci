@@ -23,6 +23,7 @@
 */
 #endregion
 
+using MongoDB.Bson.Serialization.Attributes;
 using SearchAThing.Core;
 using System.Runtime.Serialization;
 
@@ -35,7 +36,7 @@ namespace SearchAThing.Sci
 
         [DataMember]
         public double Value { get; private set; }
-
+        
         [DataMember]
         public MeasureUnit MU { get; private set; }
 

@@ -23,6 +23,7 @@
 */
 #endregion
 
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,17 +40,19 @@ namespace SearchAThing.Sci
         /// this list is used to avoid double registration of a measure unit with same name
         /// for a given physical quantity
         /// </summary>
+        [BsonIgnore]
         [DataMember]
         static List<MeasureUnit> AllMeasureUnits = new List<MeasureUnit>();
 
         static Dictionary<int, int> global_static_id_counter = new Dictionary<int, int>();
 
+        [BsonIgnore]
         [DataMember]
         internal int id;
-
+        
         [DataMember]
         public string Name { get; private set; }
-
+        
         [DataMember]
         public PhysicalQuantity PhysicalQuantity { get; private set; }
 
