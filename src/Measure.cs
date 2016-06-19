@@ -25,18 +25,40 @@
 
 using MongoDB.Bson.Serialization.Attributes;
 using SearchAThing.Core;
+using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.Serialization;
+using System;
+using System.Linq;
 
 namespace SearchAThing.Sci
 {
 
+    [BsonIgnoreExtraElements]
     [DataContract(IsReference = true)]
     public class Measure
     {
 
+        [BsonElement("Value")]
+        public string BsonValue
+        {
+            get
+            {
+                return ToString(CultureInfo.InvariantCulture, true);
+            }
+            set
+            {
+                var measure = TryParse(value, null, CultureInfo.InvariantCulture);
+                MU = measure.MU;
+                Value = measure.Value;                                
+            }
+        }
+
+        [BsonIgnore]
         [DataMember]
         public double Value { get; private set; }
-        
+
+        [BsonIgnore]
         [DataMember]
         public MeasureUnit MU { get; private set; }
 
@@ -62,17 +84,38 @@ namespace SearchAThing.Sci
                 return new Measure(Value * MU.PhysicalQuantity.ConvertFactor(MU, toMU), toMU);
         }
 
+        public string ToString(CultureInfo culture, bool includePQ = false)
+        {
+            var res = string.Format(culture, "{0}{1}", Value, MU);
+
+            if (includePQ) res += $" [{MU.PhysicalQuantity}]";
+
+            return res;
+        }
+
         public override string ToString()
         {
             return $"{Value}{MU}";
         }
 
-        public static Measure TryParse(PhysicalQuantity pq, string text)
+        public static Measure TryParse(string text, PhysicalQuantity pq = null, CultureInfo culture = null)
         {
+            if (culture == null) culture = CultureInfo.InvariantCulture;
+
+            if (pq == null)
+            {
+                var pqstart = text.LastIndexOf('[') + 1;
+                if (pqstart == 0) return null;
+                var pqname = text.Substring(pqstart, text.Length - pqstart - 1);
+                pq = PQCollection.PhysicalQuantities.First(w => w.Name == pqname);
+
+                text = text.Substring(0, pqstart-1);
+            }
+
             if (pq.Equals(PQCollection.Adimensional))
             {
                 double n;
-                if (double.TryParse(text, out n)) return new Measure(n, MUCollection.Adimensional.adim);
+                if (double.TryParse(text, NumberStyles.Number, culture, out n)) return new Measure(n, MUCollection.Adimensional.adim);
             }
             else
             {
