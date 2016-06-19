@@ -27,6 +27,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 
 namespace SearchAThing.Sci
@@ -68,19 +69,40 @@ namespace SearchAThing.Sci
         [BsonIgnore]
         [DataMember]
         List<MeasureUnit> measureUnits;
-        public IEnumerable<MeasureUnit> MeasureUnits { get { return measureUnits; } }
+        public IEnumerable<MeasureUnit> MeasureUnits
+        {
+            get
+            {
+                if (measureUnitsContainerType != null)
+                {
+                    var t = measureUnitsContainerType;
+                    measureUnitsContainerType = null;
+
+                    var muType = typeof(MeasureUnit);
+                    var mus = t.GetFields(BindingFlags.Public | BindingFlags.Static).Where(r => r.FieldType == muType).ToList();
+
+                    foreach (var mu in mus) mu.GetValue(null); // wakeup measure unit field
+                }
+
+                return measureUnits;
+            }
+        }
 
         [BsonIgnore]
         [DataMember]
         public string Name { get; private set; }
 
-        public PhysicalQuantity(string name, MeasureUnitConversionTypeEnum muConversionType = MeasureUnitConversionTypeEnum.Linear)
+        Type measureUnitsContainerType;
+
+        public PhysicalQuantity(string name, Type _measureUnitsContainerType = null, MeasureUnitConversionTypeEnum muConversionType = MeasureUnitConversionTypeEnum.Linear)
         {
             id = global_static_id_counter++;
 
             MUConversionType = muConversionType;
 
             Name = name;
+
+            measureUnitsContainerType = _measureUnitsContainerType;
 
             measureUnits = new List<MeasureUnit>();
         }
