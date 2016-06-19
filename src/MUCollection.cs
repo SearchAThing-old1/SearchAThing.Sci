@@ -24,12 +24,13 @@
 #endregion
 
 using System;
+using System.Linq;
 
 namespace SearchAThing.Sci
 {
 
     public static class MUCollection
-    {
+    {       
 
         //-------------------------------------------------------------------
         // Measure Units
@@ -37,64 +38,16 @@ namespace SearchAThing.Sci
 
         public static class Adimensional
         {
-            static MeasureUnit _adimensional;
-            public static MeasureUnit adim
-            {
-                get
-                {
-                    if (_adimensional == null)
-                    {
-                        _adimensional = new MeasureUnit(PQCollection.Adimensional, "adim");
-                    }
-                    return _adimensional;
-                }
-            }
+            public static readonly MeasureUnit adim = new MeasureUnit(PQCollection.Adimensional, "adim");
         }
 
         #region Length
 
         public static class Length
         {
-
-            static MeasureUnit _mm;
-            public static MeasureUnit mm
-            {
-                get
-                {
-                    if (_mm == null)
-                    {
-                        _mm = new MeasureUnit(PQCollection.Length, "mm");
-                    }
-                    return _mm;
-                }
-            }
-
-            static MeasureUnit _m;
-            public static MeasureUnit m
-            {
-                get
-                {
-                    if (_m == null)
-                    {
-                        _m = new MeasureUnit(PQCollection.Length, "m", mm, 1e3);
-                    }
-                    return _m;
-                }
-            }
-
-            static MeasureUnit _km;
-            public static MeasureUnit km
-            {
-                get
-                {
-                    if (_km == null)
-                    {
-                        _km = new MeasureUnit(PQCollection.Length, "km", m, 1e3);
-                    }
-                    return _km;
-                }
-            }
-
+            public static readonly MeasureUnit mm = new MeasureUnit(PQCollection.Length, "mm");
+            public static readonly MeasureUnit m = new MeasureUnit(PQCollection.Length, "m", mm, 1e3);
+            public static readonly MeasureUnit km = new MeasureUnit(PQCollection.Length, "km", m, 1e3);
         }
 
         #endregion
@@ -103,33 +56,8 @@ namespace SearchAThing.Sci
 
         public static class Mass
         {
-
-            static MeasureUnit _g;
-            public static MeasureUnit g
-            {
-                get
-                {
-                    if (_g == null)
-                    {
-                        _g = new MeasureUnit(PQCollection.Mass, "g");
-                    }
-                    return _g;
-                }
-            }
-
-            static MeasureUnit _kg;
-            public static MeasureUnit kg
-            {
-                get
-                {
-                    if (_kg == null)
-                    {
-                        _kg = new MeasureUnit(PQCollection.Mass, "kg", g, 1e3);
-                    }
-                    return _kg;
-                }
-            }
-
+            public static readonly MeasureUnit g = new MeasureUnit(PQCollection.Mass, "g");
+            public static readonly MeasureUnit kg = new MeasureUnit(PQCollection.Mass, "kg", g, 1e3);
         }
 
         #endregion
@@ -138,46 +66,9 @@ namespace SearchAThing.Sci
 
         public static class Time
         {
-
-            static MeasureUnit _sec;
-            public static MeasureUnit sec
-            {
-                get
-                {
-                    if (_sec == null)
-                    {
-                        _sec = new MeasureUnit(PQCollection.Time, "sec");
-                    }
-                    return _sec;
-                }
-            }
-
-            static MeasureUnit _min;
-            public static MeasureUnit min
-            {
-                get
-                {
-                    if (_min == null)
-                    {
-                        _min = new MeasureUnit(PQCollection.Time, "min", sec, 60);
-                    }
-                    return _min;
-                }
-            }
-
-            static MeasureUnit _hr;
-            public static MeasureUnit hr
-            {
-                get
-                {
-                    if (_hr == null)
-                    {
-                        _hr = new MeasureUnit(PQCollection.Time, "hr", min, 60);
-                    }
-                    return _hr;
-                }
-            }
-
+            public static readonly MeasureUnit sec = new MeasureUnit(PQCollection.Time, "sec");
+            public static readonly MeasureUnit min = new MeasureUnit(PQCollection.Time, "min", sec, 60);
+            public static readonly MeasureUnit hr = new MeasureUnit(PQCollection.Time, "hr", min, 60);
         }
 
         #endregion
@@ -186,45 +77,9 @@ namespace SearchAThing.Sci
 
         public static class Temperature
         {
-
-            static MeasureUnit _C;
-            public static MeasureUnit C
-            {
-                get
-                {
-                    if (_C == null)
-                    {
-                        _C = new MeasureUnit(PQCollection.Temperature, "C", NonLinearConvFunctor);
-                    }
-                    return _C;
-                }
-            }
-
-            static MeasureUnit _K;
-            public static MeasureUnit K
-            {
-                get
-                {
-                    if (_K == null)
-                    {
-                        _K = new MeasureUnit(PQCollection.Temperature, "K", NonLinearConvFunctor);
-                    }
-                    return _K;
-                }
-            }
-
-            static MeasureUnit _F;
-            public static MeasureUnit F
-            {
-                get
-                {
-                    if (_F == null)
-                    {
-                        _F = new MeasureUnit(PQCollection.Temperature, "F", NonLinearConvFunctor);
-                    }
-                    return _F;
-                }
-            }
+            public static readonly MeasureUnit C = new MeasureUnit(PQCollection.Temperature, "C", NonLinearConvFunctor);
+            public static readonly MeasureUnit K = new MeasureUnit(PQCollection.Temperature, "K", NonLinearConvFunctor);
+            public static readonly MeasureUnit F = new MeasureUnit(PQCollection.Temperature, "F", NonLinearConvFunctor);
 
             static Func<MeasureUnit, MeasureUnit, double, double> _nonLinearConvFunctor;
             public static Func<MeasureUnit, MeasureUnit, double, double> NonLinearConvFunctor
@@ -266,20 +121,7 @@ namespace SearchAThing.Sci
 
         public static class PlaneAngle
         {
-
-            static MeasureUnit _rad;
-            public static MeasureUnit rad
-            {
-                get
-                {
-                    if (_rad == null)
-                    {
-                        _rad = new MeasureUnit(PQCollection.PlaneAngle, "rad");
-                    }
-                    return _rad;
-                }
-            }
-
+            public static readonly MeasureUnit rad = new MeasureUnit(PQCollection.PlaneAngle, "rad");
         }
 
         #endregion
@@ -288,32 +130,8 @@ namespace SearchAThing.Sci
 
         public static class Pressure
         {
-
-            static MeasureUnit _Pa;
-            public static MeasureUnit Pa
-            {
-                get
-                {
-                    if (_Pa == null)
-                    {
-                        _Pa = new MeasureUnit(PQCollection.Pressure, "Pa");
-                    }
-                    return _Pa;
-                }
-            }
-
-            static MeasureUnit _kPa;
-            public static MeasureUnit kPa
-            {
-                get
-                {
-                    if (_kPa == null)
-                    {
-                        _kPa = new MeasureUnit(PQCollection.Pressure, "kPa", Pa, 1e3);
-                    }
-                    return _kPa;
-                }
-            }
+            public static readonly MeasureUnit Pa = new MeasureUnit(PQCollection.Pressure, "Pa");
+            public static readonly MeasureUnit kPa = new MeasureUnit(PQCollection.Pressure, "kPa", Pa, 1e3);
 
             public static MeasureUnit Auto(MeasureUnit force, MeasureUnit length)
             {
@@ -323,12 +141,14 @@ namespace SearchAThing.Sci
                     if (length.Equals(Length.m)) return Pa;
                 }
                 #endregion
+
                 #region force=[kN]
                 else if (force.Equals(Force.kN))
                 {
                     if (length.Equals(Length.m)) return Pressure.kPa;
                 }
                 #endregion
+
                 throw new NotImplementedException($"pressure mu automatic not defined for input force=[{force.Name}] and length=[{length.Name}]");
             }
         }
@@ -339,20 +159,7 @@ namespace SearchAThing.Sci
 
         public static class Acceleration
         {
-
-            static MeasureUnit _m_s2;
-            public static MeasureUnit m_s2
-            {
-                get
-                {
-                    if (_m_s2 == null)
-                    {
-                        _m_s2 = new MeasureUnit(PQCollection.Acceleration, "m_s2");
-                    }
-                    return _m_s2;
-                }
-            }
-
+            public static readonly MeasureUnit m_s2 = new MeasureUnit(PQCollection.Acceleration, "m_s2");
         }
 
         #endregion
@@ -361,33 +168,8 @@ namespace SearchAThing.Sci
 
         public static class Force
         {
-
-            static MeasureUnit _N;
-            public static MeasureUnit N
-            {
-                get
-                {
-                    if (_N == null)
-                    {
-                        _N = new MeasureUnit(PQCollection.Force, "N");
-                    }
-                    return _N;
-                }
-            }
-
-            static MeasureUnit _kN;
-            public static MeasureUnit kN
-            {
-                get
-                {
-                    if (_kN == null)
-                    {
-                        _kN = new MeasureUnit(PQCollection.Force, "kN", N, 1e3);
-                    }
-                    return _kN;
-                }
-            }
-
+            public static readonly MeasureUnit N = new MeasureUnit(PQCollection.Force, "N");
+            public static readonly MeasureUnit kN = new MeasureUnit(PQCollection.Force, "kN", N, 1e3);
         }
 
         #endregion
@@ -396,20 +178,7 @@ namespace SearchAThing.Sci
 
         public static class Speed
         {
-
-            static MeasureUnit _m_s;
-            public static MeasureUnit m_s
-            {
-                get
-                {
-                    if (_m_s == null)
-                    {
-                        _m_s = new MeasureUnit(PQCollection.Speed, "m_s");
-                    }
-                    return _m_s;
-                }
-            }
-
+            public static readonly MeasureUnit m_s = new MeasureUnit(PQCollection.Speed, "m_s");
         }
 
         #endregion

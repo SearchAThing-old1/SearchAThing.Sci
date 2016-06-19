@@ -24,6 +24,7 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SearchAThing.Sci
 {
@@ -63,53 +64,17 @@ namespace SearchAThing.Sci
         // Base quantity
         //-------------------------------------------------------------------
 
-        #region Base quantity
+        #region Base quantity        
 
-        static PhysicalQuantity adimensional;
-        public static PhysicalQuantity Adimensional
-        {
-            get
-            {
-                if (adimensional == null) adimensional = new PhysicalQuantity("Adimensional");
-
-                return adimensional;
-            }
-        }
+        public static readonly PhysicalQuantity Adimensional = new PhysicalQuantity("Adimensional", typeof(MUCollection.Adimensional));
 
         // https://en.wikipedia.org/wiki/List_of_physical_quantities
 
-        static PhysicalQuantity length;
-        public static PhysicalQuantity Length
-        {
-            get
-            {
-                if (length == null) length = new PhysicalQuantity("Length");
+        public static readonly PhysicalQuantity Length = new PhysicalQuantity("Length", typeof(MUCollection.Length));
 
-                return length;
-            }
-        }
+        public static readonly PhysicalQuantity Mass = new PhysicalQuantity("Mass", typeof(MUCollection.Mass));
 
-        static PhysicalQuantity mass;
-        public static PhysicalQuantity Mass
-        {
-            get
-            {
-                if (mass == null) mass = new PhysicalQuantity("Mass");
-
-                return mass;
-            }
-        }
-
-        static PhysicalQuantity time;
-        public static PhysicalQuantity Time
-        {
-            get
-            {
-                if (time == null) time = new PhysicalQuantity("Time");
-
-                return time;
-            }
-        }
+        public static readonly PhysicalQuantity Time = new PhysicalQuantity("Time", typeof(MUCollection.Time));
 
         /*
         static PhysicalQuantity electricCurrent;
@@ -124,16 +89,8 @@ namespace SearchAThing.Sci
         }
         */
 
-        static PhysicalQuantity temperature;
-        public static PhysicalQuantity Temperature
-        {
-            get
-            {
-                if (temperature == null) temperature = new PhysicalQuantity("Temperature", MeasureUnitConversionTypeEnum.NonLinear);
-
-                return temperature;
-            }
-        }
+        public static readonly PhysicalQuantity Temperature = new PhysicalQuantity("Temperature",
+            typeof(MUCollection.Temperature), MeasureUnitConversionTypeEnum.NonLinear);
 
         // amountOfSubstance
 
@@ -147,31 +104,13 @@ namespace SearchAThing.Sci
 
         #region Derived quantity
 
-        static PhysicalQuantity planeAngle;
-        public static PhysicalQuantity PlaneAngle
-        {
-            get
-            {
-                if (planeAngle == null) planeAngle = new PhysicalQuantity("PlaneAngle");
-
-                return planeAngle;
-            }
-        }
+        public static readonly PhysicalQuantity PlaneAngle = new PhysicalQuantity("PlaneAngle", typeof(MUCollection.PlaneAngle));
 
         // solidAngle
 
         // absorbedDoseRate
 
-        static PhysicalQuantity acceleration;
-        public static PhysicalQuantity Acceleration
-        {
-            get
-            {
-                if (acceleration == null) acceleration = new PhysicalQuantity("Acceleration");
-
-                return acceleration;
-            }
-        }
+        public static readonly PhysicalQuantity Acceleration = new PhysicalQuantity("Acceleration", typeof(MUCollection.Acceleration));
 
         // angularAcceleration
 
@@ -243,16 +182,7 @@ namespace SearchAThing.Sci
 
         // entropy
 
-        static PhysicalQuantity force;
-        public static PhysicalQuantity Force
-        {
-            get
-            {
-                if (force == null) force = new PhysicalQuantity("Force");
-
-                return force;
-            }
-        }
+        public static readonly PhysicalQuantity Force = new PhysicalQuantity("Force", typeof(MUCollection.Force));
 
         // fuelEfficiency
 
@@ -384,16 +314,7 @@ namespace SearchAThing.Sci
         }
         */
 
-        static PhysicalQuantity pressure;
-        public static PhysicalQuantity Pressure
-        {
-            get
-            {
-                if (pressure == null) pressure = new PhysicalQuantity("Pressure");
-
-                return pressure;
-            }
-        }
+        public static readonly PhysicalQuantity Pressure = new PhysicalQuantity("Pressure", typeof(MUCollection.Pressure));
 
         // pop
 
@@ -409,16 +330,7 @@ namespace SearchAThing.Sci
 
         // refractiveIndex
 
-        static PhysicalQuantity speed;
-        public static PhysicalQuantity Speed
-        {
-            get
-            {
-                if (speed == null) speed = new PhysicalQuantity("Speed");
-
-                return speed;
-            }
-        }
+        public static readonly PhysicalQuantity Speed = new PhysicalQuantity("Speed", typeof(MUCollection.Speed));
 
         // specificEnergy
 
@@ -428,17 +340,8 @@ namespace SearchAThing.Sci
 
         // spin
 
-        // strain
-        static PhysicalQuantity strain;
-        public static PhysicalQuantity Strain
-        {
-            get
-            {
-                if (strain == null) strain = new PhysicalQuantity("Strain");
-
-                return strain;
-            }
-        }
+        // strain        
+        //Spublic static readonly PhysicalQuantity Strain = new PhysicalQuantity("Strain");
 
         /*
         static PhysicalQuantity stress;
