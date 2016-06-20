@@ -124,7 +124,7 @@ namespace SearchAThing.Sci
 
                 MeasureUnit mu = null;
 
-                foreach (var _mu in pq.MeasureUnits)
+                foreach (var _mu in pq.MeasureUnits.OrderByDescending(w=>w.Name.Length))
                 {
                     if (s.EndsWith(_mu.ToString()))
                     {
