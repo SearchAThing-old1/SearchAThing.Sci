@@ -68,7 +68,7 @@ namespace SearchAThing
 
         public static bool EqualsAutoTol(this double x, double y)
         {
-            return x.EqualsTol(y, Abs(x * 1e-6));
+            return x.EqualsTol(Abs(x * 1e-6), y);
         }
 
         public static bool GreatThanTol(this double x, double tol, double y)

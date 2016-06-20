@@ -50,7 +50,7 @@ namespace SearchAThing.Sci
             {
                 var measure = TryParse(value, null, CultureInfo.InvariantCulture);
                 MU = measure.MU;
-                Value = measure.Value;                                
+                Value = measure.Value;
             }
         }
 
@@ -106,10 +106,11 @@ namespace SearchAThing.Sci
             {
                 var pqstart = text.LastIndexOf('[') + 1;
                 if (pqstart == 0) return null;
+
                 var pqname = text.Substring(pqstart, text.Length - pqstart - 1);
                 pq = PQCollection.PhysicalQuantities.First(w => w.Name == pqname);
 
-                text = text.Substring(0, pqstart-1);
+                text = text.Substring(0, pqstart - 1);
             }
 
             if (pq.Equals(PQCollection.Adimensional))
