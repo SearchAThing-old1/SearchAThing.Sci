@@ -29,6 +29,7 @@ using netDxf.Entities;
 using netDxf;
 using netDxf.Tables;
 using SearchAThing.Sci;
+using System;
 
 namespace SearchAThing
 {
@@ -49,6 +50,33 @@ namespace SearchAThing
             dxfObj.AddEntities(ents, layer);
 
             return ents;
+        }
+
+        public static BBox3D BBox(this EntityObject eo)
+        {
+            switch (eo.Type)
+            {
+                case EntityType.Line:
+                    return new BBox3D(((Line)eo).ToLine3D().Points);
+
+                case EntityType.LightWeightPolyline:                    
+                    return new BBox3D(((LwPolyline)eo).Vertexes.Select(k => k.Position.ToVector3D()));
+
+                default:
+                    throw new NotImplementedException($"bbox not implemented for dxf entity type [{eo.Type.ToString()}]");
+            }
+        }
+
+        public static BBox3D BBox(this IEnumerable<EntityObject> ents)
+        {
+            var bbox = new BBox3D();
+
+            foreach (var x in ents)
+            {
+                bbox = bbox.Union(x.BBox());
+            }
+
+            return bbox;
         }
 
     }
