@@ -621,6 +621,11 @@ namespace SearchAThing
             return new Vector3D(v.X, v.Y, v.Z);
         }
 
+        public static Vector3D ToVector3D(this netDxf.Vector2 v)
+        {
+            return new Vector3D(v.X, v.Y);
+        }
+
         public static Vector3D ToVector3D(this netDxf.Vector3 v)
         {
             return new Vector3D(v.X, v.Y, v.Z);
