@@ -34,15 +34,14 @@ namespace SearchAThing
     {
 
         public class BBox3D
-        {
-
+        {            
             public bool IsEmpty { get { return Min == null; } }
 
             public Vector3D Min { get; private set; }
             public Vector3D Max { get; private set; }
 
             public BBox3D()
-            {
+            {                
             }
 
             public BBox3D(IEnumerable<Vector3D> pts)
