@@ -30,12 +30,25 @@ using netDxf;
 using netDxf.Tables;
 using SearchAThing.Sci;
 using System;
+using System.Text;
 
 namespace SearchAThing
 {
 
     public static partial class Extensions
     {
+
+        public static string CadScript(this BBox3D bbox)
+        {
+            var sb = new StringBuilder();
+
+            foreach (var x in bbox.ToFace3DList())
+            {
+                sb.AppendLine(x.CadScript());
+            }
+
+            return sb.ToString();
+        }
 
         public static IEnumerable<Face3d> ToFace3DList(this BBox3D bbox)
         {
@@ -52,15 +65,107 @@ namespace SearchAThing
             return ents;
         }
 
-        public static BBox3D BBox(this EntityObject eo)
+        public static IEnumerable<Vector3D> Points(this EntityObject eo)
         {
             switch (eo.Type)
             {
                 case EntityType.Line:
-                    return new BBox3D(((Line)eo).ToLine3D().Points);
+                    {
+                        var line = (Line)eo;
+                        yield return line.StartPoint;
+                        yield return line.EndPoint;
+                    }
+                    break;
 
-                case EntityType.LightWeightPolyline:                    
-                    return new BBox3D(((LwPolyline)eo).Vertexes.Select(k => k.Position.ToVector3D()));
+                case EntityType.LightWeightPolyline:
+                    {
+                        var lw = (LwPolyline)eo;
+                        foreach (var x in lw.Vertexes) yield return x.Position.ToVector3D();
+                    }
+                    break;
+
+                case EntityType.Text:
+                    {
+                        var txt = (Text)eo;
+                        yield return txt.Position;
+                    }
+                    break;
+
+                case EntityType.MText:
+                    {
+                        var mtxt = (MText)eo;
+                        yield return mtxt.Position;
+                    }
+                    break;
+
+                case EntityType.Point:
+                    {
+                        var pt = (Point)eo;
+                        yield return pt.Position;
+                    }
+                    break;
+
+                case EntityType.Insert:
+                    {                                                
+                        var ins = (Insert)eo;
+                        var insPt = ins.Position;
+                        var pts = ins.Block.Entities.SelectMany(w => w.Points());
+
+                        pts = pts.Select(w => w.ScaleAbout(Vector3D.Zero, ins.Scale));
+
+                        var N = ins.Normal;
+                        var ocs = new CoordinateSystem3D(insPt, N).Rotate(N, ins.Rotation.ToRad());
+
+                        pts = pts.Select(w => w.ToWCS(ocs));                        
+
+                        foreach (var x in pts) yield return x;
+                    };
+                    break;
+
+                case EntityType.Hatch:
+                    {
+                    }
+                    break;
+
+                case EntityType.Circle:
+                    {
+                        var circleLw = ((Circle)eo).ToPolyline(4);
+                        foreach (var x in circleLw.Vertexes) yield return x.Position.ToVector3D();
+                    }
+                    break;
+
+                default:
+                    throw new NotImplementedException($"bbox not implemented for dxf entity type [{eo.Type.ToString()}]");
+            }
+        }
+
+        public static BBox3D BBox(this EntityObject eo)
+        {
+            switch (eo.Type)
+            {
+                // TODO consider text width
+                case EntityType.Text:
+                // TODO consider text width
+                case EntityType.MText:
+                case EntityType.Line:
+                case EntityType.Point:
+                case EntityType.Insert:
+                    return eo.Points().BBox();
+
+                case EntityType.Circle: return ((Circle)eo).ToPolyline(4).BBox();
+
+                case EntityType.LightWeightPolyline:
+                    {
+                        var lwpoly = (LwPolyline)eo;
+
+                        var N = lwpoly.Normal;
+                        var ocs = new CoordinateSystem3D(N * lwpoly.Elevation, N);
+
+                        return new BBox3D(eo.Points().Select(k => k.ToWCS(ocs)));
+                    }
+                     
+
+                case EntityType.Hatch: return new BBox3D();
 
                 default:
                     throw new NotImplementedException($"bbox not implemented for dxf entity type [{eo.Type.ToString()}]");
@@ -82,3 +187,4 @@ namespace SearchAThing
     }
 
 }
+
