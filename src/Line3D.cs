@@ -421,7 +421,7 @@ namespace SearchAThing
 
         public static Line3D ToLine3D(this netDxf.Entities.Line line)
         {
-            return new Line3D(line.StartPoint.ToVector3D(), line.EndPoint.ToVector3D());
+            return new Line3D(line.StartPoint, line.EndPoint);
         }
 
     }

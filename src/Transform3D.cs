@@ -26,6 +26,7 @@
 using sVector3D = System.Windows.Media.Media3D.Vector3D;
 using sMatrix3D = System.Windows.Media.Media3D.Matrix3D;
 using sQuaternion = System.Windows.Media.Media3D.Quaternion;
+using SearchAThing;
 
 namespace SearchAThing.Sci
 {

@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using SearchAThing.Sci;
 using ClipperLib;
 using System.Drawing.Drawing2D;
+using netDxf;
 
 namespace SearchAThing
 {
@@ -261,7 +262,7 @@ namespace SearchAThing
                     }
 
                     // take a change to swap the first segment
-                    if (iter == 1)                        
+                    if (iter == 1)
                     {
                         if (prev.From.EqualsTol(tol, cur.From))
                         {
@@ -274,7 +275,7 @@ namespace SearchAThing
                         {
                             yield return prev.Reverse();
                             prev = cur.Reverse();
-                            yield return prev;                            
+                            yield return prev;
                             continue;
                         }
                     }
@@ -343,7 +344,7 @@ namespace SearchAThing
         /// </summary>        
         public static netDxf.Entities.Polyline ToPolyline(this IEnumerable<Vector3D> pts, double tol)
         {
-            return new netDxf.Entities.Polyline(pts.OpenPolyPoints(tol).Select(r => r.ToVector3()).ToList(), true);
+            return new netDxf.Entities.Polyline(pts.OpenPolyPoints(tol).Select(r => (Vector3)r).ToList(), true);
         }
 
         /// <summary>
@@ -352,7 +353,7 @@ namespace SearchAThing
         public static netDxf.Entities.Polyline ToPolyline(this IEnumerable<Line3D> segs, double tol)
         {
             var X = segs.Select(w => w.From).OpenPolyPoints(tol);
-            return new netDxf.Entities.Polyline(X.Select(r => r.ToVector3()).ToList(), true);
+            return new netDxf.Entities.Polyline(X.Select(r => (Vector3)r).ToList(), true);
         }
         /// <summary>
         /// can generate a Int64MapExceptionRange exception if double values can't fit into a In64 representation.

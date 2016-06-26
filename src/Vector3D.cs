@@ -31,6 +31,7 @@ using System.Globalization;
 using System.Collections.Generic;
 using SearchAThing.Sci;
 using System.Text;
+using System.Windows;
 
 namespace SearchAThing
 {
@@ -38,7 +39,7 @@ namespace SearchAThing
     namespace Sci
     {
 
-        public class Vector3D
+        public partial class Vector3D
         {
 
             public static Vector3D Zero = new Vector3D(0, 0, 0);
@@ -262,6 +263,26 @@ namespace SearchAThing
             }
 
             /// <summary>
+            /// Scale this point about the given origin with the given factor.
+            /// </summary>            
+            public Vector3D ScaleAbout(Vector3D origin, double factor)
+            {
+                var d = this - origin;
+
+                return origin + d * factor;
+            }
+
+            /// <summary>
+            /// Scale this point about the given origin with the given factor as (sx,sy,sz).
+            /// </summary>            
+            public Vector3D ScaleAbout(Vector3D origin, Vector3D factor)
+            {
+                var d = this - origin;
+
+                return origin + d * factor;
+            }
+
+            /// <summary>
             /// Note: tol must be Constant.NormalizedLengthTolerance
             /// if comparing normalized vectors
             /// </summary>        
@@ -452,7 +473,7 @@ namespace SearchAThing
                         ymin + dy * rnd.NextDouble(),
                         zmin + dz * rnd.NextDouble());
                 }
-            }
+            }                       
 
             public sVector3D ToSystemVector3D()
             {
@@ -464,16 +485,6 @@ namespace SearchAThing
                 return $"({X.ToString(2)}, {Y.ToString(2)}, {Z.ToString(2)})";
             }
 
-            /*
-            /// <summary>
-            /// string representation rounded to given decimal
-            /// Note: a given decimal+1 preround is done (see unit test)
-            /// </summary>        
-            public string Stringify(int dec)
-            {
-                return $"{X.Stringify(dec)}_{Y.Stringify(dec)}_{Z.Stringify(dec)}";
-            }
-            */
         }
 
         public class Vector3DEqualityComparer : IEqualityComparer<Vector3D>
@@ -626,19 +637,22 @@ namespace SearchAThing
             return new Vector3D(v.X, v.Y);
         }
 
-        public static Vector3D ToVector3D(this netDxf.Vector3 v)
-        {
-            return new Vector3D(v.X, v.Y, v.Z);
-        }
-
-        public static netDxf.Vector3 ToVector3(this Vector3D v)
+       /* public static netDxf.Vector3 ToVector3(this Vector3D v)
         {
             return new netDxf.Vector3(v.X, v.Y, v.Z);
-        }
+        }*/
 
         public static netDxf.Vector2 ToVector2(this Vector3D v)
         {
             return new netDxf.Vector2(v.X, v.Y);
+        }
+
+        /// <summary>
+        /// To point (double x, double y)
+        /// </summary>        
+        public static Point ToPoint(this Vector3D v)
+        {
+            return new Point(v.X, v.Y);
         }
 
     }
