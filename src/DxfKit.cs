@@ -31,6 +31,9 @@ using SearchAThing.Sci;
 using netDxf;
 using netDxf.Blocks;
 using netDxf.Tables;
+using System.Text;
+using System.Globalization;
+using SearchAThing;
 
 namespace SearchAThing
 {
@@ -46,9 +49,9 @@ namespace SearchAThing
             /// </summary>        
             public static IEnumerable<Line> Star(Vector3D center, double L)
             {
-                yield return new Line((center - L / 2 * Vector3D.XAxis).ToVector3(), (center + L / 2 * Vector3D.XAxis).ToVector3());
-                yield return new Line((center - L / 2 * Vector3D.YAxis).ToVector3(), (center + L / 2 * Vector3D.YAxis).ToVector3());
-                yield return new Line((center - L / 2 * Vector3D.ZAxis).ToVector3(), (center + L / 2 * Vector3D.ZAxis).ToVector3());
+                yield return new Line((center - L / 2 * Vector3D.XAxis), (center + L / 2 * Vector3D.XAxis));
+                yield return new Line((center - L / 2 * Vector3D.YAxis), (center + L / 2 * Vector3D.YAxis));
+                yield return new Line((center - L / 2 * Vector3D.ZAxis), (center + L / 2 * Vector3D.ZAxis));
             }
 
             /// <summary>
@@ -84,7 +87,7 @@ namespace SearchAThing
                     {
                         for (int zi = 0; zi < 2; ++zi)
                         {
-                            m[xi, yi, zi] = (corner + size.Scalar(xi, yi, zi)).ToVector3();
+                            m[xi, yi, zi] = (corner + size.Scalar(xi, yi, zi));
                         }
                     }
                 }
@@ -103,6 +106,136 @@ namespace SearchAThing
 
     public static partial class Extensions
     {
+
+        public static IEnumerable<EntityObject> Explode(this Insert ins)
+        {
+            var insPt = ins.Position;
+
+            var N = ins.Normal;
+            var ocs = new CoordinateSystem3D(insPt, N).Rotate(N, ins.Rotation.ToRad());
+            var origin = Vector3D.Zero.ToWCS(ocs);
+
+            foreach (var ent in ins.Block.Entities)
+            {
+                // TODO scale
+                // pts = pts.Select(w => w.ScaleAbout(Vector3D.Zero, ins.Scale.ToVector3D()));
+
+
+                // pts = pts.Select(w => w.ToWCS(ocs));
+
+                switch (ent.Type)
+                {
+                    case EntityType.Circle:
+                        {
+                            var c = (Circle)ent.CoordTransform((x) => x.ToWCS(ocs), origin);
+                            c.Center = (c.Center + insPt);
+                            yield return c;
+                        }
+                        break;
+                }
+            }
+        }
+
+        public static IEnumerable<EntityObject> CoordTransform(this DxfDocument dxf, Func<Vector3D, Vector3D> transform)
+        {
+            foreach (var point in dxf.Points) yield return point.CoordTransform(transform);
+            foreach (var line in dxf.Lines) yield return line.CoordTransform(transform);
+            foreach (var lwpoly in dxf.LwPolylines) yield return lwpoly.CoordTransform(transform);
+            foreach (var poly in dxf.Polylines) yield return poly.CoordTransform(transform);
+            foreach (var circle in dxf.Circles) yield return circle.CoordTransform(transform);
+            foreach (var text in dxf.Texts) yield return text.CoordTransform(transform);
+            foreach (var mtext in dxf.MTexts) yield return mtext.CoordTransform(transform);
+
+
+            var origin = transform(Vector3D.Zero);
+            var insBlocks = dxf.Inserts.Select(w => w.Block).Distinct();
+            Dictionary<string, Block> blkDict = new Dictionary<string, Block>();
+            foreach (var _insBlock in insBlocks)
+            {
+                var insBlock = (Block)_insBlock.Clone();
+                var ents = insBlock.Entities.ToList();
+                insBlock.Entities.Clear();
+                foreach (var x in ents)
+                {
+                    if (x.Type == EntityType.Hatch) continue; // TODO hatch
+                    insBlock.Entities.Add(x.CoordTransform(transform, origin));
+                }
+                blkDict.Add(insBlock.Name, insBlock);
+            }
+
+            foreach (var _ins in dxf.Inserts)
+            {
+                var ins = _ins.Clone(blkDict[_ins.Block.Name]);
+                ins.Position = transform(ins.Position);
+                yield return ins;
+            }
+        }
+
+        /// <summary>
+        /// build a clone of the given entity with coord transformed accordingly given function.
+        /// </summary>        
+        public static EntityObject CoordTransform(this EntityObject eo, Func<Vector3D, Vector3D> transform, Vector3D origin = null)
+        {
+            switch (eo.Type)
+            {
+                case EntityType.Line:
+                    {
+                        var line = (Line)eo.Clone();
+                        line.StartPoint = transform(line.StartPoint);
+                        line.EndPoint = transform(line.EndPoint);
+                        return line;
+                    }
+
+                case EntityType.Text:
+                    {
+                        var text = (Text)eo.Clone();
+                        text.Position = transform(text.Position);
+                        return text;
+                    }
+
+                case EntityType.MText:
+                    {
+                        var mtext = (MText)eo.Clone();
+                        mtext.Position = transform(mtext.Position);
+                        return mtext;
+                    }
+
+                case EntityType.Circle:
+                    {
+                        var circle = (Circle)eo.Clone();
+                        {
+                            var c = transform(circle.Center);
+                            if (origin != null) c -= origin;
+                            circle.Center = c;
+                        }
+                        {
+                            var r = transform(new Vector3D(circle.Radius, 0));
+                            if (origin != null) r -= origin;
+                            circle.Radius = r.Length;
+                        }
+                        return circle;
+                    }
+
+                case EntityType.Point:
+                    {
+                        var point = (Point)eo.Clone();
+                        point.Position = transform(point.Position);
+                        return point;
+                    }
+
+                case EntityType.LightWeightPolyline:
+                    {
+                        var lw = (LwPolyline)eo.Clone();
+                        lw.Vertexes.ForEach(w =>
+                        {
+                            w.Position = transform(w.Position.ToVector3D()).ToVector2();
+                        });
+                        return lw;
+                    }
+
+                default: throw new NotImplementedException($"not implemented coord transform for entity [{eo.Type}]");
+            }
+        }
 
         /// <summary>
         /// add entity to the given dxf object ( it can be Dxfdocument or Block )
@@ -124,8 +257,8 @@ namespace SearchAThing
         /// optionally set layer
         /// </summary>        
         public static void AddEntities(this DxfObject dxfObj, IEnumerable<EntityObject> ents, Layer layer = null)
-        {           
-            foreach (var ent in ents) dxfObj.AddEntity(ent, layer);            
+        {
+            foreach (var ent in ents) dxfObj.AddEntity(ent, layer);
         }
 
         /// <summary>
@@ -173,6 +306,23 @@ namespace SearchAThing
             return ents;
         }
 
-    }   
+        public static string CadScript(this Face3d face)
+        {
+            var sb = new StringBuilder();
+
+            sb.Append(string.Format(CultureInfo.InvariantCulture, "FACE {0},{1},{2} {3},{4},{5} {6},{7},{8}",
+                face.FirstVertex.X, face.FirstVertex.Y, face.FirstVertex.Z,
+                face.SecondVertex.X, face.SecondVertex.Y, face.SecondVertex.Z,
+                face.ThirdVertex.X, face.ThirdVertex.Y, face.ThirdVertex.Z));
+
+            if (face.FourthVertex != null) sb.Append(string.Format(CultureInfo.InvariantCulture, " {0},{1},{2}",
+                face.FourthVertex.X, face.FourthVertex.Y, face.FourthVertex.Z));
+
+            sb.AppendLine();
+
+            return sb.ToString();
+        }
+
+    }
 
 }
