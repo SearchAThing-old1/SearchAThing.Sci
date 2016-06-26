@@ -23,8 +23,18 @@
 */
 #endregion
 
+using static System.Math;
+
 namespace SearchAThing.Sci
 {
+
+    public enum CoordinateSystem3DAutoEnum
+    {
+        /// <summary>
+        /// Arbitrary Axis Alghoritm ( dxf spec )
+        /// </summary>
+        AAA
+    }
 
     public class CoordinateSystem3D
     {
@@ -38,6 +48,27 @@ namespace SearchAThing.Sci
         public Vector3D BaseZ { get; private set; }
 
         public static CoordinateSystem3D WCS = new CoordinateSystem3D(Vector3D.Zero, Vector3D.XAxis, Vector3D.YAxis, Vector3D.ZAxis);
+        const double aaaSmall = 1.0 / 64;
+
+        public CoordinateSystem3D(Vector3D o, Vector3D normal, CoordinateSystem3DAutoEnum csAutoType = CoordinateSystem3DAutoEnum.AAA)
+        {
+            Vector3D Ax = null;
+
+            if (Abs(normal.X) < aaaSmall && Abs(normal.Y) < aaaSmall)
+                Ax = Vector3D.YAxis.CrossProduct(normal).Normalized();
+            else
+                Ax = Vector3D.ZAxis.CrossProduct(normal).Normalized();
+
+            var Ay = normal.CrossProduct(Ax).Normalized();
+
+            Origin = o;
+            BaseX = Ax;
+            BaseY = Ay;
+            BaseZ = Ax.CrossProduct(Ay).Normalized();
+
+            m = Matrix3D.FromVectorsAsColumns(BaseX, BaseY, BaseZ);
+            mInv = m.Inverse();
+        }
 
         /// <summary>
         /// Construct a coordinate system with the given origin and orthonormal bases
