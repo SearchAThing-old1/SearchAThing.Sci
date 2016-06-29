@@ -113,22 +113,34 @@ namespace SearchAThing
         }
 
         /// <summary>
-        /// given a set of polygon pts, returns the enumeation of all pts except the last if equals the first
+        /// given a set of polygon pts, returns the enumeation of all pts
+        /// so that the last not attach to the first ( if makeClosed = false ).
+        /// Elsewhere it returns a last point equals the first ( makeClosed = true ).
         /// </summary>        
-        public static IEnumerable<Vector3D> OpenPolyPoints(this IEnumerable<Vector3D> pts, double tol)
+        public static IEnumerable<Vector3D> PolyPoints(this IEnumerable<Vector3D> pts, double tol, bool makeClosed = false)
         {
             Vector3D first = null;
+
+            var foundFirstAtend = false;
 
             foreach (var p in pts)
             {
                 if (first == null)
                     first = p;
                 else
-                    if (first.EqualsTol(tol, p)) yield break;
+                    if (first.EqualsTol(tol, p))
+                {
+                    if (makeClosed)
+                        yield return p;
+                    yield break;
+                }
 
                 yield return p;
             }
-        }
+
+            if (!foundFirstAtend && makeClosed)
+                yield return first;
+        }       
 
         /// <summary>
         /// yields an ienumerable of polygon segments corresponding to the given polygon pts ( z is not considered )
@@ -327,7 +339,7 @@ namespace SearchAThing
         /// </summary>        
         public static netDxf.Entities.LwPolyline ToLwPolyline(this IEnumerable<Vector3D> pts, double tol)
         {
-            return new netDxf.Entities.LwPolyline(pts.OpenPolyPoints(tol).Select(r => r.ToVector2()).ToList(), true);
+            return new netDxf.Entities.LwPolyline(pts.PolyPoints(tol).Select(r => r.ToVector2()).ToList(), true);
         }
 
         /// <summary>
@@ -335,7 +347,7 @@ namespace SearchAThing
         /// </summary>        
         public static netDxf.Entities.LwPolyline ToLwPolyline(this IEnumerable<Line3D> segs, double tol)
         {
-            var X = segs.Select(w => w.From).OpenPolyPoints(tol);
+            var X = segs.Select(w => w.From).PolyPoints(tol);
             return new netDxf.Entities.LwPolyline(X.Select(r => r.ToVector2()).ToList(), true);
         }
 
@@ -344,7 +356,7 @@ namespace SearchAThing
         /// </summary>        
         public static netDxf.Entities.Polyline ToPolyline(this IEnumerable<Vector3D> pts, double tol)
         {
-            return new netDxf.Entities.Polyline(pts.OpenPolyPoints(tol).Select(r => (Vector3)r).ToList(), true);
+            return new netDxf.Entities.Polyline(pts.PolyPoints(tol).Select(r => (Vector3)r).ToList(), true);
         }
 
         /// <summary>
@@ -352,7 +364,7 @@ namespace SearchAThing
         /// </summary>        
         public static netDxf.Entities.Polyline ToPolyline(this IEnumerable<Line3D> segs, double tol)
         {
-            var X = segs.Select(w => w.From).OpenPolyPoints(tol);
+            var X = segs.Select(w => w.From).PolyPoints(tol);
             return new netDxf.Entities.Polyline(X.Select(r => (Vector3)r).ToList(), true);
         }
         /// <summary>

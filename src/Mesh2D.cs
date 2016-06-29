@@ -140,7 +140,7 @@ namespace SearchAThing
             vCmp = new Vector3DEqualityComparer(tol * 2);
             lCmp = new Line3DEqualityComparer(tol * 2);
             Points = _pts;
-            Boundary = _boundaryPts.OpenPolyPoints(tol).ToList();
+            Boundary = _boundaryPts.PolyPoints(tol).ToList();
             var boundarySegs = Boundary.PolygonSegments(tol);
             _closures = new List<Line3D>();
             _boundarySplitPts = new HashSet<Vector3D>(vCmp);

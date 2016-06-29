@@ -25,6 +25,7 @@
 
 using System;
 using System.Linq;
+using static System.Math;
 
 namespace SearchAThing.Sci
 {
@@ -122,6 +123,7 @@ namespace SearchAThing.Sci
         public static class PlaneAngle
         {
             public static readonly MeasureUnit rad = new MeasureUnit(PQCollection.PlaneAngle, "rad");
+            public static readonly MeasureUnit grad = new MeasureUnit(PQCollection.PlaneAngle, "grad", rad, PI / 180.0);
         }
 
         #endregion
