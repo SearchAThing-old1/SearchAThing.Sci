@@ -31,7 +31,7 @@ namespace SearchAThing.Sci
 {
 
     public static class MUCollection
-    {       
+    {
 
         //-------------------------------------------------------------------
         // Measure Units
@@ -47,6 +47,7 @@ namespace SearchAThing.Sci
         public static class Length
         {
             public static readonly MeasureUnit mm = new MeasureUnit(PQCollection.Length, "mm");
+            public static readonly MeasureUnit cm = new MeasureUnit(PQCollection.Length, "cm", mm, 1e1);
             public static readonly MeasureUnit m = new MeasureUnit(PQCollection.Length, "m", mm, 1e3);
             public static readonly MeasureUnit km = new MeasureUnit(PQCollection.Length, "km", m, 1e3);
         }

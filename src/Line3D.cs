@@ -79,12 +79,18 @@ namespace SearchAThing
                 }
             }
 
+            /// <summary>
+            /// build segment
+            /// </summary>            
             public Line3D(Vector3D from, Vector3D to)
             {
                 From = from;
                 V = to - from;
             }
 
+            /// <summary>
+            /// build segment from plus the given vector form to
+            /// </summary>            
             public Line3D(Vector3D from, Vector3D v, Line3DConstructMode mode)
             {
                 From = from;
@@ -119,7 +125,7 @@ namespace SearchAThing
             /// return the segment with swapped from,to
             /// </summary>            
             public Line3D Reverse()
-            {
+            {                
                 return new Line3D(To, From);
             }
 

@@ -482,7 +482,7 @@ namespace SearchAThing
 
             public override string ToString()
             {
-                return $"({X.ToString(2)}, {Y.ToString(2)}, {Z.ToString(2)})";
+                return $"({X.ToString(3)}, {Y.ToString(3)}, {Z.ToString(3)})";
             }
 
         }
