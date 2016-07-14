@@ -28,6 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Windows.Data;
+using System.Globalization;
 
 namespace SearchAThing.Sci
 {
@@ -123,5 +125,5 @@ namespace SearchAThing.Sci
         }
 
     };
-
+ 
 }

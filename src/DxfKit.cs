@@ -178,6 +178,13 @@ namespace SearchAThing
         {
             switch (eo.Type)
             {
+                case EntityType.Insert:
+                    {
+                        var ins = (Insert)eo.Clone();
+                        ins.Position = transform(ins.Position);
+                        return ins;
+                    }
+
                 case EntityType.Line:
                     {
                         var line = (Line)eo.Clone();
