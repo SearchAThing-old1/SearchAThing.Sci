@@ -112,15 +112,16 @@ namespace SearchAThing.Sci
 
         public MUDomain()
         {
-            Length = new Measure(1e-1, MUCollection.Length.mm);
-            Mass = new Measure(1e-1, MUCollection.Mass.g);
+            Length = new Measure(1e-4, MUCollection.Length.m);
+            Mass = new Measure(1e-4, MUCollection.Mass.kg);
             Time = new Measure(1e-1, MUCollection.Time.sec);
             Temperature = new Measure(1e-1, MUCollection.Temperature.C);
-
-            PlaneAngle = new Measure(PI / 180.0 / 10.0, MUCollection.PlaneAngle.rad);
-            Pressure = new Measure(1e-1, MUCollection.Pressure.Pa);
-            Acceleration = new Measure(1e-1, MUCollection.Acceleration.m_s2);
             Force = new Measure(1e-1, MUCollection.Force.N);
+            PlaneAngle = new Measure(PI / 180.0 / 10.0, MUCollection.PlaneAngle.rad);
+
+            // implicit            
+            Pressure = new Measure(1e-1, MUCollection.Pressure.Pa);
+            Acceleration = new Measure(1e-1, MUCollection.Acceleration.m_s2);            
             Speed = new Measure(1e-1, MUCollection.Speed.m_s);
         }
     }
