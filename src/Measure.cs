@@ -71,7 +71,7 @@ namespace SearchAThing.Sci
         /// <summary>
         /// Convert to the implicit measure of the given mu domain
         /// </summary>
-        public Measure ConvertTo(MUDomain mud)
+        public Measure ConvertTo(IMUDomain mud)
         {
             return ConvertTo(mud.ByPhysicalQuantity(MU.PhysicalQuantity).MU);
         }
