@@ -61,6 +61,7 @@ namespace SearchAThing.Sci
         {
             public static readonly MeasureUnit g = new MeasureUnit(PQCollection.Mass, "g");
             public static readonly MeasureUnit kg = new MeasureUnit(PQCollection.Mass, "kg", g, 1e3);
+            public static readonly MeasureUnit T = new MeasureUnit(PQCollection.Mass, "T", kg, 1e3);
         }
 
         #endregion
@@ -136,6 +137,8 @@ namespace SearchAThing.Sci
         {
             public static readonly MeasureUnit Pa = new MeasureUnit(PQCollection.Pressure, "Pa");
             public static readonly MeasureUnit kPa = new MeasureUnit(PQCollection.Pressure, "kPa", Pa, 1e3);
+            public static readonly MeasureUnit MPa = new MeasureUnit(PQCollection.Pressure, "MPa", kPa, 1e3);
+            public static readonly MeasureUnit GPa = new MeasureUnit(PQCollection.Pressure, "GPa", MPa, 1e3);
 
             public static MeasureUnit Auto(MeasureUnit force, MeasureUnit length)
             {
