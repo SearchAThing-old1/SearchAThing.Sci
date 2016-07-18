@@ -119,6 +119,11 @@ namespace SearchAThing.Sci
             return BaseZ.IsParallelTo(tol, other.BaseZ);
         }
 
+        public CoordinateSystem3D Move(Vector3D delta)
+        {
+            return new CoordinateSystem3D(Origin + delta, BaseX, BaseY, BaseZ);
+        }
+
         public CoordinateSystem3D Rotate(Vector3D axis, double angleRad)
         {
             return new CoordinateSystem3D(
