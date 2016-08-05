@@ -68,6 +68,26 @@ namespace SearchAThing.Sci
             MU = mu;
         }
 
+        #region operators
+        
+        /// <summary>
+        /// scalar mul
+        /// </summary>        
+        public static Measure operator *(double s, Measure v)
+        {
+            return new Measure(v.Value * s, v.MU);
+        }
+
+        /// <summary>
+        /// scalar mul
+        /// </summary>        
+        public static Measure operator *(Measure v, double s)
+        {
+            return new Measure(v.Value * s, v.MU);
+        }        
+
+        #endregion
+
         /// <summary>
         /// Convert to the implicit measure of the given mu domain
         /// </summary>
