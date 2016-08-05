@@ -23,6 +23,7 @@
 */
 #endregion
 
+using MongoDB.Bson.Serialization.Attributes;
 using SearchAThing.Sci;
 using System;
 using System.Runtime.Serialization;
@@ -31,24 +32,70 @@ using static System.Math;
 namespace SearchAThing.Sci
 {
 
+    public class MeasureUnitWithDefaultTolerance
+    {
+
+        public double DefaultTolerance { get; private set; }
+
+        [BsonElement("MU")]
+        public string MUName { get { return MU.ToString(); } }
+
+        [BsonIgnore]
+        public MeasureUnit MU { get; private set; }
+
+        public MeasureUnitWithDefaultTolerance(double _DefaultTolerance, MeasureUnit _MU)
+        {
+            MU = _MU;
+            DefaultTolerance = _DefaultTolerance;
+        }
+
+        public MeasureUnitWithDefaultTolerance ConvertTo(MeasureUnit toMU)
+        {
+            if (MU.PhysicalQuantity.MUConversionType == MeasureUnitConversionTypeEnum.NonLinear)
+                return new MeasureUnitWithDefaultTolerance(MU.PhysicalQuantity.NonLinearConversionFunctor(MU, toMU, DefaultTolerance), toMU);
+            else
+                return new MeasureUnitWithDefaultTolerance(DefaultTolerance * MU.PhysicalQuantity.ConvertFactor(MU, toMU), toMU);
+        }
+
+    }
+
     public interface IMUDomain
     {
-        
-        Measure Length { get; }        
-        Measure Mass { get; }        
-        Measure Time { get; }        
-        Measure Temperature { get; }        
-        Measure PlaneAngle { get; }        
-        Measure Pressure { get; }       
-        Measure Acceleration { get; }        
-        Measure Force { get; }        
-        Measure Speed { get; }
+
+        MeasureUnitWithDefaultTolerance Length { get; set; }
+        MeasureUnitWithDefaultTolerance Mass { get; set; }
+        MeasureUnitWithDefaultTolerance Time { get; set; }
+        MeasureUnitWithDefaultTolerance Temperature { get; set; }
+        MeasureUnitWithDefaultTolerance PlaneAngle { get; set; }
+        MeasureUnitWithDefaultTolerance Pressure { get; set; }
+        MeasureUnitWithDefaultTolerance Acceleration { get; set; }
+        MeasureUnitWithDefaultTolerance Force { get; set; }
+        MeasureUnitWithDefaultTolerance Speed { get; set; }
 
     }
 
     /// <summary>
     /// Measures here contains information about implicit measure unit
-    /// and value of the tolerance
+    /// and value of the tolerance.
+    /// 
+    /// Note that all measure must be dimensionally equivalent.
+    /// For example:
+    /// [length] = m
+    /// [length2] = [length] * [length] = m2
+    /// [time] = s
+    /// [time2] = [time] * [time] = s2
+    /// [speed] = [length] / [time] = m/s
+    /// [acceleration] = [length] / [time2] = m/s2
+    /// [mass] = kg
+    /// [force] = [mass] * [acceleration] = kg * m/s2 = N
+    /// [pressure] = [force] / [length2] = N / m2 = Pa
+    /// 
+    /// This will ensure measure comparision without further conversion, for example
+    /// m1 = 1 [kg]
+    /// a1 = 2 [m/s2]
+    /// f1 = 4 [N]
+    /// 
+    /// test = m1 * a1 > f1
     /// </summary>
     [DataContract(IsReference = true)]
     public class MUDomain : IMUDomain
@@ -58,78 +105,78 @@ namespace SearchAThing.Sci
         /// Implicit measure unit for Length and its tolerance
         /// </summary>
         [DataMember]
-        public Measure Length { get; private set; }
+        public MeasureUnitWithDefaultTolerance Length { get; set; }
 
         /// <summary>
         /// Implicit measure unit for Mass and its tolerance
         /// </summary>
         [DataMember]
-        public Measure Mass { get; private set; }
+        public MeasureUnitWithDefaultTolerance Mass { get; set; }
 
         /// <summary>
         /// Implicit measure unit for Time and its tolerance
         /// </summary>
         [DataMember]
-        public Measure Time { get; private set; }
+        public MeasureUnitWithDefaultTolerance Time { get; set; }
 
         /// <summary>
         /// Implicit measure unit for Temperature and its tolerance
         /// </summary>
         [DataMember]
-        public Measure Temperature { get; private set; }
+        public MeasureUnitWithDefaultTolerance Temperature { get; set; }
 
         /// <summary>
         /// Implicit measure unit for PlaneAngle and its tolerance
         /// </summary>
         [DataMember]
-        public Measure PlaneAngle { get; private set; }
+        public MeasureUnitWithDefaultTolerance PlaneAngle { get; set; }
 
         /// <summary>
         /// Implicit measure unit for Pressure and its tolerance
+        ///     [pressure] = [force] / [length]^2
         /// </summary>
         [DataMember]
-        public Measure Pressure { get; private set; }
+        public MeasureUnitWithDefaultTolerance Pressure { get; set; }
 
         /// <summary>
         /// Implicit measure unit for Acceleration and its tolerance
+        ///     [acceleration] = [length] / [time]^2
         /// </summary>
         [DataMember]
-        public Measure Acceleration { get; private set; }
+        public MeasureUnitWithDefaultTolerance Acceleration { get; set; }
 
         /// <summary>
         /// Implicit measure unit for Force and its tolerance
+        ///     [force] = [mass] * ( [length] / [time]^2 )
         /// </summary>
         [DataMember]
-        public Measure Force { get; private set; }
+        public MeasureUnitWithDefaultTolerance Force { get; set; }
 
         /// <summary>
         /// Implicit measure unit for Speed and its tolerance
+        ///     [speed] = [length] / [time]
         /// </summary>
         [DataMember]
-        public Measure Speed { get; private set; }
-
-        public void SetLength(Measure length) { Length = length; }
+        public MeasureUnitWithDefaultTolerance Speed { get; set; }
 
         public MUDomain()
         {
-            Length = new Measure(1e-4, MUCollection.Length.m);
-            Mass = new Measure(1e-4, MUCollection.Mass.kg);
-            Time = new Measure(1e-1, MUCollection.Time.sec);
-            Temperature = new Measure(1e-1, MUCollection.Temperature.C);
-            Force = new Measure(1e-1, MUCollection.Force.N);
-            PlaneAngle = new Measure(PI / 180.0 / 10.0, MUCollection.PlaneAngle.rad);
-
-            // implicit            
-            Pressure = new Measure(1e-1, MUCollection.Pressure.Pa);
-            Acceleration = new Measure(1e-1, MUCollection.Acceleration.m_s2);            
-            Speed = new Measure(1e-1, MUCollection.Speed.m_s);
+            Length = new MeasureUnitWithDefaultTolerance(1e-4, MUCollection.Length.m);
+            Mass = new MeasureUnitWithDefaultTolerance(1e-4, MUCollection.Mass.kg);
+            Time = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Time.sec);
+            Temperature = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Temperature.C);
+            Force = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Force.N);
+            PlaneAngle = new MeasureUnitWithDefaultTolerance(PI / 180.0 / 10.0, MUCollection.PlaneAngle.rad);
+            Pressure = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Pressure.Pa);
+            Acceleration = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Acceleration.m_s2);
+            Speed = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Speed.m_s);
         }
     }
 
     public static partial class Extensions
-    {         
+    {
 
-        public static Measure ByPhysicalQuantity(this IMUDomain mud, PhysicalQuantity physicalQuantity)
+        public static MeasureUnitWithDefaultTolerance ByPhysicalQuantity(this IMUDomain mud, PhysicalQuantity physicalQuantity)
         {
             var id = physicalQuantity.id;
 

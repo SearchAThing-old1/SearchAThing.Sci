@@ -51,10 +51,10 @@ namespace SearchAThing.Sci
         [BsonIgnore]
         [DataMember]
         internal int id;
-        
+
         [DataMember]
         public string Name { get; private set; }
-        
+
         [DataMember]
         public PhysicalQuantity PhysicalQuantity { get; private set; }
 
@@ -119,11 +119,11 @@ namespace SearchAThing.Sci
             var mudomain = model.MUDomain.ByPhysicalQuantity(PhysicalQuantity);
 
             if (mudomain.MU.id == id)
-                return mudomain.Value;
+                return mudomain.DefaultTolerance;
             else
-                return mudomain.ConvertTo(this).Value;
+                return mudomain.ConvertTo(this).DefaultTolerance;
         }
 
     };
- 
+
 }
