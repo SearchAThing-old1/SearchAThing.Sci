@@ -153,6 +153,7 @@ namespace SearchAThing.Sci
                 else if (force.Equals(Force.kN))
                 {
                     if (length.Equals(Length.m)) return Pressure.kPa;
+                    if (length.Equals(Length.mm)) return Pressure.GPa;
                 }
                 #endregion
 
