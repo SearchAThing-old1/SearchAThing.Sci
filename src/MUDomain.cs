@@ -28,6 +28,7 @@ using SearchAThing.Sci;
 using System;
 using System.Runtime.Serialization;
 using static System.Math;
+using System.Linq;
 
 namespace SearchAThing.Sci
 {
@@ -37,8 +38,30 @@ namespace SearchAThing.Sci
 
         public double DefaultTolerance { get; private set; }
 
+        string _PQName;
+        [BsonElement("PQ")]
+        public string PQName
+        {
+            get
+            {
+                if (_PQName == null) _PQName = MU.PhysicalQuantity.ToString();
+                return _PQName;
+            }
+            set
+            {
+                _PQName = value;
+            }
+        }
+
         [BsonElement("MU")]
-        public string MUName { get { return MU.ToString(); } }
+        public string MUName
+        {
+            get { return MU.ToString(); }
+            set
+            {
+                MU = PQCollection.PhysicalQuantities.First(w => w.Name == PQName).MeasureUnits.First(w => w.Name == value);
+            }
+        }
 
         [BsonIgnore]
         public MeasureUnit MU { get; private set; }
