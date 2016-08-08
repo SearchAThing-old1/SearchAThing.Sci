@@ -29,6 +29,8 @@ using System.Linq;
 namespace SearchAThing.Sci
 {
 
+    // https://en.wikipedia.org/wiki/List_of_physical_quantities
+
     public static class PQCollection
     {
 
@@ -55,6 +57,9 @@ namespace SearchAThing.Sci
                     physicalQuantities.Add(Acceleration);
                     physicalQuantities.Add(Force);
                     physicalQuantities.Add(Speed);
+                    physicalQuantities.Add(ElectricalConductivity);
+                    physicalQuantities.Add(Power);
+                    physicalQuantities.Add(Turbidity);
                 }
                 return physicalQuantities;
             }
@@ -112,6 +117,8 @@ namespace SearchAThing.Sci
 
         public static readonly PhysicalQuantity Acceleration = new PhysicalQuantity("Acceleration", typeof(MUCollection.Acceleration));
 
+        public static readonly PhysicalQuantity Turbidity = new PhysicalQuantity("Turbidity", typeof(MUCollection.Turbidity));
+
         // angularAcceleration
 
         /*
@@ -160,6 +167,8 @@ namespace SearchAThing.Sci
         // electricFieldStrength
 
         // electricalConductance
+
+        public static readonly PhysicalQuantity ElectricalConductivity = new PhysicalQuantity("ElectricalConductivity", typeof(MUCollection.ElectricalConductivity));
 
         // electicPotential
 
@@ -301,18 +310,7 @@ namespace SearchAThing.Sci
 
         // permittivity
 
-        /*
-        static PhysicalQuantity power;
-        public static PhysicalQuantity Power
-        {
-            get
-            {
-                if (power == null) power = new PhysicalQuantity("Power");
-
-                return power;
-            }
-        }
-        */
+        public static readonly PhysicalQuantity Power = new PhysicalQuantity("Power", typeof(MUCollection.Power));
 
         public static readonly PhysicalQuantity Pressure = new PhysicalQuantity("Pressure", typeof(MUCollection.Pressure));
 

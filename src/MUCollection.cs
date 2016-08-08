@@ -163,11 +163,29 @@ namespace SearchAThing.Sci
 
         #endregion
 
+        #region Power
+
+        public static class Power
+        {
+            public static readonly MeasureUnit W = new MeasureUnit(PQCollection.Power, "W");
+        }
+
+        #endregion
+
         #region Acceleration
 
         public static class Acceleration
         {
             public static readonly MeasureUnit m_s2 = new MeasureUnit(PQCollection.Acceleration, "m_s2");
+        }
+
+        #endregion
+
+        #region Turbidity
+
+        public static class Turbidity
+        {
+            public static readonly MeasureUnit FNU = new MeasureUnit(PQCollection.Turbidity, "FNU");
         }
 
         #endregion
@@ -187,6 +205,15 @@ namespace SearchAThing.Sci
         public static class Speed
         {
             public static readonly MeasureUnit m_s = new MeasureUnit(PQCollection.Speed, "m_s");
+        }
+
+        #endregion
+
+        #region ElectricalConductivity
+
+        public static class ElectricalConductivity
+        {
+            public static readonly MeasureUnit S_m = new MeasureUnit(PQCollection.ElectricalConductivity, "S_m");
         }
 
         #endregion
