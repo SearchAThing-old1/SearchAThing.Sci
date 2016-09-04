@@ -25,7 +25,9 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using static System.Math;
 
 namespace SearchAThing.Sci
@@ -33,6 +35,41 @@ namespace SearchAThing.Sci
 
     public static class MUCollection
     {
+
+        //-------------------------------------------------------------------
+        // Enumerate Measure Units
+        //-------------------------------------------------------------------
+
+        static List<MeasureUnit> _MeasureUnits;
+        /// <summary>
+        /// through reflector returns all measure units along all physical quantities declared in MUCollection
+        /// </summary>
+        public static IEnumerable<MeasureUnit> MeasureUnits
+        {
+            get
+            {
+                if (_MeasureUnits == null)
+                {
+                    _MeasureUnits = new List<MeasureUnit>();
+
+                    var nestedTypes = typeof(MUCollection).GetNestedTypes(BindingFlags.Public | BindingFlags.Static);
+
+                    foreach (var nestedType in nestedTypes)
+                    {
+                        var tNestedTypeTypes = nestedType.GetFields(BindingFlags.Public | BindingFlags.Static);
+
+                        foreach (var tNestedTypeType in tNestedTypeTypes)
+                        {
+                            var mu = (MeasureUnit)tNestedTypeType.GetValue(null);
+
+                            _MeasureUnits.Add(mu);
+                        }
+                    }
+                }
+
+                return _MeasureUnits;
+            }
+        }
 
         //-------------------------------------------------------------------
         // Measure Units
@@ -73,6 +110,15 @@ namespace SearchAThing.Sci
             public static readonly MeasureUnit sec = new MeasureUnit(PQCollection.Time, "sec");
             public static readonly MeasureUnit min = new MeasureUnit(PQCollection.Time, "min", sec, 60);
             public static readonly MeasureUnit hr = new MeasureUnit(PQCollection.Time, "hr", min, 60);
+        }
+
+        #endregion
+
+        #region ElectricCurrent
+
+        public static class ElectricCurrent
+        {
+            public static readonly MeasureUnit A = new MeasureUnit(PQCollection.ElectricCurrent, "A");
         }
 
         #endregion
@@ -120,6 +166,26 @@ namespace SearchAThing.Sci
         }
 
         #endregion
+
+        #region AmountOfSubstance
+
+        public static class AmountOfSubstance
+        {
+            public static readonly MeasureUnit mol = new MeasureUnit(PQCollection.AmountOfSubstance, "mol");
+        }
+
+        #endregion
+
+        #region LuminousIntensity
+
+        public static class LuminousIntensity
+        {
+            public static readonly MeasureUnit cd = new MeasureUnit(PQCollection.LuminousIntensity, "cd");
+        }
+
+        #endregion
+
+        //-------------------------------------------------------------------
 
         #region PlaneAngle
 
@@ -205,6 +271,24 @@ namespace SearchAThing.Sci
         public static class Speed
         {
             public static readonly MeasureUnit m_s = new MeasureUnit(PQCollection.Speed, "m_s");
+        }
+
+        #endregion
+
+        #region Energy
+
+        public static class Energy
+        {
+            public static readonly MeasureUnit J = new MeasureUnit(PQCollection.Energy, "J");
+        }
+
+        #endregion                
+
+        #region ElectricalConductance
+
+        public static class ElectricalConductance
+        {
+            public static readonly MeasureUnit S = new MeasureUnit(PQCollection.ElectricalConductance, "S");
         }
 
         #endregion

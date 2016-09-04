@@ -29,12 +29,31 @@ using System;
 using System.Runtime.Serialization;
 using static System.Math;
 using System.Linq;
+using System.Collections.Generic;
+using MongoDB.Bson;
 
 namespace SearchAThing.Sci
 {
 
     public class MeasureUnitWithDefaultTolerance
     {
+
+        public ObjectId ObjectId { get { return ObjectId.Parse(Id); } }
+
+        string _Id;
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id
+        {
+            get
+            {
+                if (_Id == null) _Id = ObjectId.GenerateNewId().ToString();
+                return _Id;
+            }
+            set
+            {
+                _Id = value;
+            }
+        }
 
         public double DefaultTolerance { get; private set; }
 
@@ -80,20 +99,40 @@ namespace SearchAThing.Sci
                 return new MeasureUnitWithDefaultTolerance(DefaultTolerance * MU.PhysicalQuantity.ConvertFactor(MU, toMU), toMU);
         }
 
+        public override string ToString()
+        {
+            return $"pq=[{PQName}] mu=[{MUName}] deftol=[{DefaultTolerance}]";
+        }
+
     }
 
     public interface IMUDomain
     {
 
+        IEnumerable<MeasureUnitWithDefaultTolerance> _All { get; }
+
+        void SetupItem(string physicalQuantityName, string measureUnitName, double defaultTolerance);
+
         MeasureUnitWithDefaultTolerance Length { get; set; }
         MeasureUnitWithDefaultTolerance Mass { get; set; }
         MeasureUnitWithDefaultTolerance Time { get; set; }
+        MeasureUnitWithDefaultTolerance ElectricCurrent { get; set; }
         MeasureUnitWithDefaultTolerance Temperature { get; set; }
+        MeasureUnitWithDefaultTolerance AmountOfSubstance { get; set; }
+        MeasureUnitWithDefaultTolerance LuminousIntensity { get; set; }
+
+        //-------------------------------------------------------------------
+
         MeasureUnitWithDefaultTolerance PlaneAngle { get; set; }
         MeasureUnitWithDefaultTolerance Pressure { get; set; }
         MeasureUnitWithDefaultTolerance Acceleration { get; set; }
         MeasureUnitWithDefaultTolerance Force { get; set; }
         MeasureUnitWithDefaultTolerance Speed { get; set; }
+        MeasureUnitWithDefaultTolerance Energy { get; set; }
+        MeasureUnitWithDefaultTolerance Turbidity { get; set; }
+        MeasureUnitWithDefaultTolerance Power { get; set; }
+        MeasureUnitWithDefaultTolerance ElectricalConductance { get; set; }
+        MeasureUnitWithDefaultTolerance ElectricalConductivity { get; set; }
 
     }
 
@@ -125,75 +164,174 @@ namespace SearchAThing.Sci
     {
 
         /// <summary>
-        /// Implicit measure unit for Length and its tolerance
+        /// [L]
         /// </summary>
         [DataMember]
         public MeasureUnitWithDefaultTolerance Length { get; set; }
 
         /// <summary>
-        /// Implicit measure unit for Mass and its tolerance
+        /// [M]
         /// </summary>
         [DataMember]
         public MeasureUnitWithDefaultTolerance Mass { get; set; }
 
         /// <summary>
-        /// Implicit measure unit for Time and its tolerance
+        /// [T]
         /// </summary>
         [DataMember]
         public MeasureUnitWithDefaultTolerance Time { get; set; }
 
         /// <summary>
-        /// Implicit measure unit for Temperature and its tolerance
+        /// [I]
+        /// </summary>
+        [DataMember]
+        public MeasureUnitWithDefaultTolerance ElectricCurrent { get; set; }
+
+        /// <summary>
+        /// [K]
         /// </summary>
         [DataMember]
         public MeasureUnitWithDefaultTolerance Temperature { get; set; }
 
         /// <summary>
-        /// Implicit measure unit for PlaneAngle and its tolerance
+        /// [N]
+        /// </summary>
+        [DataMember]
+        public MeasureUnitWithDefaultTolerance AmountOfSubstance { get; set; }
+
+        /// <summary>
+        /// [J]
+        /// </summary>
+        [DataMember]
+        public MeasureUnitWithDefaultTolerance LuminousIntensity { get; set; }
+
+        //------------------------------------------------------------------------------
+
+        /// <summary>
+        /// [1]
         /// </summary>
         [DataMember]
         public MeasureUnitWithDefaultTolerance PlaneAngle { get; set; }
 
         /// <summary>
-        /// Implicit measure unit for Pressure and its tolerance
-        ///     [pressure] = [force] / [length]^2
+        /// [M L−1 T−2]
         /// </summary>
         [DataMember]
         public MeasureUnitWithDefaultTolerance Pressure { get; set; }
 
         /// <summary>
-        /// Implicit measure unit for Acceleration and its tolerance
-        ///     [acceleration] = [length] / [time]^2
+        /// [L T−2]
         /// </summary>
         [DataMember]
         public MeasureUnitWithDefaultTolerance Acceleration { get; set; }
 
         /// <summary>
-        /// Implicit measure unit for Force and its tolerance
-        ///     [force] = [mass] * ( [length] / [time]^2 )
+        /// [M L T−2]
         /// </summary>
         [DataMember]
         public MeasureUnitWithDefaultTolerance Force { get; set; }
 
         /// <summary>
-        /// Implicit measure unit for Speed and its tolerance
-        ///     [speed] = [length] / [time]
+        /// [L T−1]
         /// </summary>
         [DataMember]
         public MeasureUnitWithDefaultTolerance Speed { get; set; }
+
+        /// <summary>
+        /// [M L2 T−2]
+        /// </summary>
+        [DataMember]
+        public MeasureUnitWithDefaultTolerance Energy { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [DataMember]
+        public MeasureUnitWithDefaultTolerance Turbidity { get; set; }
+
+        /// <summary>
+        /// [M L2 T−3]
+        /// </summary>
+        [DataMember]
+        public MeasureUnitWithDefaultTolerance Power { get; set; }
+
+        /// <summary>
+        /// [L−2 M−1 T3 I2]
+        /// </summary>
+        [DataMember]
+        public MeasureUnitWithDefaultTolerance ElectricalConductance { get; set; }
+
+        /// <summary>
+        /// [L−3 M−1 T3 I2]
+        /// </summary>
+        [DataMember]
+        public MeasureUnitWithDefaultTolerance ElectricalConductivity { get; set; }
+
+        //------------------------------------------------------------------------------
+
+        static Type tMeasureUnitWithDefaultTolerance = typeof(MeasureUnitWithDefaultTolerance);
+
+        public IEnumerable<MeasureUnitWithDefaultTolerance> _All
+        {
+            get
+            {
+                var t = GetType();
+
+                var props = t.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
+                foreach (var prop in props.Where(r => r.PropertyType == tMeasureUnitWithDefaultTolerance))
+                {
+                    yield return (MeasureUnitWithDefaultTolerance)prop.GetMethod.Invoke(this, null);
+                }
+            }
+        }
+
+        /// <summary>
+        /// allow to set programmatically the associated measure unit and tolerance in the model of a given physical quantity
+        /// </summary>        
+        public void SetupItem(string physicalQuantityName, string measureUnitName, double defaultTolerance)
+        {
+            var pq = PQCollection.PhysicalQuantities.First(w => w.Name == physicalQuantityName);
+
+            var t = GetType();
+
+            var props = t.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
+            var mu = MUCollection.MeasureUnits.First(w => w.Name == measureUnitName);
+            var muwdt = new MeasureUnitWithDefaultTolerance(defaultTolerance, mu);
+
+            props
+                .Where(r => r.PropertyType == tMeasureUnitWithDefaultTolerance)
+                .First(w => w.Name == physicalQuantityName)
+                .SetMethod.Invoke(this, new object[] { muwdt });
+        }
+
+        //------------------------------------------------------------------------------
 
         public MUDomain()
         {
             Length = new MeasureUnitWithDefaultTolerance(1e-4, MUCollection.Length.m);
             Mass = new MeasureUnitWithDefaultTolerance(1e-4, MUCollection.Mass.kg);
             Time = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Time.sec);
+            ElectricCurrent = new MeasureUnitWithDefaultTolerance(1e-9, MUCollection.ElectricCurrent.A);
             Temperature = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Temperature.C);
+            AmountOfSubstance = new MeasureUnitWithDefaultTolerance(1e-9, MUCollection.AmountOfSubstance.mol);
+            LuminousIntensity = new MeasureUnitWithDefaultTolerance(1e-9, MUCollection.LuminousIntensity.cd);
+
+            //---------------------------------------------------------------
+
             Force = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Force.N);
             PlaneAngle = new MeasureUnitWithDefaultTolerance(PI / 180.0 / 10.0, MUCollection.PlaneAngle.rad);
             Pressure = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Pressure.Pa);
             Acceleration = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Acceleration.m_s2);
             Speed = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Speed.m_s);
+            Energy = new MeasureUnitWithDefaultTolerance(1e-4, MUCollection.Energy.J);
+            Power = new MeasureUnitWithDefaultTolerance(1e-4, MUCollection.Power.W);
+            ElectricalConductance = new MeasureUnitWithDefaultTolerance(1e-9, MUCollection.ElectricalConductance.S);
+            ElectricalConductivity = new MeasureUnitWithDefaultTolerance(1e-9, MUCollection.ElectricalConductivity.S_m);
+            Turbidity = new MeasureUnitWithDefaultTolerance(1e-9, MUCollection.Turbidity.FNU);
         }
+
     }
 
     public static partial class Extensions
@@ -206,12 +344,23 @@ namespace SearchAThing.Sci
             if (mud.Length.MU.PhysicalQuantity.id == id) return mud.Length;
             else if (mud.Mass.MU.PhysicalQuantity.id == id) return mud.Mass;
             else if (mud.Time.MU.PhysicalQuantity.id == id) return mud.Time;
+            else if (mud.ElectricCurrent.MU.PhysicalQuantity.id == id) return mud.ElectricCurrent;
             else if (mud.Temperature.MU.PhysicalQuantity.id == id) return mud.Temperature;
+            else if (mud.AmountOfSubstance.MU.PhysicalQuantity.id == id) return mud.AmountOfSubstance;
+            else if (mud.LuminousIntensity.MU.PhysicalQuantity.id == id) return mud.LuminousIntensity;
+
+            //---------------------------------------------------------------
+
             else if (mud.PlaneAngle.MU.PhysicalQuantity.id == id) return mud.PlaneAngle;
             else if (mud.Pressure.MU.PhysicalQuantity.id == id) return mud.Pressure;
             else if (mud.Acceleration.MU.PhysicalQuantity.id == id) return mud.Acceleration;
             else if (mud.Force.MU.PhysicalQuantity.id == id) return mud.Force;
             else if (mud.Speed.MU.PhysicalQuantity.id == id) return mud.Speed;
+            else if (mud.Energy.MU.PhysicalQuantity.id == id) return mud.Energy;
+            else if (mud.Power.MU.PhysicalQuantity.id == id) return mud.Power;
+            else if (mud.ElectricalConductance.MU.PhysicalQuantity.id == id) return mud.ElectricalConductance;
+            else if (mud.ElectricalConductivity.MU.PhysicalQuantity.id == id) return mud.ElectricalConductivity;
+            else if (mud.Turbidity.MU.PhysicalQuantity.id == id) return mud.Turbidity;
 
             throw new NotImplementedException($"unable to find measure domain for given physical quantity {physicalQuantity}");
         }

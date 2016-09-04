@@ -50,13 +50,20 @@ namespace SearchAThing.Sci
                     physicalQuantities.Add(Length);
                     physicalQuantities.Add(Mass);
                     physicalQuantities.Add(Time);
+                    physicalQuantities.Add(ElectricCurrent);
                     physicalQuantities.Add(Temperature);
+                    physicalQuantities.Add(AmountOfSubstance);
+                    physicalQuantities.Add(LuminousIntensity);
+
+                    //-------------------------------------------------------
 
                     physicalQuantities.Add(PlaneAngle);
                     physicalQuantities.Add(Pressure);
                     physicalQuantities.Add(Acceleration);
                     physicalQuantities.Add(Force);
                     physicalQuantities.Add(Speed);
+                    physicalQuantities.Add(Energy);
+                    physicalQuantities.Add(ElectricalConductance);
                     physicalQuantities.Add(ElectricalConductivity);
                     physicalQuantities.Add(Power);
                     physicalQuantities.Add(Turbidity);
@@ -81,25 +88,14 @@ namespace SearchAThing.Sci
 
         public static readonly PhysicalQuantity Time = new PhysicalQuantity("Time", typeof(MUCollection.Time));
 
-        /*
-        static PhysicalQuantity electricCurrent;
-        public static PhysicalQuantity ElectricCurrent
-        {
-            get
-            {
-                if (electricCurrent == null) electricCurrent = new PhysicalQuantity("ElectricCurrent");
-
-                return electricCurrent;
-            }
-        }
-        */
+        public static readonly PhysicalQuantity ElectricCurrent = new PhysicalQuantity("ElectricCurrent", typeof(MUCollection.ElectricCurrent));
 
         public static readonly PhysicalQuantity Temperature = new PhysicalQuantity("Temperature",
             typeof(MUCollection.Temperature), MeasureUnitConversionTypeEnum.NonLinear);
 
-        // amountOfSubstance
+        public static readonly PhysicalQuantity AmountOfSubstance = new PhysicalQuantity("AmountOfSubstance", typeof(MUCollection.AmountOfSubstance));
 
-        // luminousIntensity        
+        public static readonly PhysicalQuantity LuminousIntensity = new PhysicalQuantity("LuminousIntensity", typeof(MUCollection.LuminousIntensity));
 
         #endregion
 
@@ -166,7 +162,7 @@ namespace SearchAThing.Sci
 
         // electricFieldStrength
 
-        // electricalConductance
+        public static readonly PhysicalQuantity ElectricalConductance = new PhysicalQuantity("ElectricalConductance", typeof(MUCollection.ElectricalConductance));
 
         public static readonly PhysicalQuantity ElectricalConductivity = new PhysicalQuantity("ElectricalConductivity", typeof(MUCollection.ElectricalConductivity));
 
@@ -174,18 +170,7 @@ namespace SearchAThing.Sci
 
         // electicalResistance
 
-        /*
-        static PhysicalQuantity energy;
-        public static PhysicalQuantity Energy
-        {
-            get
-            {
-                if (energy == null) energy = new PhysicalQuantity("Energy");
-
-                return energy;
-            }
-        }
-        */
+        public static readonly PhysicalQuantity Energy = new PhysicalQuantity("Energy", typeof(MUCollection.Energy));
 
         // energyDensity
 
