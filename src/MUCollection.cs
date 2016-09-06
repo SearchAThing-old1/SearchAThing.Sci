@@ -80,6 +80,11 @@ namespace SearchAThing.Sci
             public static readonly MeasureUnit adim = new MeasureUnit(PQCollection.Adimensional, "adim");
         }
 
+        public static class Frequency
+        {
+            public static readonly MeasureUnit hz = new MeasureUnit(PQCollection.Frequency, "hz");
+        }
+
         #region Length
 
         public static class Length
@@ -140,6 +145,8 @@ namespace SearchAThing.Sci
                     {
                         _nonLinearConvFunctor = (muFrom, muTo, valueFrom) =>
                         {
+                            if (muFrom == muTo) return valueFrom;
+
                             if (muFrom == C)
                             {
                                 if (muTo == K) return valueFrom + 273.15;

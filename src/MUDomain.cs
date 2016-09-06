@@ -111,7 +111,7 @@ namespace SearchAThing.Sci
 
         IEnumerable<MeasureUnitWithDefaultTolerance> _All { get; }
 
-        void SetupItem(string physicalQuantityName, string measureUnitName, double defaultTolerance);
+        void SetupItem(string physicalQuantityName, string measureUnitName, double? defaultTolerance = null);
 
         MeasureUnitWithDefaultTolerance Length { get; set; }
         MeasureUnitWithDefaultTolerance Mass { get; set; }
@@ -288,8 +288,9 @@ namespace SearchAThing.Sci
 
         /// <summary>
         /// allow to set programmatically the associated measure unit and tolerance in the model of a given physical quantity
+        /// if given defaulttolreance is null, then current default tolerance will be converted to given measure unit
         /// </summary>        
-        public void SetupItem(string physicalQuantityName, string measureUnitName, double defaultTolerance)
+        public void SetupItem(string physicalQuantityName, string measureUnitName, double? defaultTolerance = null)
         {
             var pq = PQCollection.PhysicalQuantities.First(w => w.Name == physicalQuantityName);
 
@@ -298,7 +299,22 @@ namespace SearchAThing.Sci
             var props = t.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
             var mu = MUCollection.MeasureUnits.First(w => w.Name == measureUnitName);
-            var muwdt = new MeasureUnitWithDefaultTolerance(defaultTolerance, mu);
+
+            MeasureUnitWithDefaultTolerance muwdt = null;
+
+            if (defaultTolerance.HasValue)
+            {
+                muwdt = new MeasureUnitWithDefaultTolerance(defaultTolerance.Value, mu);
+            }
+            else
+            {
+                var curTol = props
+                    .Where(r => r.PropertyType == tMeasureUnitWithDefaultTolerance)
+                    .First(w => w.Name == physicalQuantityName)
+                    .GetMethod.Invoke(this, null);
+
+                muwdt = (curTol as MeasureUnitWithDefaultTolerance).ConvertTo(mu);
+            }
 
             props
                 .Where(r => r.PropertyType == tMeasureUnitWithDefaultTolerance)
