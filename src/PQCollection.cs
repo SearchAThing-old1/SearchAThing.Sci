@@ -47,6 +47,9 @@ namespace SearchAThing.Sci
                 {
                     physicalQuantities = new List<PhysicalQuantity>();
 
+                    physicalQuantities.Add(Adimensional);
+                    physicalQuantities.Add(Frequency);
+
                     physicalQuantities.Add(Length);
                     physicalQuantities.Add(Mass);
                     physicalQuantities.Add(Time);
@@ -79,6 +82,8 @@ namespace SearchAThing.Sci
         #region Base quantity        
 
         public static readonly PhysicalQuantity Adimensional = new PhysicalQuantity("Adimensional", typeof(MUCollection.Adimensional));
+
+        public static readonly PhysicalQuantity Frequency = new PhysicalQuantity("Frequency", typeof(MUCollection.Frequency));
 
         // https://en.wikipedia.org/wiki/List_of_physical_quantities
 
