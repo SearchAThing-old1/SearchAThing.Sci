@@ -69,7 +69,7 @@ namespace SearchAThing.Sci
         }
 
         #region operators
-        
+
         /// <summary>
         /// scalar mul
         /// </summary>        
@@ -84,7 +84,7 @@ namespace SearchAThing.Sci
         public static Measure operator *(Measure v, double s)
         {
             return new Measure(v.Value * s, v.MU);
-        }        
+        }
 
         #endregion
 
@@ -93,6 +93,8 @@ namespace SearchAThing.Sci
         /// </summary>
         public Measure ConvertTo(IMUDomain mud)
         {
+            if (MU == MUCollection.Adimensional.adim) return new Measure(Value, MU);
+
             return ConvertTo(mud.ByPhysicalQuantity(MU.PhysicalQuantity).MU);
         }
 
@@ -144,7 +146,7 @@ namespace SearchAThing.Sci
 
                 MeasureUnit mu = null;
 
-                foreach (var _mu in pq.MeasureUnits.OrderByDescending(w=>w.Name.Length))
+                foreach (var _mu in pq.MeasureUnits.OrderByDescending(w => w.Name.Length))
                 {
                     if (s.EndsWith(_mu.ToString()))
                     {
