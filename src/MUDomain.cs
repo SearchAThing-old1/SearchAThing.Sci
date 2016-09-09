@@ -164,6 +164,12 @@ namespace SearchAThing.Sci
     {
 
         /// <summary>
+        /// 
+        /// </summary>
+        [DataMember]
+        public MeasureUnitWithDefaultTolerance Adimensional { get; set; }
+
+        /// <summary>
         /// [L]
         /// </summary>
         [DataMember]
@@ -326,6 +332,8 @@ namespace SearchAThing.Sci
 
         public MUDomain()
         {
+            Adimensional = new MeasureUnitWithDefaultTolerance(0, MUCollection.Adimensional.adim);
+
             Length = new MeasureUnitWithDefaultTolerance(1e-4, MUCollection.Length.m);
             Mass = new MeasureUnitWithDefaultTolerance(1e-4, MUCollection.Mass.kg);
             Time = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Time.sec);
