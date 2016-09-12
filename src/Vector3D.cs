@@ -251,6 +251,13 @@ namespace SearchAThing
                 return t.Apply(this);
             }
 
+            public Vector3D RotateAboutAxis(Line3D axisSegment, double angleRad)
+            {
+                var vrel = this - axisSegment.From;
+                var vrot = vrel.RotateAboutAxis(axisSegment.V, angleRad);
+                return vrot + axisSegment.From;
+            }
+
             /// <summary>
             /// Note: tol must be Constant.NormalizedLengthTolerance
             /// if comparing normalized vectors
