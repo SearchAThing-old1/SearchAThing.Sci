@@ -23,10 +23,11 @@
 */
 #endregion
 
-using sVector3D = System.Windows.Media.Media3D.Vector3D;
-using sMatrix3D = System.Windows.Media.Media3D.Matrix3D;
-using sQuaternion = System.Windows.Media.Media3D.Quaternion;
+using sVector3D = Microsoft.Xna.Framework.Vector3;//System.Windows.Media.Media3D.Vector3D;
+using sMatrix3D = Microsoft.Xna.Framework.Matrix;//System.Windows.Media.Media3D.Matrix3D;
+using sQuaternion = Microsoft.Xna.Framework.Quaternion;//System.Windows.Media.Media3D.Quaternion;
 using SearchAThing;
+using Microsoft.Xna.Framework;
 
 namespace SearchAThing.Sci
 {
@@ -44,32 +45,38 @@ namespace SearchAThing.Sci
 
         public Transform3D()
         {
-            m = new sMatrix3D();
+            m = sMatrix3D.Identity;
         }
 
         public void RotateAboutXAxis(double angleRad)
         {
-            m.Rotate(new sQuaternion(sXAxis, angleRad.ToDeg()));
+            m = m * sMatrix3D.CreateFromQuaternion(sQuaternion.CreateFromAxisAngle(sXAxis, (float)angleRad));
+            //m.Rotate(new sQuaternion(sXAxis, angleRad.ToDeg()));
         }
 
         public void RotateAboutYAxis(double angleRad)
         {
-            m.Rotate(new sQuaternion(sYAxis, angleRad.ToDeg()));
+            m = m * sMatrix3D.CreateFromQuaternion(sQuaternion.CreateFromAxisAngle(sYAxis, (float)angleRad));
+            //m.Rotate(new sQuaternion(sYAxis, angleRad.ToDeg()));
         }
 
         public void RotateAboutZAxis(double angleRad)
         {
-            m.Rotate(new sQuaternion(sZAxis, angleRad.ToDeg()));
+            m = m * sMatrix3D.CreateFromQuaternion(sQuaternion.CreateFromAxisAngle(sZAxis, (float)angleRad));
+            //m.Rotate(new sQuaternion(sZAxis, angleRad.ToDeg()));
         }
 
         public void RotateAboutAxis(Vector3D axis, double angleRad)
         {
-            m.Rotate(new sQuaternion(new sVector3D(axis.X, axis.Y, axis.Z), angleRad.ToDeg()));
+            var v = new sVector3D((float)axis.X, (float)axis.Y, (float)axis.Z);
+            m = m * sMatrix3D.CreateFromQuaternion(sQuaternion.CreateFromAxisAngle(v, (float)angleRad));
+            //m.Rotate(new sQuaternion(new sVector3D(axis.X, axis.Y, axis.Z), angleRad.ToDeg()));
         }
 
         public Vector3D Apply(Vector3D v)
         {
-            return m.Transform(v.ToSystemVector3D()).ToVector3D();
+            return sVector3D.Transform(v.ToSystemVector3D(), m).ToVector3D();
+            //return m.Transform(v.ToSystemVector3D()).ToVector3D();
         }
 
     }

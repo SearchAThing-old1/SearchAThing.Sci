@@ -49,12 +49,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MongoDB.Bson, Version=2.2.4.26, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\SearchAThing.Sci.GUI.Examples\packages\MongoDB.Bson.2.2.4\lib\net45\MongoDB.Bson.dll</HintPath>
+    <Reference Include="MongoDB.Bson, Version=2.3.0.149, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\SearchAThing.UnitTest\packages\MongoDB.Bson.2.3.0-rc1\lib\net45\MongoDB.Bson.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -85,6 +83,21 @@
     <Compile Include="SampleModel.cs" />
     <Compile Include="Line3D.cs" />
     <Compile Include="IModel.cs" />
+    <Compile Include="Thirdy\MonoGame.Framework\MathHelper.cs" />
+    <Compile Include="Thirdy\MonoGame.Framework\Ray.cs" />
+    <Compile Include="Thirdy\MonoGame.Framework\ContainmentType.cs" />
+    <Compile Include="Thirdy\MonoGame.Framework\BoundingSphere.cs" />
+    <Compile Include="Thirdy\MonoGame.Framework\BoundingFrustum.cs" />
+    <Compile Include="Thirdy\MonoGame.Framework\Matrix.cs" />
+    <Compile Include="Thirdy\MonoGame.Framework\BoundingBox.cs" />
+    <Compile Include="Thirdy\MonoGame.Framework\Vector4.cs" />
+    <Compile Include="Thirdy\MonoGame.Framework\Point.cs" />
+    <Compile Include="Thirdy\MonoGame.Framework\Plane.cs" />
+    <Compile Include="Thirdy\MonoGame.Framework\PlaneIntersectionType.cs" />
+    <Compile Include="Thirdy\MonoGame.Framework\Vector2.cs" />
+    <Compile Include="Thirdy\MonoGame.Framework\Vector3.cs" />
+    <Compile Include="Thirdy\MonoGame.Framework\Rectangle.cs" />
+    <Compile Include="Thirdy\MonoGame.Framework\Quaternion.cs" />
     <Compile Include="Transform3D.cs" />
     <Compile Include="Vector3D.Dxf.cs" />
     <Compile Include="Vector3D.cs" />
@@ -107,7 +120,7 @@
       <Project>{2337776d-7d0c-40aa-a439-c26c3ce24fab}</Project>
       <Name>MIConvexHull</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\netdxf_mono\netDxf\netDxf.csproj">
+    <ProjectReference Include="..\..\netdxf\netDxf\netDxf.csproj">
       <Project>{785380e0-ceb9-4c34-82e5-60d0e33e848e}</Project>
       <Name>netDxf</Name>
     </ProjectReference>

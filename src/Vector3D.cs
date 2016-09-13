@@ -26,7 +26,7 @@
 using System;
 using static System.Math;
 
-using sVector3D = System.Windows.Media.Media3D.Vector3D;
+using sVector3D = Microsoft.Xna.Framework.Vector3;// System.Windows.Media.Media3D.Vector3D;
 using System.Globalization;
 using System.Collections.Generic;
 using SearchAThing.Sci;
@@ -247,7 +247,7 @@ namespace SearchAThing
             public Vector3D RotateAboutAxis(Vector3D axis, double angleRad)
             {
                 var t = new Transform3D();
-                t.RotateAboutAxis(axis, angleRad);
+                t.RotateAboutAxis(axis.Normalized(), angleRad);
                 return t.Apply(this);
             }
 
@@ -480,11 +480,11 @@ namespace SearchAThing
                         ymin + dy * rnd.NextDouble(),
                         zmin + dz * rnd.NextDouble());
                 }
-            }                       
+            }
 
             public sVector3D ToSystemVector3D()
             {
-                return new sVector3D(X, Y, Z);
+                return new sVector3D((float)X, (float)Y, (float)Z);
             }
 
             public override string ToString()
@@ -644,10 +644,10 @@ namespace SearchAThing
             return new Vector3D(v.X, v.Y);
         }
 
-       /* public static netDxf.Vector3 ToVector3(this Vector3D v)
-        {
-            return new netDxf.Vector3(v.X, v.Y, v.Z);
-        }*/
+        /* public static netDxf.Vector3 ToVector3(this Vector3D v)
+         {
+             return new netDxf.Vector3(v.X, v.Y, v.Z);
+         }*/
 
         public static netDxf.Vector2 ToVector2(this Vector3D v)
         {

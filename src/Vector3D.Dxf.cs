@@ -26,7 +26,8 @@
 using System;
 using static System.Math;
 
-using sVector3D = System.Windows.Media.Media3D.Vector3D;
+//using sVector3D = System.Windows.Media.Media3D.Vector3D;
+using sVector3D = Microsoft.Xna.Framework.Vector3;
 using System.Globalization;
 using System.Collections.Generic;
 using SearchAThing.Sci;
