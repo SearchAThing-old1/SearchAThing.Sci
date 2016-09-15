@@ -136,6 +136,35 @@ namespace SearchAThing
             }
         }
 
+        public static List<Vector3D> Vector3DCoords(this LwPolyline lwp)
+        {
+            var res = new List<Vector3D>();
+            var N = lwp.Normal;
+            var ocs = new CoordinateSystem3D(Vector3D.Zero, N);
+
+            foreach (var v in lwp.Vertexes)
+            {
+                res.Add(MathHelper.Transform(
+                    new Vector3(v.Position.X, v.Position.Y, lwp.Elevation), lwp.Normal, CoordinateSystem.Object, CoordinateSystem.World));
+            }
+
+            return res;
+        }
+
+        /// <summary>
+        /// from a set of pts returns segments from1-to1, from2-to2, ...
+        /// where 
+        /// - from_0 = pts[0]
+        /// - to_i = from_(i+1)
+        /// </summary>        
+        public static List<Line3D> Segments(this List<Vector3D> pts)
+        {
+            var segments = new List<Line3D>();            
+            for (int vi = 0; vi < pts.Count - 1; ++vi) segments.Add(new Line3D(pts[vi], pts[vi + 1]));
+
+            return segments;
+        }
+
         public static IEnumerable<EntityObject> CoordTransform(this DxfDocument dxf, Func<Vector3D, Vector3D> transform)
         {
             foreach (var point in dxf.Points) yield return point.CoordTransform(transform);

@@ -528,6 +528,36 @@ namespace SearchAThing
     {
 
         /// <summary>
+        /// retrieve psql repsentation of a list of vector3d
+        /// in a db form double[] ( array of 3 doubles )
+        /// </summary>        
+        public static string ToPsql(this IEnumerable<Vector3D> ary)
+        {
+            if (ary == null)
+                return "null";
+            else
+            {
+                var sb = new StringBuilder();
+
+                sb.Append("'{");
+
+                var isFirst = true;
+                foreach (var v in ary)
+                {
+                    if (!isFirst)
+                        sb.Append(",");
+                    else
+                        isFirst = false;
+                    sb.Append(string.Format(CultureInfo.InvariantCulture, "{0},{1},{2}", v.X, v.Y, v.Z));
+                }
+                
+                sb.Append("}'");
+
+                return sb.ToString();
+            }
+        }
+
+        /// <summary>
         /// produce a string with x1,y1,x2,y2, ...
         /// </summary>        
         public static string ToCoordSequence2D(this IEnumerable<Vector3D> points)

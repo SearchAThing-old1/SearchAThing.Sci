@@ -43,6 +43,14 @@ namespace SearchAThing
         public partial class Vector3D
         {
 
+            public string CadScript
+            {
+                get
+                {
+                    return string.Format(CultureInfo.InvariantCulture, "POINT {0},{1},{2}\r\n", X, Y, Z);
+                }
+            }
+
             public static implicit operator Vector3D(Vector3 v)
             {
                 return new Vector3D(v.X, v.Y, v.Z);
