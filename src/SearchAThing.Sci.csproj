@@ -71,6 +71,7 @@
     <Compile Include="CoordinateSystem3D.Dxf.cs" />
     <Compile Include="Fluent.cs" />
     <Compile Include="DxfKit.cs" />
+    <Compile Include="Utli.cs" />
     <Compile Include="Int64Map.cs" />
     <Compile Include="DiscreteSpace.cs" />
     <Compile Include="Plane3D.cs" />
