@@ -126,4 +126,26 @@ namespace SearchAThing.Sci
 
     };
 
+    public static partial class Extensions
+    {
+
+        /// <summary>
+        /// convert given value from to measure units
+        /// </summary>        
+        public static double Convert(this double value, MeasureUnit from, MeasureUnit to)
+        {
+            return Measure.Convert(value, from, to);
+        }
+
+        /// <summary>
+        /// convert given value from to measure units
+        /// to measure unit is given from the correspondent physical quantity measure unit in the given domain
+        /// </summary>        
+        public static double Convert(this double value, MeasureUnit from, IMUDomain mud)
+        {
+            return Measure.Convert(value, from, mud);
+        }
+
+    }
+
 }

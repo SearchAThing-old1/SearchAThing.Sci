@@ -345,6 +345,11 @@ namespace SearchAThing
                 return new Vector3D(X * xs, Y * ys, Z * zs);
             }
 
+            public Vector3D Convert(MeasureUnit from, MeasureUnit to)
+            {
+                return new Vector3D(X.Convert(from, to), Y.Convert(from, to), Z.Convert(from, to));
+            }
+
             #region operators
 
             /// <summary>
@@ -528,6 +533,24 @@ namespace SearchAThing
     {
 
         /// <summary>
+        /// compute length of polyline from given seq_pts
+        /// </summary>        
+        public static double Length(this IEnumerable<Vector3D> seq_pts)
+        {
+            var l = 0.0;
+
+            Vector3D prev = null;
+            var en = seq_pts.GetEnumerator();
+            while (en.MoveNext())
+            {
+                if (prev != null) l += prev.Distance(en.Current);
+                prev = en.Current;
+            }
+
+            return l;
+        }
+
+        /// <summary>
         /// retrieve psql repsentation of a list of vector3d
         /// in a db form double[] ( array of 3 doubles )
         /// </summary>        
@@ -550,7 +573,7 @@ namespace SearchAThing
                         isFirst = false;
                     sb.Append(string.Format(CultureInfo.InvariantCulture, "{0},{1},{2}", v.X, v.Y, v.Z));
                 }
-                
+
                 sb.Append("}'");
 
                 return sb.ToString();
