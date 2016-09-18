@@ -71,7 +71,6 @@
     <Compile Include="CoordinateSystem3D.Dxf.cs" />
     <Compile Include="Fluent.cs" />
     <Compile Include="DxfKit.cs" />
-    <Compile Include="Utli.cs" />
     <Compile Include="Int64Map.cs" />
     <Compile Include="DiscreteSpace.cs" />
     <Compile Include="Plane3D.cs" />
@@ -101,6 +100,7 @@
     <Compile Include="Thirdy\MonoGame.Framework\Rectangle.cs" />
     <Compile Include="Thirdy\MonoGame.Framework\Quaternion.cs" />
     <Compile Include="Transform3D.cs" />
+    <Compile Include="Util.cs" />
     <Compile Include="Vector3D.Dxf.cs" />
     <Compile Include="Vector3D.cs" />
     <Compile Include="Tolerance.cs" />
