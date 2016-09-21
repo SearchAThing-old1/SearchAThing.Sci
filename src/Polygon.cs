@@ -113,6 +113,28 @@ namespace SearchAThing
         }
 
         /// <summary>
+        /// increase of decrease polygon points offseting
+        /// </summary>        
+        public static IEnumerable<Vector3D> Offset(this IList<Vector3D> pts, double tol, double offset)
+        {
+            var intmap = new Int64Map(tol, pts.SelectMany(x => x.Coordinates));
+
+            var clipper = new ClipperOffset();
+            {
+                var path = pts.Select(p => new IntPoint(intmap.ToInt64(p.X), intmap.ToInt64(p.Y))).ToList();
+                // http://www.angusj.com/delphi/clipper.php
+                clipper.AddPath(path, JoinType.jtMiter, EndType.etClosedPolygon);
+            }
+
+            var intoffset = intmap.ToInt64(intmap.Origin + offset) - intmap.ToInt64(intmap.Origin);
+
+            var sol = new List<List<IntPoint>>();
+            clipper.Execute(ref sol, intoffset);
+
+            return sol.SelectMany(s => s.Select(si => new Vector3D(intmap.FromInt64(si.X), intmap.FromInt64(si.Y), 0)));
+        }
+
+        /// <summary>
         /// given a set of polygon pts, returns the enumeation of all pts
         /// so that the last not attach to the first ( if makeClosed = false ).
         /// Elsewhere it returns a last point equals the first ( makeClosed = true ).
@@ -140,7 +162,7 @@ namespace SearchAThing
 
             if (!foundFirstAtend && makeClosed)
                 yield return first;
-        }       
+        }
 
         /// <summary>
         /// yields an ienumerable of polygon segments corresponding to the given polygon pts ( z is not considered )
