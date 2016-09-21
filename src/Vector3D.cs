@@ -144,6 +144,14 @@ namespace SearchAThing
             }
 
             /// <summary>
+            /// distance between two points ( without considering Z )
+            /// </summary>            
+            public double Distance2D(Vector3D other)
+            {
+                return Sqrt((X - other.X) * (X - other.X) + (Y - other.Y) * (Y - other.Y));
+            }
+
+            /// <summary>
             /// Dot product
             /// a b = |a| |b| cos(alfa)
             /// </summary>        
