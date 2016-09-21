@@ -52,6 +52,14 @@ namespace SearchAThing
                 }
             }
 
+            public string CadScriptLineFrom
+            {
+                get
+                {
+                    return string.Format(CultureInfo.InvariantCulture, "LINE {0},{1},{2}\r\n", X, Y, Z);
+                }
+            }
+
             public static implicit operator Vector3D(Vector3 v)
             {
                 return new Vector3D(v.X, v.Y, v.Z);
