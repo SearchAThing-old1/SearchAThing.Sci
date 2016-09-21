@@ -118,11 +118,22 @@ namespace SearchAThing.Sci
         /// convert given value from to measure units
         /// to measure unit is given from the correspondent physical quantity measure unit in the given domain
         /// </summary>        
-        public static double Convert(double value, MeasureUnit from, IMUDomain mud)
+        public static double Convert(double value, MeasureUnit from, IMUDomain to)
         {
             if (from == MUCollection.Adimensional.adim) return value;
 
-            return value.Convert(from, mud.ByPhysicalQuantity(from.PhysicalQuantity).MU);
+            return value.Convert(from, to.ByPhysicalQuantity(from.PhysicalQuantity).MU);
+        }
+
+        /// <summary>
+        /// convert given value from to measure units
+        /// from measure unit is given from the correspondent physical quantity measure unit in the given domain
+        /// </summary>        
+        public static double Convert(double value, IMUDomain from, MeasureUnit to)
+        {
+            if (from == MUCollection.Adimensional.adim) return value;
+
+            return value.Convert(from.ByPhysicalQuantity(to.PhysicalQuantity).MU, to);
         }
 
         public string ToString(CultureInfo culture, bool includePQ = false)
