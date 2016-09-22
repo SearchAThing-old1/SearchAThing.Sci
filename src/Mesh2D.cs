@@ -233,7 +233,7 @@ namespace SearchAThing
                     foreach (var v in cell.Vertices.Select(f => f.V))
                     {
                         if (polyVertexProcessed.Contains(v)) continue;
-                        polyVertexProcessed.Add(v);                        
+                        polyVertexProcessed.Add(v);
 
                         var cells = _vectorToCell[v];
                         if (cells.Count < 3) continue;
@@ -486,6 +486,27 @@ namespace SearchAThing
                 return string.Format($"cvs={Vertices[0].ToString()} {Vertices[1].ToString()} {Vertices[2].ToString()}");
             }
 
+        }
+
+    }
+
+    public static partial class Extensions
+    {
+
+        public static IEnumerable<Vector3D> SimpleConvex(this IEnumerable<Vector3D> pts, double tol)
+        {
+            //var bbox = pts.BBox().Scale(1.1);
+
+            var mesh = new Mesh2D(tol,
+                _pts: pts,
+                _boundaryPts: new List<Vector3D>() { },
+                failedPoints: null,
+                boundaryPolyIntersectToleranceFactor: 10,
+                boundaryPolyBooleanMapToleranceFactor: 0.1,
+                closedPolyToleranceFactor: 1,
+                disableBoundary: true);
+            
+            return mesh.ConvexHull;
         }
 
     }
