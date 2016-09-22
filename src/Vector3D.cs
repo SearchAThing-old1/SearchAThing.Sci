@@ -207,6 +207,34 @@ namespace SearchAThing
             }
 
             /// <summary>
+            /// project this vector to the given line
+            /// </summary>            
+            public Vector3D Project(Line3D line)
+            {
+                return (this - line.From).Project(line.V) + line.From;
+            }
+
+            /// <summary>
+            /// return a copy of this vector with ordinate ( 0:x 1:y 2:z ) changed
+            /// </summary>            
+            public Vector3D Set(OrdIdx ordIdx, int value)
+            {
+                var x = X;
+                var y = Y;
+                var z = Z;
+
+                switch (ordIdx)
+                {
+                    case OrdIdx.X: x = value; break;
+                    case OrdIdx.Y: y = value; break;
+                    case OrdIdx.Z: z = value; break;
+                    default: throw new Exception($"invalid ordIdx:{ordIdx}");
+                }
+
+                return new Vector3D(x, y, z);
+            }
+
+            /// <summary>
             /// Note: tol must be Constant.NormalizedLengthTolerance
             /// if comparing normalized vectors
             /// </summary>        
@@ -529,6 +557,13 @@ namespace SearchAThing
             }
         }
 
+    }
+
+    public enum OrdIdx
+    {
+        X = 0,
+        Y = 1,
+        Z = 2
     }
 
     public enum CadPointMode
