@@ -196,7 +196,7 @@ namespace SearchAThing
         /// By default check the point contained in the polygon perimeter.
         /// </summary>        
         /// <param name="excludePerimeter">Exclude check point contained in the perimeter</param>
-        public static bool ContainsPoint(this IList<Vector3D> pts, double tol, Vector3D pt, bool excludePerimeter = false)
+        public static bool ContainsPoint(this IReadOnlyList<Vector3D> pts, double tol, Vector3D pt, bool excludePerimeter = false)
         {
             var ray = new Line3D(pt, Vector3D.XAxis, Line3DConstructMode.PointAndVector);
 
