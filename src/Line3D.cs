@@ -125,7 +125,7 @@ namespace SearchAThing
             /// return the segment with swapped from,to
             /// </summary>            
             public Line3D Reverse()
-            {                
+            {
                 return new Line3D(To, From);
             }
 
@@ -160,29 +160,13 @@ namespace SearchAThing
             }
 
             /// <summary>
-            /// Infinite line contains point.
-            /// Note: tol must be Constant.NormalizedLengthTolerance
-            /// if comparing normalized vectors
+            /// Infinite line contains point.            
             /// </summary>        
             public bool LineContainsPoint(double tol, Vector3D p, bool segmentMode = false)
             {
-                // line contains given point if there is a scalar s
-                // for which p = From + s * V
+                var prj = p.Project(this);
 
-                var s = 0.0;
-
-                // to find out the scalar we need to test the first non null component
-                if (!(V.X.EqualsTol(tol, 0))) s = (p.X - From.X) / V.X;
-                else if (!(V.Y.EqualsTol(tol, 0))) s = (p.Y - From.Y) / V.Y;
-                else if (!(V.Z.EqualsTol(tol, 0))) s = (p.Z - From.Z) / V.Z;
-
-                if (segmentMode)
-                {
-                    // s is the scalar of V vector that runs From->To
-                    if (!(s >= 0.0 && s <= 1.0)) return false;
-                }
-
-                return p.EqualsTol(tol, From.X + s * V.X, From.Y + s * V.Y, From.Z + s * V.Z);
+                return prj.EqualsTol(tol, p);
             }
 
             /// <summary>
@@ -419,7 +403,7 @@ namespace SearchAThing
 
             foreach (var l in lines)
             {
-                sb.AppendLine(l.CadScript);                
+                sb.AppendLine(l.CadScript);
             }
 
             return sb.ToString();
