@@ -56,7 +56,7 @@ namespace SearchAThing.Sci
                 else
                     return ProjectionInfo.Name;
             }
-        }
+        }        
 
         /// <summary>
         /// true if this CRS convert using custom function
@@ -186,8 +186,11 @@ namespace SearchAThing.Sci
         /// </summary>        
         public Vector3D Project(Vector3D v, CRSData to)
         {
-            if (IsCustom)
-                return CustomCRSInfo.CustomProject(v, this, to);
+            if (IsCustom || to.IsCustom)
+            {
+                var custom = (CustomCRSInfo == null) ? to.CustomCRSInfo : CustomCRSInfo;
+                return custom.CustomProject(v, this, to);
+            }
             else
             {
                 var xy = new double[] { v.X, v.Y };
@@ -205,19 +208,23 @@ namespace SearchAThing.Sci
     public class CustomCRSInfo
     {
 
-        public string Name { get; private set; }
+        public string Name { get; private set; }        
         public bool IsGeoCentric { get; private set; }
         public MeasureUnit MU { get; private set; }
         public CustomProject CustomProject { get; private set; }
 
         public CustomCRSInfo(string name, bool isGeoCentric, MeasureUnit mu, CustomProject customProjectFn)
         {
-            Name = name;
+            Name = name;            
             IsGeoCentric = isGeoCentric;
             MU = mu;
             CustomProject = customProjectFn;
         }
 
+        public override string ToString()
+        {
+            return $"name:{Name} isgeo:{IsGeoCentric} mu:{MU}";
+        }
     }
 
     /// <summary>
