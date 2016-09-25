@@ -23,17 +23,9 @@
 */
 #endregion
 
-using System;
-using static System.Math;
-
-//using sVector3D = System.Windows.Media.Media3D.Vector3D;
-using sVector3D = Microsoft.Xna.Framework.Vector3;
 using System.Globalization;
-using System.Collections.Generic;
-using SearchAThing.Sci;
 using System.Text;
-using System.Windows;
-using netDxf;
+using static System.Math;
 
 namespace SearchAThing
 {
@@ -41,33 +33,34 @@ namespace SearchAThing
     namespace Sci
     {
 
-        public partial class Vector3D
+        public partial class CoordinateSystem3D
         {
+
+            public string ToCadString(double axisLen)
+            {
+                var sb = new StringBuilder();
+
+                sb.Append(string.Format("-COLOR 1\r\n"));
+                sb.Append(new Line3D(Origin, BaseX * axisLen, Line3DConstructMode.PointAndVector).CadScript);
+                sb.Append("\r\n");
+
+                sb.Append(string.Format("-COLOR 2\r\n"));
+                sb.Append(new Line3D(Origin, BaseY * axisLen, Line3DConstructMode.PointAndVector).CadScript);
+                sb.Append("\r\n");
+
+                sb.Append(string.Format("-COLOR 3\r\n"));
+                sb.Append(new Line3D(Origin, BaseZ * axisLen, Line3DConstructMode.PointAndVector).CadScript);
+                sb.Append("\r\n");
+
+                return sb.ToString();
+            }
 
             public string CadScript
             {
                 get
                 {
-                    return string.Format(CultureInfo.InvariantCulture, "POINT {0},{1},{2}\r\n", X, Y, Z);
+                    return ToCadString(1.0);
                 }
-            }
-
-            public string CadScriptLineFrom
-            {
-                get
-                {
-                    return string.Format(CultureInfo.InvariantCulture, "LINE {0},{1},{2}\r\n", X, Y, Z);
-                }
-            }
-
-            public static implicit operator Vector3D(Vector3 v)
-            {
-                return new Vector3D(v.X, v.Y, v.Z);
-            }
-
-            public static implicit operator Vector3(Vector3D v)
-            {
-                return new Vector3(v.X, v.Y, v.Z);
             }
 
         }

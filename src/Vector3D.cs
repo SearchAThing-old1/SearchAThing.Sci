@@ -144,6 +144,14 @@ namespace SearchAThing
             }
 
             /// <summary>
+            /// distance between two points ( without considering Z )
+            /// </summary>            
+            public double Distance2D(Vector3D other)
+            {
+                return Sqrt((X - other.X) * (X - other.X) + (Y - other.Y) * (Y - other.Y));
+            }
+
+            /// <summary>
             /// Dot product
             /// a b = |a| |b| cos(alfa)
             /// </summary>        
@@ -196,6 +204,34 @@ namespace SearchAThing
                 // http://math.oregonstate.edu/bridge/papers/dot+cross.pdf (fig.1)
 
                 return DotProduct(to) / to.Length * to.Normalized();
+            }
+
+            /// <summary>
+            /// project this vector to the given line
+            /// </summary>            
+            public Vector3D Project(Line3D line)
+            {
+                return (this - line.From).Project(line.V) + line.From;
+            }
+
+            /// <summary>
+            /// return a copy of this vector with ordinate ( 0:x 1:y 2:z ) changed
+            /// </summary>            
+            public Vector3D Set(OrdIdx ordIdx, int value)
+            {
+                var x = X;
+                var y = Y;
+                var z = Z;
+
+                switch (ordIdx)
+                {
+                    case OrdIdx.X: x = value; break;
+                    case OrdIdx.Y: y = value; break;
+                    case OrdIdx.Z: z = value; break;
+                    default: throw new Exception($"invalid ordIdx:{ordIdx}");
+                }
+
+                return new Vector3D(x, y, z);
             }
 
             /// <summary>
@@ -343,6 +379,11 @@ namespace SearchAThing
             public Vector3D Scalar(double xs, double ys, double zs)
             {
                 return new Vector3D(X * xs, Y * ys, Z * zs);
+            }
+
+            public Vector3D Convert(MeasureUnit from, MeasureUnit to)
+            {
+                return new Vector3D(X.Convert(from, to), Y.Convert(from, to), Z.Convert(from, to));
             }
 
             #region operators
@@ -518,6 +559,13 @@ namespace SearchAThing
 
     }
 
+    public enum OrdIdx
+    {
+        X = 0,
+        Y = 1,
+        Z = 2
+    }
+
     public enum CadPointMode
     {
         Point,
@@ -526,6 +574,54 @@ namespace SearchAThing
 
     public static partial class Extensions
     {
+
+        /// <summary>
+        /// compute length of polyline from given seq_pts
+        /// </summary>        
+        public static double Length(this IEnumerable<Vector3D> seq_pts)
+        {
+            var l = 0.0;
+
+            Vector3D prev = null;
+            var en = seq_pts.GetEnumerator();
+            while (en.MoveNext())
+            {
+                if (prev != null) l += prev.Distance(en.Current);
+                prev = en.Current;
+            }
+
+            return l;
+        }
+
+        /// <summary>
+        /// retrieve psql repsentation of a list of vector3d
+        /// in a db form double[] ( array of 3 doubles )
+        /// </summary>        
+        public static string ToPsql(this IEnumerable<Vector3D> ary)
+        {
+            if (ary == null)
+                return "null";
+            else
+            {
+                var sb = new StringBuilder();
+
+                sb.Append("'{");
+
+                var isFirst = true;
+                foreach (var v in ary)
+                {
+                    if (!isFirst)
+                        sb.Append(",");
+                    else
+                        isFirst = false;
+                    sb.Append(string.Format(CultureInfo.InvariantCulture, "{0},{1},{2}", v.X, v.Y, v.Z));
+                }
+
+                sb.Append("}'");
+
+                return sb.ToString();
+            }
+        }
 
         /// <summary>
         /// produce a string with x1,y1,x2,y2, ...

@@ -36,7 +36,7 @@ namespace SearchAThing.Sci
         AAA
     }
 
-    public class CoordinateSystem3D
+    public partial class CoordinateSystem3D
     {
 
         Matrix3D m;

@@ -34,6 +34,7 @@ using netDxf.Tables;
 using System.Text;
 using System.Globalization;
 using SearchAThing;
+using SearchAThing.Sci;
 
 namespace SearchAThing
 {
@@ -107,6 +108,36 @@ namespace SearchAThing
     public static partial class Extensions
     {
 
+        /// <summary>
+        /// get the midpoint of the 3d polyline
+        /// distance is computed over all segments
+        /// </summary>        
+        public static Vector3D MidPoint(this Polyline poly)
+        {
+            var mid_len = poly.Vector3DCoords().Length() / 2;
+            Vector3D prev = null;
+            var pos = 0.0;
+            var en = poly.Vector3DCoords().GetEnumerator();
+            while (en.MoveNext())
+            {
+                if (prev == null)
+                    prev = en.Current;
+                else
+                {
+                    var prev_cur_dst = en.Current.Distance(prev);
+                    if (pos + prev_cur_dst >= mid_len)
+                    {
+                        // mid is between prev and current
+                        var leftLen = mid_len - pos;
+                        return prev + (en.Current - prev).Normalized() * leftLen;
+                    }
+                    pos += prev_cur_dst;
+                    prev = en.Current;
+                }
+            }
+            return null;
+        }
+
         public static IEnumerable<EntityObject> Explode(this Insert ins)
         {
             var insPt = ins.Position;
@@ -134,6 +165,50 @@ namespace SearchAThing
                         break;
                 }
             }
+        }
+
+        /// <summary>
+        /// enumerate as Vector3D given dxf polyline vertexes
+        /// </summary>        
+        public static IEnumerable<Vector3D> Vector3DCoords(this Polyline pl)
+        {
+            return pl.Vertexes.Select(w => (Vector3D)w.Position);
+        }
+
+        /// <summary>
+        /// enumerate as Vector3D given dxf lwpolyline vertexes
+        /// </summary>        
+        public static IEnumerable<Vector3D> Vector3DCoords(this LwPolyline lwp)
+        {
+            var res = new List<Vector3D>();
+            var N = lwp.Normal;
+            var ocs = new CoordinateSystem3D(Vector3D.Zero, N);
+
+            foreach (var v in lwp.Vertexes)
+            {
+                yield return MathHelper.Transform(
+                    new Vector3(v.Position.X, v.Position.Y, lwp.Elevation), lwp.Normal, CoordinateSystem.Object, CoordinateSystem.World);
+            }
+        }
+
+        /// <summary>
+        /// from a set of pts returns segments from1-to1, from2-to2, ...
+        /// where 
+        /// - from_0 = pts[0]
+        /// - to_i = from_(i+1)
+        /// </summary>        
+        public static IEnumerable<Line3D> Segments(this IEnumerable<Vector3D> pts)
+        {
+            var en = pts.GetEnumerator();
+
+            Vector3D prev = null;
+
+            while (en.MoveNext())
+            {
+                if (prev != null) yield return new Line3D(prev, en.Current);
+
+                prev = en.Current;
+            }            
         }
 
         public static IEnumerable<EntityObject> CoordTransform(this DxfDocument dxf, Func<Vector3D, Vector3D> transform)

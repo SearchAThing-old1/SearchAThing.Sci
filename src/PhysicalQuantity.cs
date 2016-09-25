@@ -66,6 +66,9 @@ namespace SearchAThing.Sci
         [DataMember]
         public MeasureUnit LinearConversionRefMU { get; private set; }
 
+        /// <summary>
+        /// Convert between nonlinear measure units
+        /// </summary>
         internal Func<MeasureUnit, MeasureUnit, double, double> NonLinearConversionFunctor { get; private set; }
 
         [BsonIgnore]
@@ -145,6 +148,9 @@ namespace SearchAThing.Sci
             NonLinearConversionFunctor = convRefFunctor;
         }
 
+        /// <summary>
+        /// convert between linear measure units
+        /// </summary>        
         public double ConvertFactor(MeasureUnit from, MeasureUnit to)
         {
             if (from.PhysicalQuantity.id != this.id || from.PhysicalQuantity.id != to.PhysicalQuantity.id)

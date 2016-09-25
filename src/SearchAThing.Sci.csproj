@@ -49,8 +49,8 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MongoDB.Bson, Version=2.3.0.149, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\SearchAThing.UnitTest\packages\MongoDB.Bson.2.3.0-rc1\lib\net45\MongoDB.Bson.dll</HintPath>
+    <Reference Include="MongoDB.Bson, Version=2.2.4.26, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\swstmp\ti-grout-flag\src\packages\MongoDB.Bson.2.2.4\lib\net45\MongoDB.Bson.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="BBox3D.Dxf.cs" />
     <Compile Include="Circle3D.cs" />
+    <Compile Include="CoordinateSystem3D.Dxf.cs" />
     <Compile Include="Fluent.cs" />
     <Compile Include="DxfKit.cs" />
     <Compile Include="Int64Map.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="Thirdy\MonoGame.Framework\Rectangle.cs" />
     <Compile Include="Thirdy\MonoGame.Framework\Quaternion.cs" />
     <Compile Include="Transform3D.cs" />
+    <Compile Include="Util.cs" />
     <Compile Include="Vector3D.Dxf.cs" />
     <Compile Include="Vector3D.cs" />
     <Compile Include="Tolerance.cs" />
