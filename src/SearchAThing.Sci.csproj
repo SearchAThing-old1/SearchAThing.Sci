@@ -72,6 +72,7 @@
     <Compile Include="DxfKit.cs" />
     <Compile Include="Int64Map.cs" />
     <Compile Include="DiscreteSpace.cs" />
+    <Compile Include="GIS.cs" />
     <Compile Include="Plane3D.cs" />
     <Compile Include="CoordinateSystem3D.cs" />
     <Compile Include="Constants.cs" />
@@ -115,6 +116,10 @@
     <ProjectReference Include="..\..\clipper\C#\clipper_library\clipper_library.csproj">
       <Project>{9b062971-a88e-4a3d-b3c9-12b78d15fa66}</Project>
       <Name>clipper_library</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DotSpatial\Source\DotSpatial.Projections\DotSpatial.Projections.csproj">
+      <Project>{D286DF06-21FA-40BE-B384-6ACA509AC98C}</Project>
+      <Name>DotSpatial.Projections</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\MIConvexHull\MIConvexHull\MIConvexHull.csproj">
       <Project>{2337776d-7d0c-40aa-a439-c26c3ce24fab}</Project>
