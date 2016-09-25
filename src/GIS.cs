@@ -278,7 +278,7 @@ namespace SearchAThing.Sci
     /// <summary>
     /// Describe a zone of validity for a CRS system
     /// </summary>
-    public class AreaOfUse
+    public class CRSAreaOfUse
     {
 
         public double WestBoundLongitudeDeg { get; private set; }
@@ -286,7 +286,7 @@ namespace SearchAThing.Sci
         public double EastBoundLongitudeDeg { get; private set; }
         public double NorthBoundLatitudeDeg { get; private set; }
 
-        public AreaOfUse(double westBoundLongitudeDeg, double southBoundLatitudeDeg,
+        public CRSAreaOfUse(double westBoundLongitudeDeg, double southBoundLatitudeDeg,
             double eastBoundLongitudeDeg, double northBoundLatitudeDeg)
         {
             WestBoundLongitudeDeg = westBoundLongitudeDeg;
@@ -313,7 +313,7 @@ namespace SearchAThing.Sci
 
         public override string ToString()
         {
-            return Invariant($"west[{WestBoundLongitudeDeg}], south[{SouthBoundLatitudeDeg}], east[{EastBoundLongitudeDeg}], north[{NorthBoundLatitudeDeg}]";
+            return Invariant($"west[{WestBoundLongitudeDeg}], south[{SouthBoundLatitudeDeg}], east[{EastBoundLongitudeDeg}], north[{NorthBoundLatitudeDeg}]");
         }
 
     }
@@ -332,9 +332,9 @@ namespace SearchAThing.Sci
         /// <summary>
         /// check if given x=longitude, y=latitude is valid within given area of use
         /// </summary>        
-        public static bool IsValid(this Vector3D v, AreaOfUse areaOfUse)
+        public static bool IsValid(this Vector3D v, CRSAreaOfUse areaOfUse)
         {
-            return areaOfUse.Contains(v);
+            return areaOfUse.Contains(v.X, v.Y);
         }
 
     }
