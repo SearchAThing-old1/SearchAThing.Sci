@@ -26,6 +26,7 @@
 using DotSpatial.Projections;
 using System;
 using System.Collections.Generic;
+using static System.FormattableString;
 
 namespace SearchAThing.Sci
 {
@@ -274,6 +275,49 @@ namespace SearchAThing.Sci
 
     }
 
+    /// <summary>
+    /// Describe a zone of validity for a CRS system
+    /// </summary>
+    public class AreaOfUse
+    {
+
+        public double WestBoundLongitudeDeg { get; private set; }
+        public double SouthBoundLatitudeDeg { get; private set; }
+        public double EastBoundLongitudeDeg { get; private set; }
+        public double NorthBoundLatitudeDeg { get; private set; }
+
+        public AreaOfUse(double westBoundLongitudeDeg, double southBoundLatitudeDeg,
+            double eastBoundLongitudeDeg, double northBoundLatitudeDeg)
+        {
+            WestBoundLongitudeDeg = westBoundLongitudeDeg;
+            SouthBoundLatitudeDeg = southBoundLatitudeDeg;
+            EastBoundLongitudeDeg = eastBoundLongitudeDeg;
+            NorthBoundLatitudeDeg = northBoundLatitudeDeg;
+
+            if (WestBoundLongitudeDeg > EastBoundLongitudeDeg ||
+                SouthBoundLatitudeDeg > NorthBoundLatitudeDeg) throw new Exception($"invalid bound coords [{ToString()}] given"); 
+
+        }
+
+        /// <summary>
+        /// check if given longitude, latitude is valid within this area of use
+        /// </summary>        
+        public bool Contains(double longitudeDeg, double latitudeDeg)
+        {
+            // longitude range [-180,180]
+            // latitude range [-90,90]
+            return
+                longitudeDeg >= WestBoundLongitudeDeg && longitudeDeg <= EastBoundLongitudeDeg &&
+                latitudeDeg >= SouthBoundLatitudeDeg && latitudeDeg <= NorthBoundLatitudeDeg;            
+        }
+
+        public override string ToString()
+        {
+            return Invariant($"west[{WestBoundLongitudeDeg}], south[{SouthBoundLatitudeDeg}], east[{EastBoundLongitudeDeg}], north[{NorthBoundLatitudeDeg}]";
+        }
+
+    }
+
     public static partial class Extensions
     {
 
@@ -283,6 +327,14 @@ namespace SearchAThing.Sci
         public static Vector3D Project(this Vector3D v, CRSData from, CRSData to)
         {
             return from.Project(v, to);
+        }
+
+        /// <summary>
+        /// check if given x=longitude, y=latitude is valid within given area of use
+        /// </summary>        
+        public static bool IsValid(this Vector3D v, AreaOfUse areaOfUse)
+        {
+            return areaOfUse.Contains(v);
         }
 
     }
