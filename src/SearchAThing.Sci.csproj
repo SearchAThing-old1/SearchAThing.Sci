@@ -49,8 +49,8 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MongoDB.Bson, Version=2.3.0.149, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>C:\nuget-packages\MongoDB.Bson.2.3.0-rc1\lib\net45\MongoDB.Bson.dll</HintPath>
+    <Reference Include="MongoDB.Bson, Version=2.3.0.157, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>C:\nuget-packages\MongoDB.Bson.2.3.0\lib\net45\MongoDB.Bson.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Npgsql, Version=3.1.8.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
