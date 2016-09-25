@@ -49,10 +49,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DotSpatial.Projections, Version=1.9.0.0, Culture=neutral, PublicKeyToken=272632bddd08a38b, processorArchitecture=MSIL">
-      <HintPath>C:\nuget-packages\DotSpatial.Projections.1.9\lib\net40-Client\DotSpatial.Projections.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="MongoDB.Bson, Version=2.3.0.149, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>C:\nuget-packages\MongoDB.Bson.2.3.0-rc1\lib\net45\MongoDB.Bson.dll</HintPath>
       <Private>True</Private>
@@ -79,6 +75,7 @@
     <Compile Include="CoordinateSystem3D.Dxf.cs" />
     <Compile Include="Fluent.cs" />
     <Compile Include="DxfKit.cs" />
+    <Compile Include="GIS.cs" />
     <Compile Include="Int64Map.cs" />
     <Compile Include="DiscreteSpace.cs" />
     <Compile Include="Plane3D.cs" />
@@ -125,6 +122,10 @@
     <ProjectReference Include="..\..\clipper\C#\clipper_library\clipper_library.csproj">
       <Project>{9b062971-a88e-4a3d-b3c9-12b78d15fa66}</Project>
       <Name>clipper_library</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DotSpatial\Source\DotSpatial.Projections\DotSpatial.Projections.csproj">
+      <Project>{d286df06-21fa-40be-b384-6aca509ac98c}</Project>
+      <Name>DotSpatial.Projections</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\MIConvexHull\MIConvexHull\MIConvexHull.csproj">
       <Project>{2337776d-7d0c-40aa-a439-c26c3ce24fab}</Project>

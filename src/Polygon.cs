@@ -53,7 +53,7 @@ namespace SearchAThing
 
     }
 
-    public static partial class Extentions
+    public static partial class Extensions
     {
 
         /// <summary>

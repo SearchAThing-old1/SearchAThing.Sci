@@ -46,6 +46,17 @@ namespace SearchAThing.Sci
         /// </summary>
         public CustomCRSInfo CustomCRSInfo { get; private set; }
 
+        public string Name
+        {
+            get
+            {
+                if (CustomCRSInfo != null)
+                    return CustomCRSInfo.Name;
+                else
+                    return ProjectionInfo.Name;
+            }
+        }
+
         /// <summary>
         /// true if this CRS convert using custom function
         /// </summary>
