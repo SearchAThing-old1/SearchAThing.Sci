@@ -93,6 +93,11 @@ namespace SearchAThing.Sci
             public static readonly MeasureUnit cm = new MeasureUnit(PQCollection.Length, "cm", mm, 1e1);
             public static readonly MeasureUnit m = new MeasureUnit(PQCollection.Length, "m", mm, 1e3);
             public static readonly MeasureUnit km = new MeasureUnit(PQCollection.Length, "km", m, 1e3);
+
+            public static readonly MeasureUnit inch = new MeasureUnit(PQCollection.Length, "in", mm, 25.4);
+            public static readonly MeasureUnit ft = new MeasureUnit(PQCollection.Length, "ft", inch, 12);
+            public static readonly MeasureUnit yard = new MeasureUnit(PQCollection.Length, "yard", ft, 3);
+            public static readonly MeasureUnit links = new MeasureUnit(PQCollection.Length, "links", ft, 0.66);
         }
 
         #endregion
