@@ -166,7 +166,37 @@ namespace SearchAThing
             {
                 var prj = p.Project(this);
 
-                return prj.EqualsTol(tol, p);
+                var dprj = p.Distance(prj);
+
+                // check if line contains point
+                if (dprj > tol) return false;
+
+                if (segmentMode)
+                {
+                    // line contains given point if there is a scalar s 
+                    // for which p = From + s * V 
+                    var s = 0.0;
+
+                    // to find out the scalar we need to test the first non null component 
+
+                    if (!(V.X.EqualsTol(tol, 0))) s = (p.X - From.X) / V.X;
+                    else if (!(V.Y.EqualsTol(tol, 0))) s = (p.Y - From.Y) / V.Y;
+                    else if (!(V.Z.EqualsTol(tol, 0))) s = (p.Z - From.Z) / V.Z;
+
+                    // s is the scalar of V vector that runs From->To 
+
+                    if (s >= 0.0 && s <= 1.0) return true;
+
+                    // point on the line but outside exact segment
+                    // check with tolerance
+
+                    if (s < 0)
+                        return p.EqualsTol(tol, From);
+                    else
+                        return p.EqualsTol(tol, To);
+                }
+
+                return true;
             }
 
             /// <summary>
