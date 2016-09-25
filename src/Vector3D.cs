@@ -217,7 +217,7 @@ namespace SearchAThing
             /// <summary>
             /// return a copy of this vector with ordinate ( 0:x 1:y 2:z ) changed
             /// </summary>            
-            public Vector3D Set(OrdIdx ordIdx, int value)
+            public Vector3D Set(OrdIdx ordIdx, double value)
             {
                 var x = X;
                 var y = Y;
