@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SearchAThing.Sci
 {
@@ -45,7 +46,7 @@ namespace SearchAThing.Sci
         /// use small tolerance to avoid lost of precision
         /// Note: too small tolerance can generate Int64MapExceptionRange
         /// </summary>        
-        public Int64Map(double tol, IEnumerable<double> domainValues)
+        public Int64Map(double tol, IEnumerable<double> domainValues, bool selfCheckTolerance = true)
         {
             var min = double.MaxValue;
             var max = double.MinValue;
@@ -60,14 +61,17 @@ namespace SearchAThing.Sci
             Origin = (min + max) / 2;
 
             // self check
-            foreach (var x in domainValues)
+            if (selfCheckTolerance)
             {
-                var fromint = FromInt64(ToInt64(x));
+                foreach (var x in domainValues)
+                {
+                    var fromint = FromInt64(ToInt64(x));
 
-                if (!fromint.EqualsTol(tol, x)) throw new Int64MapExceptionRange($"can't fit given domain within Int64 types. Try bigger tolerance.");
+                    if (!fromint.EqualsTol(tol, x)) throw new Int64MapExceptionRange($"can't fit given domain within Int64 types. Try bigger tolerance.");
+                }
             }
         }
-
+        
         public Int64 ToInt64(double x) { return (Int64)((x - Origin) / Tolerance); }
         public double FromInt64(Int64 x) { return (((double)x) * Tolerance) + Origin; }
 
