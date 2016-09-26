@@ -40,6 +40,20 @@ namespace SearchAThing
             public Vector3D Min { get; private set; }
             public Vector3D Max { get; private set; }
 
+            /// <summary>
+            /// build a 4 point bbox coords for 2D using Z=Min.Z
+            /// </summary>
+            public IEnumerable<Vector3D> Coords2D
+            {
+                get
+                {
+                    yield return new Vector3D(Min.X, Min.Y, Min.Z);
+                    yield return new Vector3D(Max.X, Min.Y, Min.Z);
+                    yield return new Vector3D(Max.X, Max.Y, Min.Z);
+                    yield return new Vector3D(Min.X, Max.Y, Min.Z);
+                }
+            }
+
             public BBox3D()
             {
             }
