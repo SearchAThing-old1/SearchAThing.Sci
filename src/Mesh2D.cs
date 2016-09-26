@@ -59,6 +59,7 @@ namespace SearchAThing
         HashSet<Vector3D> _boundarySplitPts = null;
         Line3DEqualityComparer lCmp = null;
         Vector3DEqualityComparer vCmp = null;
+        bool _disableBoundary;
 
         public IEnumerable<Vector3D> Points { get; private set; }
         public List<Vector3D> Boundary { get; private set; }
@@ -110,7 +111,14 @@ namespace SearchAThing
         {
             get
             {
-                return Boundary.Union(BoundarySplitPts).ToList().SortPoly(tol).PolygonSegments(tol)
+                IEnumerable<Line3D> res = null;
+
+                if (!_disableBoundary)
+                    res = Boundary.Union(BoundarySplitPts).ToList().SortPoly(tol).PolygonSegments(tol);
+                else
+                    res = new Line3D[] { };
+
+                return res
                     .Union(_pointToPoly.SelectMany(k => k.Value.Poly.PolygonSegments(tol)))
                     .Union(_closures)
                     .Distinct(lCmp)
@@ -144,6 +152,7 @@ namespace SearchAThing
             var boundarySegs = Boundary.PolygonSegments(tol);
             _closures = new List<Line3D>();
             _boundarySplitPts = new HashSet<Vector3D>(vCmp);
+            _disableBoundary = disableBoundary;
             var extPolys = new List<List<Vector3D>>();
             var boundaryMean = Boundary.Mean();
             if (failedPoints != null) failedPoints.Clear();
@@ -368,15 +377,18 @@ namespace SearchAThing
 
                     var closureLine = new Line3D(from, to);
 
-                    var intersect = boundarySegs.Intersect(tol, closureLine, Line3DSegmentMode.FromTo);
-                    if (intersect.Count() > 0)
+                    if (!disableBoundary)
                     {
-                        var ip = intersect.First();
-                        _boundarySplitPts.Add(ip);
-                        if (Boundary.ContainsPoint(tol, closureLine.From))
-                            closureLine = new Line3D(closureLine.From, ip);
-                        else
-                            closureLine = new Line3D(closureLine.To, ip);
+                        var intersect = boundarySegs.Intersect(tol, closureLine, Line3DSegmentMode.FromTo);
+                        if (intersect.Count() > 0)
+                        {
+                            var ip = intersect.First();
+                            _boundarySplitPts.Add(ip);
+                            if (Boundary.ContainsPoint(tol, closureLine.From))
+                                closureLine = new Line3D(closureLine.From, ip);
+                            else
+                                closureLine = new Line3D(closureLine.To, ip);
+                        }
                     }
 
                     _closures.Add(closureLine);
@@ -488,7 +500,7 @@ namespace SearchAThing
 
         }
 
-    }
+    }    
 
     public static partial class Extensions
     {
@@ -510,5 +522,4 @@ namespace SearchAThing
         }
 
     }
-
 }
