@@ -43,10 +43,12 @@ namespace SearchAThing
 
             public static IEnumerable<Vector3D> EllipseToPolygon2D(Vector3D center, double width, double height, double flatness = .1)
             {
+                var _center = Vector3D.Zero;
+
                 var gp = new GraphicsPath();
-                gp.AddEllipse((float)(center.X - width / 2), (float)(center.Y - height / 2), (float)width, (float)height);
+                gp.AddEllipse((float)(_center.X - width / 2), (float)(_center.Y - height / 2), (float)width, (float)height);
                 gp.Flatten(new Matrix(), (float)flatness);
-                foreach (var p in gp.PathPoints) yield return new Vector3D(p.X, p.Y, 0);
+                foreach (var p in gp.PathPoints) yield return new Vector3D(p.X, p.Y, 0) + center;
             }
 
         }
@@ -394,9 +396,9 @@ namespace SearchAThing
         /// In that case try with tolerances not too small.
         /// It is suggested to use a lenTol/10 to avoid lost of precision during domain conversions.
         /// </summary>        
-        public static IEnumerable<IEnumerable<Vector3D>> Boolean(this IEnumerable<Vector3D> polyA, double tol, IEnumerable<Vector3D> polyB, ClipType type)
+        public static IEnumerable<IEnumerable<Vector3D>> Boolean(this IEnumerable<Vector3D> polyA, double tol, IEnumerable<Vector3D> polyB, ClipType type, bool selfCheckInt64MapTolerance = true)
         {
-            var intmap = new Int64Map(tol, polyA.SelectMany(x => x.Coordinates).Union(polyB.SelectMany(x => x.Coordinates)));
+            var intmap = new Int64Map(tol, polyA.SelectMany(x => x.Coordinates).Union(polyB.SelectMany(x => x.Coordinates)), selfCheckInt64MapTolerance);
 
             var clipper = new Clipper();
             {
