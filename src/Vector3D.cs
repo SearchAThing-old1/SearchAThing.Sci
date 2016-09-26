@@ -66,6 +66,17 @@ namespace SearchAThing
             {
             }
 
+            /// <summary>
+            /// build a vector (x,y,0) or (x,y,z) from given 2 or 3 doubles
+            /// </summary>            
+            public Vector3D(double[] arr)
+            {
+                X = arr[0];
+                Y = arr[1];
+                if (arr.Length == 3) Z = arr[2];
+                if (arr.Length > 3) throw new Exception($"too much coordinates to build a vector3d");
+            }
+
             public Vector3D(double x, double y, double z)
             {
                 X = x; Y = y; Z = z;
@@ -485,10 +496,10 @@ namespace SearchAThing
 
             /// <summary>
             /// Create an array of Vector3D from given list of 3d coords ( eg. { 100, 200, 10, 300, 400, 20 }
-            /// will create follow list of vector3d = { (100,200,10), (300,400,20) }
+            /// will create follow list of vector3d = { (100,200,10), (300,400,20) }            
             /// </summary>        
             public static List<Vector3D> From3DCoords(params double[] coords)
-            {
+            {                
                 var res = new List<Vector3D>();
 
                 for (var i = 0; i < coords.Length; i += 3)
