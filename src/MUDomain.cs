@@ -114,6 +114,7 @@ namespace SearchAThing.Sci
         void SetupItem(string physicalQuantityName, string measureUnitName, double? defaultTolerance = null);
 
         MeasureUnitWithDefaultTolerance Length { get; set; }
+        MeasureUnitWithDefaultTolerance Length2 { get; set; }
         MeasureUnitWithDefaultTolerance Mass { get; set; }
         MeasureUnitWithDefaultTolerance Time { get; set; }
         MeasureUnitWithDefaultTolerance ElectricCurrent { get; set; }
@@ -174,6 +175,12 @@ namespace SearchAThing.Sci
         /// </summary>
         [DataMember]
         public MeasureUnitWithDefaultTolerance Length { get; set; }
+
+        /// <summary>
+        /// [L^2]
+        /// </summary>
+        [DataMember]
+        public MeasureUnitWithDefaultTolerance Length2 { get; set; }
 
         /// <summary>
         /// [M]
@@ -344,6 +351,7 @@ namespace SearchAThing.Sci
 
             //---------------------------------------------------------------
 
+            Length2 = new MeasureUnitWithDefaultTolerance(1e-4, MUCollection.Length2.m2);
             Force = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Force.N);
             PlaneAngle = new MeasureUnitWithDefaultTolerance(PI / 180.0 / 10.0, MUCollection.PlaneAngle.rad);
             Pressure = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Pressure.Pa);
@@ -366,6 +374,7 @@ namespace SearchAThing.Sci
             var id = physicalQuantity.id;
 
             if (mud.Length.MU.PhysicalQuantity.id == id) return mud.Length;
+            else if (mud.Length2.MU.PhysicalQuantity.id == id) return mud.Length2;
             else if (mud.Mass.MU.PhysicalQuantity.id == id) return mud.Mass;
             else if (mud.Time.MU.PhysicalQuantity.id == id) return mud.Time;
             else if (mud.ElectricCurrent.MU.PhysicalQuantity.id == id) return mud.ElectricCurrent;

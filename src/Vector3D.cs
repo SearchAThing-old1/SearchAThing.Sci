@@ -591,35 +591,18 @@ namespace SearchAThing
             }
 
             return l;
-        }
+        }        
 
         /// <summary>
-        /// retrieve psql repsentation of a list of vector3d
-        /// in a db form double[] ( array of 3 doubles )
+        /// from a list of vector3d retrieve x1,y1,z1,x2,y2,z2,... coord sequence
         /// </summary>        
-        public static string ToPsql(this IEnumerable<Vector3D> ary)
+        public static IEnumerable<double> ToCoordSequence(this IEnumerable<Vector3D> pts)
         {
-            if (ary == null)
-                return "null";
-            else
+            foreach (var p in pts)
             {
-                var sb = new StringBuilder();
-
-                sb.Append("'{");
-
-                var isFirst = true;
-                foreach (var v in ary)
-                {
-                    if (!isFirst)
-                        sb.Append(",");
-                    else
-                        isFirst = false;
-                    sb.Append(string.Format(CultureInfo.InvariantCulture, "{0},{1},{2}", v.X, v.Y, v.Z));
-                }
-
-                sb.Append("}'");
-
-                return sb.ToString();
+                yield return p.X;
+                yield return p.Y;
+                yield return p.Z;
             }
         }
 
@@ -756,6 +739,22 @@ namespace SearchAThing
         public static Point ToPoint(this Vector3D v)
         {
             return new Point(v.X, v.Y);
+        }
+
+        /// <summary>
+        /// creates a psql double[] string
+        /// </summary>
+        public static string ToPsql(this Vector3D v)
+        {
+            return v.Coordinates.ToPsql();
+        }
+
+        /// <summary>
+        /// create a psql representation of double[] coord sequence x1,y1,z1,x2,y2,z2, ... of given points
+        /// </summary>        
+        public static string ToPsql(this IEnumerable<Vector3D> pts)
+        {
+            return pts.ToCoordSequence().ToPsql();
         }
 
     }

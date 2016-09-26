@@ -60,6 +60,7 @@ namespace SearchAThing.Sci
 
                     //-------------------------------------------------------
 
+                    physicalQuantities.Add(Length2);
                     physicalQuantities.Add(PlaneAngle);
                     physicalQuantities.Add(Pressure);
                     physicalQuantities.Add(Acceleration);
@@ -138,6 +139,7 @@ namespace SearchAThing.Sci
         // angularMomentum
 
         // area
+        public static readonly PhysicalQuantity Length2 = new PhysicalQuantity("Length2", typeof(MUCollection.Length2));
 
         // areaDensity
 

@@ -102,6 +102,18 @@ namespace SearchAThing.Sci
 
         #endregion
 
+        #region Length2
+
+        public static class Length2
+        {
+            public static readonly MeasureUnit mm2 = new MeasureUnit(PQCollection.Length2, "mm2");
+            public static readonly MeasureUnit cm2 = new MeasureUnit(PQCollection.Length2, "cm2", mm2, Pow((1.0).Convert(Length.cm, Length.mm), 2));
+            public static readonly MeasureUnit m2 = new MeasureUnit(PQCollection.Length2, "m2", mm2, Pow((1.0).Convert(Length.m, Length.mm), 2));
+            public static readonly MeasureUnit inch2 = new MeasureUnit(PQCollection.Length2, "in2", mm2, Pow((1.0).Convert(Length.inch, Length.mm), 2));
+        }
+
+        #endregion
+
         #region Mass
 
         public static class Mass
