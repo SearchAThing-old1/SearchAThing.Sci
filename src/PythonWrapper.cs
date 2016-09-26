@@ -32,6 +32,7 @@ using System.Linq;
 using System.Globalization;
 using static System.Math;
 using static System.FormattableString;
+using System.Threading;
 
 namespace SearchAThing
 {
@@ -96,12 +97,12 @@ namespace SearchAThing
                 throw new Exception($"process not active. Use Start()");
             }
 
-            debug?.Invoke($" py: write [{str}]");
-
             var sb = new StringBuilder(str);
 
             sb.AppendLine();
             sb.AppendLine(TerminatingFn);
+
+            debug?.Invoke($" py: write [{sb.ToString()}]");
 
             processTask.Write(sb.ToString());
         }
@@ -112,10 +113,18 @@ namespace SearchAThing
 
             while (true)
             {
-                debug?.Invoke($" py: waiting output...");
-                var s = await processTask.ReadOutput();
-
-                if (s == TerminateExpectedOutput) break;
+                string s = null;
+                try
+                {
+                    debug?.Invoke($" py: waiting output...");
+                    s = await processTask.ReadOutput(TimeSpan.FromMilliseconds(250));
+                }
+                catch (TaskCanceledException)
+                {
+                    if (sb.Length > 0) // something read but not >>> sign
+                        break;
+                }
+                if (s == TerminateExpectedOutput) break; // normal termination with >>> sign
 
                 debug?.Invoke($" py: read [{s}]");
                 sb.AppendLine(s);
