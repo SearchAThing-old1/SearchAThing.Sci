@@ -39,6 +39,7 @@ namespace SearchAThing
 
             public Vector3D Min { get; private set; }
             public Vector3D Max { get; private set; }
+            public Vector3D Size { get { return Max - Min; } }
 
             /// <summary>
             /// build a 4 point bbox coords for 2D using Z=Min.Z
