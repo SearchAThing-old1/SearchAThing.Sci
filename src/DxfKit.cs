@@ -208,7 +208,22 @@ namespace SearchAThing
                 if (prev != null) yield return new Line3D(prev, en.Current);
 
                 prev = en.Current;
-            }            
+            }
+        }
+
+        /// <summary>
+        /// given points a,b,c it will return a,b,c,a ( first is repeated at end )
+        /// </summary>        
+        public static IEnumerable<Vector3D> RepeatFirstAtEnd(this IEnumerable<Vector3D> pts)
+        {
+            Vector3D first = null;
+            foreach (var x in pts)
+            {
+                if (first == null) first = x;
+                yield return x;
+            }
+            yield return first;
+
         }
 
         public static IEnumerable<EntityObject> CoordTransform(this DxfDocument dxf, Func<Vector3D, Vector3D> transform)
@@ -326,7 +341,7 @@ namespace SearchAThing
         public static EntityObject AddEntity(this DxfObject dxfObj, EntityObject eo, Layer layer = null)
         {
             if (dxfObj is DxfDocument) (dxfObj as DxfDocument).AddEntity(eo);
-            else if (dxfObj is Block) (dxfObj as Block).Entities.Add(eo);
+            else if (dxfObj is Block) (dxfObj as Block).Entities.Add(eo);            
             else throw new ArgumentException($"dxfObj must DxfDocument or Block");
 
             if (layer != null) eo.Layer = layer;
