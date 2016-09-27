@@ -31,6 +31,7 @@ using SearchAThing.Sci;
 using ClipperLib;
 using System.Drawing.Drawing2D;
 using netDxf;
+using SearchAThing;
 
 namespace SearchAThing
 {
@@ -217,9 +218,12 @@ namespace SearchAThing
                 Vector3D ip = null;
                 var segMinY = Min(seg.From.Y, seg.To.Y);
                 var segMaxY = Max(seg.From.Y, seg.To.Y);
-                if (pt.Y.GreatThanOrEqualsTol(tol, segMinY) && pt.Y.LessThanOrEqualsTol(tol, segMaxY))
-                    ip = ray.Intersect(tol, seg);
-                if (ip != null && pt.X.GreatThanOrEqualsTol(tol, ip.X) && seg.SegmentContainsPoint(tol, ip)) ++intCnt;
+                if (pt.Y.GreatThanOrEqualsTol(tol, segMinY) && pt.Y.LessThanOrEqualsTol(tol, segMaxY)) ip = ray.Intersect(tol, seg);
+                if (ip != null)
+                {
+                    if (pts.Any(r => r.EqualsTol(tol, ip))) ++intCnt;
+                    if (pt.X.GreatThanOrEqualsTol(tol, ip.X) && seg.SegmentContainsPoint(tol, ip)) ++intCnt;
+                }
             }
 
             return intCnt % 2 != 0;
@@ -356,41 +360,26 @@ namespace SearchAThing
             }
 
             yield break;
-        }
+        }        
 
         /// <summary>
-        /// build 2d dxf polyline
+        /// build 2d dxf polyline.
+        /// note: use RepeatFirstAtEnd extension to build a closed polyline
         /// </summary>        
-        public static netDxf.Entities.LwPolyline ToLwPolyline(this IEnumerable<Vector3D> pts, double tol)
-        {
-            return new netDxf.Entities.LwPolyline(pts.PolyPoints(tol).Select(r => r.ToVector2()).ToList(), true);
-        }
-
-        /// <summary>
-        /// build 2d dxf polyline
-        /// </summary>        
-        public static netDxf.Entities.LwPolyline ToLwPolyline(this IEnumerable<Line3D> segs, double tol)
-        {
-            var X = segs.Select(w => w.From).PolyPoints(tol);
-            return new netDxf.Entities.LwPolyline(X.Select(r => r.ToVector2()).ToList(), true);
+        public static netDxf.Entities.LwPolyline ToLwPolyline(this IEnumerable<Vector3D> pts)
+        {            
+            return new netDxf.Entities.LwPolyline(pts.Select(r => r.ToVector2()).ToList(), true);
         }
 
         /// <summary>
         /// build 3d dxf polyline
+        /// note: use RepeatFirstAtEnd extension to build a closed polyline
         /// </summary>        
-        public static netDxf.Entities.Polyline ToPolyline(this IEnumerable<Vector3D> pts, double tol)
+        public static netDxf.Entities.Polyline ToPolyline(this IEnumerable<Vector3D> pts)
         {
-            return new netDxf.Entities.Polyline(pts.PolyPoints(tol).Select(r => (Vector3)r).ToList(), true);
+            return new netDxf.Entities.Polyline(pts.Select(r => (Vector3)r).ToList(), true);
         }
-
-        /// <summary>
-        /// build 3d dxf polyline
-        /// </summary>        
-        public static netDxf.Entities.Polyline ToPolyline(this IEnumerable<Line3D> segs, double tol)
-        {
-            var X = segs.Select(w => w.From).PolyPoints(tol);
-            return new netDxf.Entities.Polyline(X.Select(r => (Vector3)r).ToList(), true);
-        }
+        
         /// <summary>
         /// can generate a Int64MapExceptionRange exception if double values can't fit into a In64 representation.
         /// In that case try with tolerances not too small.
