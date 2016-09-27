@@ -158,16 +158,18 @@ namespace SearchAThing
             if (failedPoints != null) failedPoints.Clear();
             _pointToPoly = new Dictionary<Vector3D, Mesh2DPoly>(vCmp);
 
+            /*
             var config = new TriangulationComputationConfig
             {
                 PointTranslationType = PointTranslationType.TranslateInternal,
                 PlaneDistanceTolerance = 1e-6,
                 PointTranslationGenerator = TriangulationComputationConfig.RandomShiftByRadius(1e-6, 0)
             };
+            */
 
             var vs = Points.Select(v => new Vertex(v)).ToList();
 
-            _voronoiMesh = VoronoiMesh.Create<Vertex, Cell>(vs, config);
+            _voronoiMesh = VoronoiMesh.Create<Vertex, Cell>(vs);//, config);
 
             _vectorToCell = new Dictionary<Vector3D, List<Cell>>(vCmp);
 
