@@ -197,32 +197,60 @@ namespace SearchAThing
         /// states if the given polygon contains the test point ( z not considered )
         /// https://en.wikipedia.org/wiki/Point_in_polygon
         /// By default check the point contained in the polygon perimeter.
+        /// Optionally duplicate points are zapped in comparing.
         /// </summary>        
         /// <param name="excludePerimeter">Exclude check point contained in the perimeter</param>
-        public static bool ContainsPoint(this IReadOnlyList<Vector3D> pts, double tol, Vector3D pt, bool excludePerimeter = false)
+        public static bool ContainsPoint(this IReadOnlyList<Vector3D> pts, double tol, Vector3D pt, bool zapDuplicates = false)
         {
-            var ray = new Line3D(pt, Vector3D.XAxis, Line3DConstructMode.PointAndVector);
+            var ptHs = new HashSet<Vector3D>(new Vector3DEqualityComparer(tol));
+            var ptsFiltered = pts;
 
-            var segs = pts.PolygonSegments(tol);
+            if (zapDuplicates)
+            {
+                var tmp = new List<Vector3D>();
+                foreach (var p in pts)
+                {
+                    if (!ptHs.Contains(p))
+                    {
+                        ptHs.Add(p);
+                        tmp.Add(p);
+                    }
+                }
+                ptsFiltered = tmp;
+            }
+            var segs = ptsFiltered.PolygonSegments(tol);
+
+            var ray = new Line3D(pt, Vector3D.XAxis, Line3DConstructMode.PointAndVector);
+            var conflictVertex = false;
+            do
+            {
+                conflictVertex = false;
+                foreach (var pp in ptsFiltered)
+                {
+                    if (ray.LineContainsPoint(tol, pp))
+                    {
+                        conflictVertex = true;
+                        // ray intersect vertex, change it
+                        ray = new Line3D(pt, pp + Vector3D.YAxis * tol * 1.1);
+                        break;
+                    }
+                }
+            }
+            while (conflictVertex);
 
             var intCnt = 0;
 
             foreach (var seg in segs)
             {
-                if (seg.SegmentContainsPoint(tol, pt))
-                {
-                    if (excludePerimeter) return false;
-                    return true;
-                }
+                if (seg.SegmentContainsPoint(tol, pt)) return true;
 
                 Vector3D ip = null;
-                var segMinY = Min(seg.From.Y, seg.To.Y);
-                var segMaxY = Max(seg.From.Y, seg.To.Y);
-                if (pt.Y.GreatThanOrEqualsTol(tol, segMinY) && pt.Y.LessThanOrEqualsTol(tol, segMaxY)) ip = ray.Intersect(tol, seg);
-                if (ip != null)
+
+                ip = ray.Intersect(tol, seg);
+                if (ip != null && seg.SegmentContainsPoint(tol, ip))
                 {
-                    if (pts.Any(r => r.EqualsTol(tol, ip))) ++intCnt;
-                    if (pt.X.GreatThanOrEqualsTol(tol, ip.X) && seg.SegmentContainsPoint(tol, ip)) ++intCnt;
+                    if (pt.X.GreatThanOrEqualsTol(tol, ip.X))
+                        ++intCnt;
                 }
             }
 
@@ -360,14 +388,14 @@ namespace SearchAThing
             }
 
             yield break;
-        }        
+        }
 
         /// <summary>
         /// build 2d dxf polyline.
         /// note: use RepeatFirstAtEnd extension to build a closed polyline
         /// </summary>        
         public static netDxf.Entities.LwPolyline ToLwPolyline(this IEnumerable<Vector3D> pts)
-        {            
+        {
             return new netDxf.Entities.LwPolyline(pts.Select(r => r.ToVector2()).ToList(), true);
         }
 
@@ -379,7 +407,7 @@ namespace SearchAThing
         {
             return new netDxf.Entities.Polyline(pts.Select(r => (Vector3)r).ToList(), true);
         }
-        
+
         /// <summary>
         /// can generate a Int64MapExceptionRange exception if double values can't fit into a In64 representation.
         /// In that case try with tolerances not too small.
@@ -402,7 +430,9 @@ namespace SearchAThing
             var sol = new List<List<IntPoint>>();
             clipper.Execute(type, sol);
 
-            return sol.Select(s => s.Select(si => new Vector3D(intmap.FromInt64(si.X), intmap.FromInt64(si.Y), 0)));
+            var res = sol.Select(s => s.Select(si => new Vector3D(intmap.FromInt64(si.X), intmap.FromInt64(si.Y), 0)));            
+
+            return res;
         }
 
     }
