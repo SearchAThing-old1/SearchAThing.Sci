@@ -341,7 +341,7 @@ namespace SearchAThing
         public static EntityObject AddEntity(this DxfObject dxfObj, EntityObject eo, Layer layer = null)
         {
             if (dxfObj is DxfDocument) (dxfObj as DxfDocument).AddEntity(eo);
-            else if (dxfObj is Block) (dxfObj as Block).Entities.Add(eo);            
+            else if (dxfObj is Block) (dxfObj as Block).Entities.Add(eo);
             else throw new ArgumentException($"dxfObj must DxfDocument or Block");
 
             if (layer != null) eo.Layer = layer;
@@ -418,6 +418,17 @@ namespace SearchAThing
             sb.AppendLine();
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// tries to zoom dxf viewport on the given bbox
+        /// </summary>        
+        public static void AutoZoom(this DxfDocument dxf, BBox3D bbox)
+        {
+            var bbox_center = (bbox.Min + bbox.Max) / 2;
+            var bbox_size = bbox.Max - bbox.Min;
+            dxf.Viewport.ViewCenter = new Vector2(bbox.Min.X, bbox_center.Y);
+            dxf.Viewport.ViewAspectRatio = bbox_size.X / (bbox_size.Y * 2);
         }
 
     }
