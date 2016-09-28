@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using SearchAThing.Sci;
 using System.Text;
 using System.Windows;
+using Newtonsoft.Json;
 
 namespace SearchAThing
 {
@@ -57,9 +58,9 @@ namespace SearchAThing
                     default: throw new ArgumentException($"invalid ord {ord} must between 0,1,2");
                 }
             }
-
+            
             public double X { get; private set; }
-            public double Y { get; private set; }
+            public double Y { get; private set; }            
             public double Z { get; private set; }
 
             public Vector3D()
@@ -113,7 +114,7 @@ namespace SearchAThing
                     yield return Z;
                 }
             }
-
+            
             public bool IsZeroLength { get { return (X + Y + Z).EqualsTol(Constants.NormalizedLengthTolerance, 0); } }
 
             /// <summary>
@@ -140,7 +141,7 @@ namespace SearchAThing
             {
                 return X.EqualsTol(tol, x) && Y.EqualsTol(tol, y) && Z.EqualsTol(tol, z);
             }
-
+            
             public double Length { get { return Sqrt(X * X + Y * Y + Z * Z); } }
 
             public Vector3D Normalized()
@@ -766,6 +767,31 @@ namespace SearchAThing
         public static string ToPsql(this IEnumerable<Vector3D> pts)
         {
             return pts.ToCoordSequence().ToPsql();
+        }
+
+        /// <summary>
+        /// return pts (maintaining order) w/out duplicates
+        /// use the other overloaded method if already have a vector 3d equality comparer
+        /// </summary>        
+        public static IEnumerable<Vector3D> ZapDuplicates(this IEnumerable<Vector3D> pts, double tol)
+        {
+            return pts.ZapDuplicates(new Vector3DEqualityComparer(tol));
+        }
+
+        /// <summary>
+        /// return pts (maintaining order) w/out duplicates
+        /// </summary>        
+        public static IEnumerable<Vector3D> ZapDuplicates(this IEnumerable<Vector3D> pts, Vector3DEqualityComparer cmp)
+        {
+            var hs = new HashSet<Vector3D>(cmp);
+            foreach (var p in pts)
+            {
+                if (!hs.Contains(p))
+                {
+                    yield return p;
+                    hs.Add(p);
+                }
+            }
         }
 
     }
