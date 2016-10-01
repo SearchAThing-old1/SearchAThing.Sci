@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using SearchAThing.Sci;
 using System.Text;
 using System.Windows;
+using static System.FormattableString;
 using Newtonsoft.Json;
 
 namespace SearchAThing
@@ -58,9 +59,9 @@ namespace SearchAThing
                     default: throw new ArgumentException($"invalid ord {ord} must between 0,1,2");
                 }
             }
-            
+
             public double X { get; private set; }
-            public double Y { get; private set; }            
+            public double Y { get; private set; }
             public double Z { get; private set; }
 
             public Vector3D()
@@ -114,7 +115,7 @@ namespace SearchAThing
                     yield return Z;
                 }
             }
-            
+
             public bool IsZeroLength { get { return (X + Y + Z).EqualsTol(Constants.NormalizedLengthTolerance, 0); } }
 
             /// <summary>
@@ -141,7 +142,7 @@ namespace SearchAThing
             {
                 return X.EqualsTol(tol, x) && Y.EqualsTol(tol, y) && Z.EqualsTol(tol, z);
             }
-            
+
             public double Length { get { return Sqrt(X * X + Y * Y + Z * Z); } }
 
             public Vector3D Normalized()
@@ -500,7 +501,7 @@ namespace SearchAThing
             /// will create follow list of vector3d = { (100,200,10), (300,400,20) }            
             /// </summary>        
             public static List<Vector3D> From3DCoords(params double[] coords)
-            {                
+            {
                 var res = new List<Vector3D>();
 
                 for (var i = 0; i < coords.Length; i += 3)
@@ -540,9 +541,23 @@ namespace SearchAThing
                 return new sVector3D((float)X, (float)Y, (float)Z);
             }
 
+            /// <summary>
+            /// parse vector3d from string format "(x y z)" or "(x,y,z)" invariant type
+            /// </summary>            
+            public static Vector3D FromString(string str)
+            {
+                var q = str.Trim().StripBegin("(").StripEnd(")").Split(str.Contains(",") ? ',' : ' ');
+                var x = double.Parse(q[0], CultureInfo.InvariantCulture);
+                var y = double.Parse(q[1], CultureInfo.InvariantCulture);
+                var z = 0d;
+                if (q.Length > 2) z = double.Parse(q[2], CultureInfo.InvariantCulture);
+
+                return new Vector3D(x, y, z);
+            }
+
             public override string ToString()
             {
-                return $"({X.ToString(3)}, {Y.ToString(3)}, {Z.ToString(3)})";
+                return Invariant($"({X.ToString(3)}, {Y.ToString(3)}, {Z.ToString(3)})");
             }
 
         }
@@ -603,7 +618,7 @@ namespace SearchAThing
             }
 
             return l;
-        }        
+        }
 
         /// <summary>
         /// from a list of vector3d retrieve x1,y1,z1,x2,y2,z2,... coord sequence
