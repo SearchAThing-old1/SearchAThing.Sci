@@ -431,6 +431,17 @@ namespace SearchAThing
             dxf.Viewport.ViewAspectRatio = bbox_size.X / (bbox_size.Y * 2);
         }
 
+        public static Line ToLine(this Line3D line)
+        {
+            return new Line(line.From, line.To);
+        }
+
+        public static EntityObject SetColor(this EntityObject eo, AciColor color)
+        {
+            eo.Color = color;
+            return eo;
+        }
+
     }
 
 }
