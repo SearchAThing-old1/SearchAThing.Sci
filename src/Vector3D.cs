@@ -310,10 +310,11 @@ namespace SearchAThing
             /// <summary>
             /// Note: tol must be Constant.NormalizedLengthTolerance
             /// if comparing normalized vectors
+            /// rotation from-to will be multiplied for given angleFactor ( default 1.0 )
             /// </summary>        
-            public Vector3D RotateAs(double tol, Vector3D from, Vector3D to)
+            public Vector3D RotateAs(double tol, Vector3D from, Vector3D to, double angleFactor = 1.0)
             {
-                var angle = from.AngleRad(tol, to);
+                var angle = from.AngleRad(tol, to) * angleFactor;
                 var N = from.CrossProduct(to);
                 return this.RotateAboutAxis(N, angle);
             }
