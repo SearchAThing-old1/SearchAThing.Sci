@@ -30,101 +30,107 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Windows.Data;
 using System.Globalization;
+using SearchAThing.Sci;
 
-namespace SearchAThing.Sci
+namespace SearchAThing
 {
 
-    [DataContract]
-    public class MeasureUnit : IEquatable<MeasureUnit>
+    namespace Sci
     {
-        /// <summary>
-        /// all measure units for any physical quantity
-        /// this list is used to avoid double registration of a measure unit with same name
-        /// for a given physical quantity
-        /// </summary>
-        [BsonIgnore]
-        [DataMember]
-        static List<MeasureUnit> AllMeasureUnits = new List<MeasureUnit>();
 
-        static Dictionary<int, int> global_static_id_counter = new Dictionary<int, int>();
-
-        [BsonIgnore]
-        [DataMember]
-        internal int id;
-
-        [DataMember]
-        public string Name { get; private set; }
-
-        [DataMember]
-        public PhysicalQuantity PhysicalQuantity { get; private set; }
-
-        void Init(PhysicalQuantity physicalQuantity, string name, MeasureUnit convRefUnit = null)
+        [DataContract]
+        public class MeasureUnit : IEquatable<MeasureUnit>
         {
-            PhysicalQuantity = physicalQuantity;
+            /// <summary>
+            /// all measure units for any physical quantity
+            /// this list is used to avoid double registration of a measure unit with same name
+            /// for a given physical quantity
+            /// </summary>
+            [BsonIgnore]
+            [DataMember]
+            static List<MeasureUnit> AllMeasureUnits = new List<MeasureUnit>();
 
-            if (AllMeasureUnits
-                .Where(r => r.PhysicalQuantity.id == physicalQuantity.id)
-                .Any(r => r.Name == name))
-                throw new Exception($"A registered measure unit [{name}] already exists for the physical quantity [{physicalQuantity.Name}]");
+            static Dictionary<int, int> global_static_id_counter = new Dictionary<int, int>();
 
-            if (physicalQuantity.MUConversionType == MeasureUnitConversionTypeEnum.Linear &&
-                convRefUnit == null && physicalQuantity.LinearConversionRefMU != null)
-                throw new Exception(
-                    $"A reference measure unit [{physicalQuantity.LinearConversionRefMU}] already exists for the physical quantity [{physicalQuantity.Name}]" +
-                    $"Need to specify a valid existing convRefUnit with related convRefFactor to specify measure unit scale factor");
+            [BsonIgnore]
+            [DataMember]
+            internal int id;
 
-            if (global_static_id_counter.ContainsKey(physicalQuantity.id))
-                id = ++global_static_id_counter[physicalQuantity.id];
-            else
-                global_static_id_counter.Add(physicalQuantity.id, id = 0);
+            [DataMember]
+            public string Name { get; private set; }
 
-            Name = name;
-            PhysicalQuantity = PhysicalQuantity;
-        }
+            [DataMember]
+            public PhysicalQuantity PhysicalQuantity { get; private set; }
 
-        public MeasureUnit(PhysicalQuantity physicalQuantity, string name, MeasureUnit convRefUnit = null, double convRefFactor = 0)
-        {
-            Init(physicalQuantity, name, convRefUnit);
+            void Init(PhysicalQuantity physicalQuantity, string name, MeasureUnit convRefUnit = null)
+            {
+                PhysicalQuantity = physicalQuantity;
 
-            physicalQuantity.RegisterMeasureUnit(this, convRefUnit, convRefFactor);
-        }
+                if (AllMeasureUnits
+                    .Where(r => r.PhysicalQuantity.id == physicalQuantity.id)
+                    .Any(r => r.Name == name))
+                    throw new Exception($"A registered measure unit [{name}] already exists for the physical quantity [{physicalQuantity.Name}]");
 
-        public MeasureUnit(PhysicalQuantity physicalQuantity, string name, Func<MeasureUnit, MeasureUnit, double, double> convRefFunctor)
-        {
-            Init(physicalQuantity, name);
+                if (physicalQuantity.MUConversionType == MeasureUnitConversionTypeEnum.Linear &&
+                    convRefUnit == null && physicalQuantity.LinearConversionRefMU != null)
+                    throw new Exception(
+                        $"A reference measure unit [{physicalQuantity.LinearConversionRefMU}] already exists for the physical quantity [{physicalQuantity.Name}]" +
+                        $"Need to specify a valid existing convRefUnit with related convRefFactor to specify measure unit scale factor");
 
-            physicalQuantity.RegisterMeasureUnit(this, convRefFunctor);
-        }
+                if (global_static_id_counter.ContainsKey(physicalQuantity.id))
+                    id = ++global_static_id_counter[physicalQuantity.id];
+                else
+                    global_static_id_counter.Add(physicalQuantity.id, id = 0);
 
-        /// <summary>
-        /// Builds a Measure object of value * given mu
-        /// </summary>        
-        public static Measure operator *(double value, MeasureUnit mu)
-        {
-            return new Measure(value, mu);
-        }
+                Name = name;
+                PhysicalQuantity = PhysicalQuantity;
+            }
 
-        public override string ToString()
-        {
-            return Name;
-        }
+            public MeasureUnit(PhysicalQuantity physicalQuantity, string name, MeasureUnit convRefUnit = null, double convRefFactor = 0)
+            {
+                Init(physicalQuantity, name, convRefUnit);
 
-        public bool Equals(MeasureUnit other)
-        {
-            return id == other.id;
-        }
+                physicalQuantity.RegisterMeasureUnit(this, convRefUnit, convRefFactor);
+            }
 
-        public double Tolerance(IModel model)
-        {
-            var mudomain = model.MUDomain.ByPhysicalQuantity(PhysicalQuantity);
+            public MeasureUnit(PhysicalQuantity physicalQuantity, string name, Func<MeasureUnit, MeasureUnit, double, double> convRefFunctor)
+            {
+                Init(physicalQuantity, name);
 
-            if (mudomain.MU.id == id)
-                return mudomain.DefaultTolerance;
-            else
-                return mudomain.ConvertTo(this).DefaultTolerance;
-        }
+                physicalQuantity.RegisterMeasureUnit(this, convRefFunctor);
+            }
 
-    };
+            /// <summary>
+            /// Builds a Measure object of value * given mu
+            /// </summary>        
+            public static Measure operator *(double value, MeasureUnit mu)
+            {
+                return new Measure(value, mu);
+            }
+
+            public override string ToString()
+            {
+                return Name;
+            }
+
+            public bool Equals(MeasureUnit other)
+            {
+                return id == other.id;
+            }
+
+            public double Tolerance(IModel model)
+            {
+                var mudomain = model.MUDomain.ByPhysicalQuantity(PhysicalQuantity);
+
+                if (mudomain.MU.id == id)
+                    return mudomain.DefaultTolerance;
+                else
+                    return mudomain.ConvertTo(this).DefaultTolerance;
+            }
+
+        };
+
+    }
 
     public static partial class Extensions
     {
