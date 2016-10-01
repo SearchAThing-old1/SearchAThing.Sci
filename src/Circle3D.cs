@@ -69,6 +69,29 @@ namespace SearchAThing
                 CS = new CoordinateSystem3D(c, p1 - c, p2 - c);
             }
 
+            /// <summary>
+            /// build 3d circle that tangent to lines t1,t2 and that intersects point p
+            /// note: point p must contained in one of t1,t2
+            /// circle will be inside region t1.V toward t2.V
+            /// </summary>            
+            public Circle3D(double tol_len, Line3D t1, Line3D t2, Vector3D p)
+            {
+                var ip = t1.Intersect(tol_len, t2);
+                var angle = t1.V.AngleRad(tol_len, t2.V);
+                var t3 = new Line3D(ip, t1.V.RotateAs(tol_len, t1.V, t2.V, .5), Line3DConstructMode.PointAndVector);
+
+                Line3D lp = null;
+                if (t1.LineContainsPoint(tol_len, p)) lp = t1;
+                else if (t2.LineContainsPoint(tol_len, p)) lp = t2;
+                else throw new Exception($"circle 2 tan 1 point : pt must contained in one of given tan");                
+
+                var lpp = new Line3D(p, lp.V.RotateAboutAxis(t1.V.CrossProduct(t2.V), PI / 2), Line3DConstructMode.PointAndVector);
+                var c = lpp.Intersect(tol_len, t3);
+
+                Radius = p.Distance(c);
+                CS = new CoordinateSystem3D(c, lpp.V, t2.Perpendicular(tol_len, c).V);
+            }
+
             public double Area { get { return PI * Radius * Radius; } }
             public double Length { get { return 2 * PI * Radius; } }
 
