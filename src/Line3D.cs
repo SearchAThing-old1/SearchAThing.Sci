@@ -444,6 +444,24 @@ namespace SearchAThing
             return new Line3D(line.StartPoint, line.EndPoint);
         }
 
+        /// <summary>
+        /// retrieve s[0].from, s[1].from, ... s[n-1].from, s[n-1].to points
+        /// </summary>        
+        public static IEnumerable<Vector3D> PolyPoints(this IEnumerable<Line3D> segs)
+        {
+            var en = segs.GetEnumerator();
+
+            Line3D seg = null;
+
+            while (en.MoveNext())
+            {
+                seg = en.Current;
+                yield return seg.From;
+            }
+
+            yield return seg.To;
+        }
+
     }
 
 }
