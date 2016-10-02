@@ -403,9 +403,9 @@ namespace SearchAThing
         /// build 3d dxf polyline
         /// note: use RepeatFirstAtEnd extension to build a closed polyline
         /// </summary>        
-        public static netDxf.Entities.Polyline ToPolyline(this IEnumerable<Vector3D> pts)
+        public static netDxf.Entities.Polyline ToPolyline(this IEnumerable<Vector3D> pts, bool isClosed = true)
         {
-            return new netDxf.Entities.Polyline(pts.Select(r => (Vector3)r).ToList(), true);
+            return new netDxf.Entities.Polyline(pts.Select(r => (Vector3)r).ToList(), isClosed);
         }
 
         /// <summary>
