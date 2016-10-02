@@ -442,6 +442,11 @@ namespace SearchAThing
             return eo;
         }
 
+        public static UCS ToDxfUCS(this CoordinateSystem3D cs, string name)
+        {
+            return new UCS(name, cs.Origin, cs.BaseX, cs.BaseY);
+        }
+
     }
 
 }
