@@ -83,7 +83,7 @@ namespace SearchAThing
                 Line3D lp = null;
                 if (t1.LineContainsPoint(tol_len, p)) lp = t1;
                 else if (t2.LineContainsPoint(tol_len, p)) lp = t2;
-                else throw new Exception($"circle 2 tan 1 point : pt must contained in one of given tan");                
+                else throw new Exception($"circle 2 tan 1 point : pt must contained in one of given tan");
 
                 var lpp = new Line3D(p, lp.V.RotateAboutAxis(t1.V.CrossProduct(t2.V), PI / 2), Line3DConstructMode.PointAndVector);
                 var c = lpp.Intersect(tol_len, t3);
@@ -102,6 +102,52 @@ namespace SearchAThing
                 return pt.ToUCS(CS).Z.EqualsTol(tol, 0) && pt.Distance(CS.Origin).LessThanOrEqualsTol(tol, Radius);
             }
 
+            /// <summary>
+            /// intersect this 3d circle with given 3d line
+            /// </summary>            
+            public IEnumerable<Vector3D> Intersect(double tol, Line3D l, bool segment_mode = false)
+            {
+                var lprj = new Line3D(l.From.ToUCS(CS).Set(OrdIdx.Z, 0), l.To.ToUCS(CS).Set(OrdIdx.Z, 0));
+
+                var a = Pow(lprj.To.X - lprj.From.X, 2) + Pow(lprj.To.Y - lprj.From.Y, 2);
+                var b = 2 * lprj.From.X * (lprj.To.X - lprj.From.X) + 2 * lprj.From.Y * (lprj.To.Y - lprj.From.Y);
+                var c = Pow(lprj.From.X, 2) + Pow(lprj.From.Y, 2) - Pow(Radius, 2);
+                var d = Pow(b, 2) - 4 * a * c;
+
+                if (d.LessThanTol(tol, 0)) yield break; // no intersection at all
+
+                var sd = Sqrt(Abs(d));
+                var f1 = (-b + sd) / (2 * a);
+                var f2 = (-b - sd) / (2 * a);
+
+                // one intersection point is
+                var ip = new Vector3D(
+                    lprj.From.X + (lprj.To.X - lprj.From.X) * f1,
+                    lprj.From.Y + (lprj.To.Y - lprj.From.Y) * f1,
+                    0);
+
+                Vector3D ip2 = null;
+
+                if (!f1.EqualsTol(Constants.NormalizedLengthTolerance, f2))
+                {
+                    // second intersection point is
+                    ip2 = new Vector3D(
+                        lprj.From.X + (lprj.To.X - lprj.From.X) * f2,
+                        lprj.From.Y + (lprj.To.Y - lprj.From.Y) * f2,
+                        0);
+                }
+
+                // back to wcs, check line contains point
+                var wcs_ip = ip.ToWCS(CS);
+                Vector3D wcs_ip2 = null;
+                if (ip2 != null) wcs_ip2 = ip2.ToWCS(CS);
+
+                if (l.LineContainsPoint(tol, wcs_ip, segment_mode))
+                    yield return wcs_ip;
+
+                if (ip2 != null && l.LineContainsPoint(tol, wcs_ip2, segment_mode))
+                    yield return wcs_ip2;
+            }
         }
     }
 
