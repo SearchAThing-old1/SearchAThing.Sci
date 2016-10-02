@@ -102,14 +102,32 @@ namespace SearchAThing
                 return pt.ToUCS(CS).Z.EqualsTol(tol, 0) && pt.Distance(CS.Origin).LessThanOrEqualsTol(tol, Radius);
             }
 
-            public IEnumerable<Line3D> ToPolygon3D(double tol_len)
+            /// <summary>
+            /// creates a polygon approximation of this circle with segments of given maxLength
+            /// </summary>            
+            public IEnumerable<Vector3D> ToPolygon3D(double segLenMax)
             {
-                var pts = Polygon.EllipseToPolygon2D(Vector3D.Zero, 2 * Radius, 2 * Radius, tol_len);
+                var alpha_step = segLenMax / Radius;
+                var alpha = 0.0;
+                var alpha_stop = 2 * PI;
 
-                return pts.RepeatFirstAtEnd()
-                    .Select(w => CS.ToWCS(w))
-                    .Segments();
-            }           
+                var origPt = new Vector3D(Radius, 0);
+                Vector3D prevPt = origPt;
+
+                yield return origPt.ToWCS(CS);         
+
+                while (alpha < alpha_stop)
+                {                    
+                    var nextPt = origPt.RotateAboutZAxis(alpha);
+
+                    yield return nextPt.ToWCS(CS);
+
+                    prevPt = nextPt;
+
+                    alpha += alpha_step;
+                }
+            }
+
             /// <summary>
             /// intersect this 3d circle with given 3d line
             /// </summary>            
