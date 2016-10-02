@@ -83,13 +83,13 @@ namespace SearchAThing
                 Line3D lp = null;
                 if (t1.LineContainsPoint(tol_len, p)) lp = t1;
                 else if (t2.LineContainsPoint(tol_len, p)) lp = t2;
-                else throw new Exception($"circle 2 tan 1 point : pt must contained in one of given tan");                
+                else throw new Exception($"circle 2 tan 1 point : pt must contained in one of given tan");
 
                 var lpp = new Line3D(p, lp.V.RotateAboutAxis(t1.V.CrossProduct(t2.V), PI / 2), Line3DConstructMode.PointAndVector);
                 var c = lpp.Intersect(tol_len, t3);
 
                 Radius = p.Distance(c);
-                CS = new CoordinateSystem3D(c, lpp.V, t2.Perpendicular(tol_len, c).V);
+                CS = new CoordinateSystem3D(c, lpp.V, t2.V);// t2.Perpendicular(tol_len, c).V);
             }
 
             public double Area { get { return PI * Radius * Radius; } }
@@ -101,6 +101,15 @@ namespace SearchAThing
             {
                 return pt.ToUCS(CS).Z.EqualsTol(tol, 0) && pt.Distance(CS.Origin).LessThanOrEqualsTol(tol, Radius);
             }
+
+            public IEnumerable<Line3D> ToPolygon3D(double tol_len)
+            {
+                var pts = Polygon.EllipseToPolygon2D(Vector3D.Zero, 2 * Radius, 2 * Radius, tol_len);
+
+                return pts.RepeatFirstAtEnd()
+                    .Select(w => CS.ToWCS(w))
+                    .Segments();
+            }           
 
         }
     }
