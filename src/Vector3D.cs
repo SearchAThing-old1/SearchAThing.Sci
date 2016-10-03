@@ -216,6 +216,8 @@ namespace SearchAThing
                 // https://en.wikipedia.org/wiki/Vector_projection
                 // http://math.oregonstate.edu/bridge/papers/dot+cross.pdf (fig.1)
 
+                if (to.Length == 0) throw new Exception($"project on null vector");
+
                 return DotProduct(to) / to.Length * to.Normalized();
             }
 
@@ -223,7 +225,7 @@ namespace SearchAThing
             /// project this vector to the given line
             /// </summary>            
             public Vector3D Project(Line3D line)
-            {
+            {                
                 return (this - line.From).Project(line.V) + line.From;
             }
 
@@ -312,9 +314,9 @@ namespace SearchAThing
             /// if comparing normalized vectors
             /// rotation from-to will be multiplied for given angleFactor ( default 1.0 )
             /// </summary>        
-            public Vector3D RotateAs(double tol, Vector3D from, Vector3D to, double angleFactor = 1.0)
+            public Vector3D RotateAs(double tol, Vector3D from, Vector3D to, double angleFactor = 1.0, double angleAddictional = 0)
             {
-                var angle = from.AngleRad(tol, to) * angleFactor;
+                var angle = from.AngleRad(tol, to) * angleFactor + angleAddictional;
                 var N = from.CrossProduct(to);
                 return this.RotateAboutAxis(N, angle);
             }
@@ -337,6 +339,14 @@ namespace SearchAThing
                 var d = this - origin;
 
                 return origin + d * factor;
+            }
+
+            /// <summary>
+            /// mirror this point about given axis
+            /// </summary>            
+            public Vector3D Mirror(Line3D axis)
+            {
+                return this + 2 * (Project(axis) - this);
             }
 
             /// <summary>
