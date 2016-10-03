@@ -60,11 +60,25 @@ namespace SearchAThing
                 }
             }
 
+            /// <summary>
+            /// convert given Vector2 to a Vector3D ( with z=0 )
+            /// </summary>            
+            public static implicit operator Vector3D(Vector2 v)
+            {
+                return new Vector3D(v.X, v.Y, 0);
+            }
+
+            /// <summary>
+            /// Convert given Vector3 to Vector3D
+            /// </summary>            
             public static implicit operator Vector3D(Vector3 v)
             {
                 return new Vector3D(v.X, v.Y, v.Z);
             }
 
+            /// <summary>
+            /// Convert given Vector3D to Vector3
+            /// </summary>            
             public static implicit operator Vector3(Vector3D v)
             {
                 return new Vector3(v.X, v.Y, v.Z);
