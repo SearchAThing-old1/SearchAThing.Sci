@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using SearchAThing.Sci;
 using System.Text;
 using System.Globalization;
+using System.Linq;
 
 namespace SearchAThing
 {
@@ -497,6 +498,76 @@ namespace SearchAThing
             }
 
             yield return seg.To;
+        }
+
+        /// <summary>
+        /// merge colinear overlapped segments into single
+        /// result segments direction and order is not ensured
+        /// pre: segs must colinear
+        /// </summary>        
+        public static IEnumerable<Line3D> MergeColinearSegments(this IEnumerable<Line3D> _segs, double tol_len)
+        {
+            var result_dir = _segs.First().V;
+            var segs = new List<Line3D>(_segs);
+
+            bool found_overlaps;
+            do
+            {
+                var to_remove = new List<Line3D>();
+                var to_add = new List<Line3D>();
+                found_overlaps = false;
+
+                for (int i = 0; !found_overlaps && i < segs.Count; ++i)
+                {
+                    for (int j = i + 1; j < segs.Count; ++j)
+                    {
+                        var i_contains_j_from = segs[i].SegmentContainsPoint(tol_len, segs[j].From);
+                        var i_contains_j_to = segs[i].SegmentContainsPoint(tol_len, segs[j].To);
+
+                        // i contains j entirely
+                        if (i_contains_j_from && i_contains_j_to)
+                        {
+                            to_remove.Add(segs[j]);
+                            found_overlaps = true;
+                            break;
+                        }
+
+                        // i contains only j from but not j to
+                        if (i_contains_j_from)
+                        {
+                            to_remove.Add(segs[i]);
+                            to_remove.Add(segs[j]);
+                            if (segs[i].V.Concordant(tol_len, segs[j].V))
+                                to_add.Add(new Line3D(segs[i].From, segs[j].To));
+                            else
+                                to_add.Add(new Line3D(segs[i].To, segs[j].To));
+
+                            found_overlaps = true;
+                            break;
+                        }
+
+                        // i contains only j to but not j from
+                        if (i_contains_j_to)
+                        {
+                            to_remove.Add(segs[i]);
+                            to_remove.Add(segs[j]);
+                            if (segs[i].V.Concordant(tol_len, segs[j].V))
+                                to_add.Add(new Line3D(segs[j].From, segs[i].To));
+                            else
+                                to_add.Add(new Line3D(segs[i].From, segs[j].From));
+
+                            found_overlaps = true;
+                            break;
+                        }
+                    }
+                }
+
+                to_remove.ForEach(w => segs.Remove(w));
+                segs.AddRange(to_add);
+            }
+            while (found_overlaps);
+
+            return segs;
         }
 
     }
