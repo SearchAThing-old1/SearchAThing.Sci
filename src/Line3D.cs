@@ -70,6 +70,27 @@ namespace SearchAThing
             public Vector3D To { get { return From + V; } }
             public Vector3D Dir { get { return (To - From).Normalized(); } }
 
+            /// <summary>
+            /// retrieve a unique endpoint representation of this line3d segment (regardless its from-to or to-from order)
+            /// such that From.Distance(Vector3D.Zero) less than To.Distance(Vector3D.Zero)
+            /// </summary>
+            public IEnumerable<Vector3D> DisambiguatedPoints
+            {
+                get
+                {
+                    if (From.Distance(Vector3D.Zero) < To.Distance(Vector3D.Zero))
+                    {
+                        yield return From;
+                        yield return To;
+                    }
+                    else
+                    {
+                        yield return To;
+                        yield return From;
+                    }
+                }
+            }
+
             public IEnumerable<Vector3D> Points
             {
                 get
@@ -146,6 +167,22 @@ namespace SearchAThing
             public static Line3D operator *(Line3D l, double s)
             {
                 return new Line3D(l.From, (l.To - l.From) * s, Line3DConstructMode.PointAndVector);
+            }
+
+            /// <summary>
+            /// Move this line of given delta adding value either at From, To
+            /// </summary>            
+            public static Line3D operator +(Line3D l, Vector3D delta)
+            {
+                return new Sci.Line3D(l.From + delta, l.V, Line3DConstructMode.PointAndVector);
+            }
+
+            /// <summary>
+            /// Move this line of given delta subtracting value either at From, To
+            /// </summary>            
+            public static Line3D operator -(Line3D l, Vector3D delta)
+            {
+                return new Sci.Line3D(l.From - delta, l.V, Line3DConstructMode.PointAndVector);
             }
             #endregion
 
