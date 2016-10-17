@@ -329,6 +329,47 @@ namespace SearchAThing
 
         }
 
+        public class Wgs84BBox : BBox3D
+        {
+            public double WestBoundLongitudeDeg
+            {
+                get
+                {
+                    return Min.X;
+                }
+            }
+            public double SouthBoundLatitudeDeg
+            {
+                get
+                {
+                    return Min.Y;
+                }
+            }
+            public double EastBoundLongitudeDeg
+            {
+                get
+                {
+                    return Max.X;
+                }
+            }
+            public double NorthBoundLatitudeDeg
+            {
+                get
+                {
+                    return Max.Y;
+                }
+            }
+
+            public Wgs84BBox()
+            {
+            }
+
+            public Wgs84BBox(IEnumerable<Vector3D> wgs84pts) : base(wgs84pts)
+            {
+
+            }
+        }
+
     }
 
     public static partial class Extensions
