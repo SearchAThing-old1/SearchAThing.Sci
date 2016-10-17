@@ -342,6 +342,7 @@ namespace SearchAThing
         {
             if (dxfObj is DxfDocument) (dxfObj as DxfDocument).AddEntity(eo);
             else if (dxfObj is Block) (dxfObj as Block).Entities.Add(eo);
+            else if (dxfObj is netDxf.Objects.Group) (dxfObj as netDxf.Objects.Group).Entities.Add(eo);
             else throw new ArgumentException($"dxfObj must DxfDocument or Block");
 
             if (layer != null) eo.Layer = layer;
