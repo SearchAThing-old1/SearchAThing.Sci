@@ -148,6 +148,18 @@ namespace SearchAThing
                     other.Max.Z.LessThanOrEqualsTol(tol, Max.Z);
             }
 
+            /// <summary>
+            /// create new bbox extending by subtract margin to Min and by add to Max
+            /// </summary>            
+            public BBox3D AddMargin(Vector3D margin)
+            {                
+                return new BBox3D(new Vector3D[]
+                {
+                    Min - margin,
+                    Max + margin
+                });
+            }
+
             public override string ToString()
             {
                 return $"{Min}-{Max}";
