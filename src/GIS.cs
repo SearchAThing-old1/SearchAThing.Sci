@@ -190,6 +190,8 @@ namespace SearchAThing
             /// </summary>        
             public Vector3D Project(Vector3D v, CRSData to)
             {
+                v = new Vector3D(v.X, v.Y);
+
                 if (IsCustom || to.IsCustom)
                 {
                     var custom = (CustomCRSInfo == null) ? to.CustomCRSInfo : CustomCRSInfo;
