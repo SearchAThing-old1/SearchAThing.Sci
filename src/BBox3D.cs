@@ -148,6 +148,30 @@ namespace SearchAThing
                     other.Max.Z.LessThanOrEqualsTol(tol, Max.Z);
             }
 
+            public bool Contains(double tol, Vector3D p)
+            {
+                if (IsEmpty) return false;
+                
+                return
+                    p.X.GreatThanOrEqualsTol(tol, Min.X) &&
+                    p.Y.GreatThanOrEqualsTol(tol, Min.Y) &&
+                    p.Z.GreatThanOrEqualsTol(tol, Min.Z) &&
+                    p.X.LessThanOrEqualsTol(tol, Max.X) &&
+                    p.Y.LessThanOrEqualsTol(tol, Max.Y) &&
+                    p.Z.LessThanOrEqualsTol(tol, Max.Z);
+            }
+
+            public bool Contains2D(double tol, Vector3D p)
+            {
+                if (IsEmpty) return false;
+
+                return
+                    p.X.GreatThanOrEqualsTol(tol, Min.X) &&
+                    p.Y.GreatThanOrEqualsTol(tol, Min.Y) &&
+                    p.X.LessThanOrEqualsTol(tol, Max.X) &&
+                    p.Y.LessThanOrEqualsTol(tol, Max.Y);                    
+            }
+
             /// <summary>
             /// create new bbox extending by subtract margin to Min and by add to Max
             /// </summary>            
