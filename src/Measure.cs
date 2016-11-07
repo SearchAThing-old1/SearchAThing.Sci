@@ -190,7 +190,7 @@ namespace SearchAThing.Sci
                 s = s.StripEnd(mu.ToString());
 
                 double n;
-                if (double.TryParse(s, out n)) return new Measure(n, mu);
+                if (double.TryParse(s, NumberStyles.Number, culture, out n)) return new Measure(n, mu);
             }
 
             return null;
