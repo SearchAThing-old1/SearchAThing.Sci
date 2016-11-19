@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using SearchAThing.Sci;
 using System.Text;
 using System.Windows;
+using System.Linq;
 using static System.FormattableString;
 using Newtonsoft.Json;
 
@@ -225,7 +226,7 @@ namespace SearchAThing
             /// project this vector to the given line
             /// </summary>            
             public Vector3D Project(Line3D line)
-            {                
+            {
                 return (this - line.From).Project(line.V) + line.From;
             }
 
@@ -566,9 +567,25 @@ namespace SearchAThing
                 return new Vector3D(x, y, z);
             }
 
+            /// <summary>
+            /// parse vector3d from array "(x1,y1,z1);(x2,y2,z2)"
+            /// </summary>            
+            public static IEnumerable<Vector3D> FromStringArray(string str)
+            {
+                return str.Split(";").Where(f => f.Trim().Length > 0).Select(f => FromString(f));
+            }
+
+            /// <summary>
+            /// string invariant representation "(x,y,z)"
+            /// </summary>            
             public override string ToString()
             {
                 return Invariant($"({X.ToString(3)}, {Y.ToString(3)}, {Z.ToString(3)})");
+            }
+
+            public string StringRepresentation()
+            {
+                return this.ToString();
             }
 
         }
@@ -612,6 +629,14 @@ namespace SearchAThing
 
     public static partial class Extensions
     {
+
+        /// <summary>
+        /// array invariant string vector3d representation "(x1,y1,z2);(x2,y2,z2)"
+        /// </summary>        
+        public static string StringRepresentation(this IEnumerable<Vector3D> pts)
+        {
+            return string.Join(";", pts.Select(g => g.StringRepresentation()));
+        }        
 
         /// <summary>
         /// compute length of polyline from given seq_pts
