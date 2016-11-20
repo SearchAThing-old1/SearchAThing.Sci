@@ -577,15 +577,19 @@ namespace SearchAThing
 
             /// <summary>
             /// string invariant representation "(x,y,z)"
+            /// w/3 decimal places
             /// </summary>            
             public override string ToString()
             {
                 return Invariant($"({X.ToString(3)}, {Y.ToString(3)}, {Z.ToString(3)})");
             }
 
+            /// <summary>
+            /// string invariant representation "(x,y,z)"
+            /// </summary>            
             public string StringRepresentation()
             {
-                return this.ToString();
+                return Invariant($"({X}, {Y}, {Z})");                
             }
 
         }
