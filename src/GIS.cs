@@ -132,6 +132,14 @@ namespace SearchAThing
             }
 
             /// <summary>
+            /// retrieve measure unit tolerance based on the domain default length tolerance
+            /// </summary>            
+            public double UnitTolerance(MUDomain mud)
+            {
+                return mud.Length.DefaultTolerance.Convert(mud.Length.MU, Unit);
+            }
+
+            /// <summary>
             /// Retrieve proj4 string
             /// </summary>
             public string Proj4String
