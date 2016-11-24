@@ -132,6 +132,7 @@ namespace SearchAThing
             MeasureUnitWithDefaultTolerance Acceleration { get; set; }
             MeasureUnitWithDefaultTolerance Force { get; set; }
             MeasureUnitWithDefaultTolerance Speed { get; set; }
+            MeasureUnitWithDefaultTolerance BendingMoment { get; set; }
             MeasureUnitWithDefaultTolerance Energy { get; set; }
             MeasureUnitWithDefaultTolerance Turbidity { get; set; }
             MeasureUnitWithDefaultTolerance Power { get; set; }
@@ -254,6 +255,12 @@ namespace SearchAThing
             public MeasureUnitWithDefaultTolerance Speed { get; set; }
 
             /// <summary>
+            /// [M L2 T-2]
+            /// </summary>
+            [DataMember]
+            public MeasureUnitWithDefaultTolerance BendingMoment { get; set; }
+
+            /// <summary>
             /// [M L2 T−2]
             /// </summary>
             [DataMember]
@@ -360,6 +367,7 @@ namespace SearchAThing
                 Pressure = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Pressure.Pa);
                 Acceleration = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Acceleration.m_s2);
                 Speed = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Speed.m_s);
+                BendingMoment = new MeasureUnitWithDefaultTolerance(1e-2, MUCollection.BendingMoment.Nm);
                 Energy = new MeasureUnitWithDefaultTolerance(1e-4, MUCollection.Energy.J);
                 Power = new MeasureUnitWithDefaultTolerance(1e-4, MUCollection.Power.W);
                 ElectricalConductance = new MeasureUnitWithDefaultTolerance(1e-9, MUCollection.ElectricalConductance.S);
@@ -394,6 +402,7 @@ namespace SearchAThing
             else if (mud.Acceleration.MU.PhysicalQuantity.id == id) return mud.Acceleration;
             else if (mud.Force.MU.PhysicalQuantity.id == id) return mud.Force;
             else if (mud.Speed.MU.PhysicalQuantity.id == id) return mud.Speed;
+            else if (mud.BendingMoment.MU.PhysicalQuantity.id == id) return mud.BendingMoment;
             else if (mud.Energy.MU.PhysicalQuantity.id == id) return mud.Energy;
             else if (mud.Power.MU.PhysicalQuantity.id == id) return mud.Power;
             else if (mud.ElectricalConductance.MU.PhysicalQuantity.id == id) return mud.ElectricalConductance;

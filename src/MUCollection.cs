@@ -299,6 +299,16 @@ namespace SearchAThing.Sci
 
         #endregion
 
+        #region BendingMoment
+
+        public static class BendingMoment
+        {
+            public static readonly MeasureUnit Nm = new MeasureUnit(PQCollection.BendingMoment, "Nm");
+            public static readonly MeasureUnit kNm = new MeasureUnit(PQCollection.BendingMoment, "kNm", Nm, 1e3);
+        }
+
+        #endregion
+
         #region Energy
 
         public static class Energy

@@ -66,6 +66,7 @@ namespace SearchAThing.Sci
                     physicalQuantities.Add(Acceleration);
                     physicalQuantities.Add(Force);
                     physicalQuantities.Add(Speed);
+                    physicalQuantities.Add(BendingMoment);
                     physicalQuantities.Add(Energy);
                     physicalQuantities.Add(ElectricalConductance);
                     physicalQuantities.Add(ElectricalConductivity);
@@ -351,6 +352,8 @@ namespace SearchAThing.Sci
         // thermalConductivity
 
         // torque
+
+        public static readonly PhysicalQuantity BendingMoment = new PhysicalQuantity("BendingMoment", typeof(MUCollection.BendingMoment));
 
         // velocity
 
