@@ -57,6 +57,14 @@
       <HintPath>C:\nuget-packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\..\..\..\..\..\..\..\nuget-packages\Microsoft.Office.Interop.Excel.15.0.4795.1000\lib\net20\Microsoft.Office.Interop.Excel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Vbe.Interop, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="MongoDB.Bson, Version=2.3.0.149, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>C:\nuget-packages\MongoDB.Bson.2.3.0-rc1\lib\net45\MongoDB.Bson.dll</HintPath>
       <Private>True</Private>
@@ -85,6 +93,7 @@
     <Compile Include="BBox3D.Dxf.cs" />
     <Compile Include="Circle3D.cs" />
     <Compile Include="CoordinateSystem3D.Dxf.cs" />
+    <EmbeddedResource Include="excel_interop_automatic_calc.vba" />
     <Compile Include="Fluent.cs" />
     <Compile Include="DxfKit.cs" />
     <Compile Include="GIS.cs" />
@@ -97,6 +106,7 @@
     <Compile Include="Mesh2D.cs" />
     <Compile Include="Polygon.cs" />
     <Compile Include="Matrix3D.cs" />
+    <Compile Include="Interop.Excel.cs" />
     <Compile Include="PythonWrapper.cs" />
     <Compile Include="SampleModel.cs" />
     <Compile Include="Line3D.cs" />
