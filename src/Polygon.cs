@@ -200,8 +200,10 @@ namespace SearchAThing
         /// Optionally duplicate points are zapped in comparing.
         /// </summary>        
         /// <param name="excludePerimeter">Exclude check point contained in the perimeter</param>
-        public static bool ContainsPoint(this IReadOnlyList<Vector3D> pts, double tol, Vector3D pt, bool zapDuplicates = false)
+        public static bool ContainsPoint(this IReadOnlyList<Vector3D> _pts, double tol, Vector3D _pt, bool zapDuplicates = false)
         {
+            var pt = _pt.Set(OrdIdx.Z, 0);
+            var pts = _pts.Select(w => w.Set(OrdIdx.Z, 0));
             var ptHs = new HashSet<Vector3D>(new Vector3DEqualityComparer(tol));
             var ptsFiltered = pts;
 
@@ -430,7 +432,7 @@ namespace SearchAThing
             var sol = new List<List<IntPoint>>();
             clipper.Execute(type, sol);
 
-            var res = sol.Select(s => s.Select(si => new Vector3D(intmap.FromInt64(si.X), intmap.FromInt64(si.Y), 0)));            
+            var res = sol.Select(s => s.Select(si => new Vector3D(intmap.FromInt64(si.X), intmap.FromInt64(si.Y), 0)));
 
             return res;
         }
