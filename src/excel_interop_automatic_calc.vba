@@ -26,9 +26,9 @@
 '
 
 Sub AutomaticCalc(data_pathfilename As String, output_pathfilename As String)
-    Application.Visible = False
-    Application.EnableCancelKey = xlDisabled
-    Application.ScreenUpdating = False
+'    Application.Visible = False
+'    Application.EnableCancelKey = xlDisabled
+'    Application.ScreenUpdating = False
     Application.Calculation = xlCalculationManual
 
     ' create a tmp sheet
@@ -44,8 +44,8 @@ Sub AutomaticCalc(data_pathfilename As String, output_pathfilename As String)
     ' remove tmp sheet
     DeleteSheetIfExists "tmp"
 
-    Application.EnableCancelKey = xlInterrupt
-    Application.ScreenUpdating = True
+'    Application.EnableCancelKey = xlInterrupt
+ '   Application.ScreenUpdating = True
     Application.Calculation = xlCalculationAutomatic
 End Sub
 
