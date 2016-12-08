@@ -118,6 +118,7 @@ namespace SearchAThing
 
             MeasureUnitWithDefaultTolerance Length { get; set; }
             MeasureUnitWithDefaultTolerance Length2 { get; set; }
+            MeasureUnitWithDefaultTolerance Length3 { get; set; }
             MeasureUnitWithDefaultTolerance Mass { get; set; }
             MeasureUnitWithDefaultTolerance Time { get; set; }
             MeasureUnitWithDefaultTolerance ElectricCurrent { get; set; }
@@ -138,6 +139,7 @@ namespace SearchAThing
             MeasureUnitWithDefaultTolerance Power { get; set; }
             MeasureUnitWithDefaultTolerance ElectricalConductance { get; set; }
             MeasureUnitWithDefaultTolerance ElectricalConductivity { get; set; }
+            MeasureUnitWithDefaultTolerance VolumetricFlowRate { get; set; }
 
         }
 
@@ -185,6 +187,12 @@ namespace SearchAThing
             /// </summary>
             [DataMember]
             public MeasureUnitWithDefaultTolerance Length2 { get; set; }
+
+            /// <summary>
+            /// [L^3]
+            /// </summary>
+            [DataMember]
+            public MeasureUnitWithDefaultTolerance Length3 { get; set; }
 
             /// <summary>
             /// [M]
@@ -290,6 +298,12 @@ namespace SearchAThing
             [DataMember]
             public MeasureUnitWithDefaultTolerance ElectricalConductivity { get; set; }
 
+            /// <summary>
+            /// [L3 T−1]
+            /// </summary>
+            [DataMember]
+            public MeasureUnitWithDefaultTolerance VolumetricFlowRate { get; set; }
+
             //------------------------------------------------------------------------------
 
             static Type tMeasureUnitWithDefaultTolerance = typeof(MeasureUnitWithDefaultTolerance);
@@ -362,6 +376,7 @@ namespace SearchAThing
                 //---------------------------------------------------------------
 
                 Length2 = new MeasureUnitWithDefaultTolerance(1e-4, MUCollection.Length2.m2);
+                Length3 = new MeasureUnitWithDefaultTolerance(1e-4, MUCollection.Length3.m3);
                 Force = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Force.N);
                 PlaneAngle = new MeasureUnitWithDefaultTolerance(PI / 180.0 / 10.0, MUCollection.PlaneAngle.rad);
                 Pressure = new MeasureUnitWithDefaultTolerance(1e-1, MUCollection.Pressure.Pa);
@@ -373,6 +388,7 @@ namespace SearchAThing
                 ElectricalConductance = new MeasureUnitWithDefaultTolerance(1e-9, MUCollection.ElectricalConductance.S);
                 ElectricalConductivity = new MeasureUnitWithDefaultTolerance(1e-9, MUCollection.ElectricalConductivity.S_m);
                 Turbidity = new MeasureUnitWithDefaultTolerance(1e-9, MUCollection.Turbidity.FNU);
+                VolumetricFlowRate = new MeasureUnitWithDefaultTolerance(1e-6, MUCollection.VolumetricFlowRate.lt_s);
             }
 
         }
@@ -388,6 +404,7 @@ namespace SearchAThing
 
             if (mud.Length.MU.PhysicalQuantity.id == id) return mud.Length;
             else if (mud.Length2.MU.PhysicalQuantity.id == id) return mud.Length2;
+            else if (mud.Length3.MU.PhysicalQuantity.id == id) return mud.Length3;
             else if (mud.Mass.MU.PhysicalQuantity.id == id) return mud.Mass;
             else if (mud.Time.MU.PhysicalQuantity.id == id) return mud.Time;
             else if (mud.ElectricCurrent.MU.PhysicalQuantity.id == id) return mud.ElectricCurrent;
@@ -406,7 +423,7 @@ namespace SearchAThing
             else if (mud.Energy.MU.PhysicalQuantity.id == id) return mud.Energy;
             else if (mud.Power.MU.PhysicalQuantity.id == id) return mud.Power;
             else if (mud.ElectricalConductance.MU.PhysicalQuantity.id == id) return mud.ElectricalConductance;
-            else if (mud.ElectricalConductivity.MU.PhysicalQuantity.id == id) return mud.ElectricalConductivity;
+            else if (mud.VolumetricFlowRate.MU.PhysicalQuantity.id == id) return mud.VolumetricFlowRate;
             else if (mud.Turbidity.MU.PhysicalQuantity.id == id) return mud.Turbidity;
 
             throw new NotImplementedException($"unable to find measure domain for given physical quantity {physicalQuantity}");

@@ -61,6 +61,7 @@ namespace SearchAThing.Sci
                     //-------------------------------------------------------
 
                     physicalQuantities.Add(Length2);
+                    physicalQuantities.Add(Length3);
                     physicalQuantities.Add(PlaneAngle);
                     physicalQuantities.Add(Pressure);
                     physicalQuantities.Add(Acceleration);
@@ -72,6 +73,7 @@ namespace SearchAThing.Sci
                     physicalQuantities.Add(ElectricalConductivity);
                     physicalQuantities.Add(Power);
                     physicalQuantities.Add(Turbidity);
+                    physicalQuantities.Add(VolumetricFlowRate);
                 }
                 return physicalQuantities;
             }
@@ -356,6 +358,10 @@ namespace SearchAThing.Sci
         public static readonly PhysicalQuantity BendingMoment = new PhysicalQuantity("BendingMoment", typeof(MUCollection.BendingMoment));
 
         // velocity
+
+        public static readonly PhysicalQuantity Length3 = new PhysicalQuantity("Length3", typeof(MUCollection.Length3));
+
+        public static readonly PhysicalQuantity VolumetricFlowRate = new PhysicalQuantity("VolumetricFlowRate", typeof(MUCollection.VolumetricFlowRate));
 
         /*
         static PhysicalQuantity volume;

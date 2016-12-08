@@ -114,6 +114,30 @@ namespace SearchAThing.Sci
 
         #endregion
 
+        #region Length3
+
+        public static class Length3
+        {
+            public static readonly MeasureUnit mm3 = new MeasureUnit(PQCollection.Length3, "mm3");
+            public static readonly MeasureUnit cm3 = new MeasureUnit(PQCollection.Length3, "cm3", mm3, Pow((1.0).Convert(Length.cm, Length.mm), 3));
+            public static readonly MeasureUnit m3 = new MeasureUnit(PQCollection.Length3, "m3", mm3, Pow((1.0).Convert(Length.m, Length.mm), 3));
+            public static readonly MeasureUnit in3 = new MeasureUnit(PQCollection.Length3, "in3", mm3, Pow((1.0).Convert(Length.inch, Length.mm), 3));
+            public static readonly MeasureUnit lt = new MeasureUnit(PQCollection.Length3, "lt", mm3, 1e6);
+        }
+
+        #endregion
+
+        #region VolumetricFlowRate
+
+        public static class VolumetricFlowRate
+        {
+            public static readonly MeasureUnit m3_s = new MeasureUnit(PQCollection.VolumetricFlowRate, "m3_s");
+            public static readonly MeasureUnit lt_s = new MeasureUnit(PQCollection.VolumetricFlowRate, "lt_s", m3_s, (1.0).Convert(Length3.lt, Length3.m3));
+            public static readonly MeasureUnit lt_min = new MeasureUnit(PQCollection.VolumetricFlowRate, "lt_min", lt_s, 1.0 / (1.0).Convert(Time.min, Time.sec));
+        }
+
+        #endregion
+
         #region Mass
 
         public static class Mass
