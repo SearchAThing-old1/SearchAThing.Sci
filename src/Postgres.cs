@@ -128,11 +128,12 @@ namespace SearchAThing
                 {
                     if (auto_header_width(header[i])) ws.Column(col).AdjustToContents();
                 }
-                if (autofilter) ws.Column(col).SetAutoFilter();
                 if (bold_header) ws.Cell(1, col).Style.Font.Bold = true;
             }
 
             if (block_header) ws.SheetView.Freeze(1, 0);
+
+            if (autofilter) ws.RangeUsed().SetAutoFilter();
 
             return wb;
         }
