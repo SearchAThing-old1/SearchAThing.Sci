@@ -253,6 +253,7 @@ namespace SearchAThing.Sci
             public static readonly MeasureUnit kPa = new MeasureUnit(PQCollection.Pressure, "kPa", Pa, 1e3);
             public static readonly MeasureUnit MPa = new MeasureUnit(PQCollection.Pressure, "MPa", kPa, 1e3);
             public static readonly MeasureUnit GPa = new MeasureUnit(PQCollection.Pressure, "GPa", MPa, 1e3);
+            public static readonly MeasureUnit bar = new MeasureUnit(PQCollection.Pressure, "bar", Pa, 1e5);
 
             public static MeasureUnit Auto(MeasureUnit force, MeasureUnit length)
             {
