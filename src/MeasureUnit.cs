@@ -136,6 +136,36 @@ namespace SearchAThing
     {
 
         /// <summary>
+        /// convert nullable double from to measure units
+        /// </summary>        
+        public static double? Convert(this double? value, MeasureUnit from, MeasureUnit to)
+        {
+            if (!value.HasValue) return null;
+
+            return value.Value.Convert(from, to);
+        }
+
+        /// <summary>
+        /// convert nullable double from to measure units
+        /// </summary>        
+        public static double? Convert(this double? value, IMUDomain mud, MeasureUnit to)
+        {
+            if (!value.HasValue) return null;
+
+            return value.Value.Convert(mud, to);
+        }
+
+        /// <summary>
+        /// convert nullable double from to measure units
+        /// </summary>        
+        public static double? Convert(this double? value, MeasureUnit from, IMUDomain mud)
+        {
+            if (!value.HasValue) return null;
+
+            return value.Value.Convert(from, mud);
+        }
+
+        /// <summary>
         /// convert given value from to measure units
         /// </summary>        
         public static double Convert(this double value, MeasureUnit from, MeasureUnit to)

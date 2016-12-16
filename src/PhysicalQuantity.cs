@@ -66,6 +66,24 @@ namespace SearchAThing.Sci
         [DataMember]
         public MeasureUnit LinearConversionRefMU { get; private set; }
 
+        Dictionary<string, MeasureUnit> _dict_mu;
+        Dictionary<string, MeasureUnit> dict_mu
+        {
+            get
+            {
+                if (_dict_mu == null) _dict_mu = MeasureUnits.ToDictionary(k => k.Name, v => v);
+                return _dict_mu;
+            }
+        }
+        public MeasureUnit ByName(string mu_name)
+        {
+            MeasureUnit mu = null;
+
+            dict_mu.TryGetValue(mu_name, out mu);
+
+            return mu;
+        }
+
         /// <summary>
         /// Convert between nonlinear measure units
         /// </summary>
@@ -213,6 +231,6 @@ namespace SearchAThing.Sci
             return Name;
         }
     };
-  
+
 
 }

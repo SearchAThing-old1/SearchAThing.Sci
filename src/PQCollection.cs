@@ -38,6 +38,24 @@ namespace SearchAThing.Sci
         // Physical Quantities
         //-------------------------------------------------------------------
 
+        static Dictionary<string, PhysicalQuantity> _dict_pq;
+        static Dictionary<string, PhysicalQuantity> dict_pq
+        {
+            get
+            {
+                if (_dict_pq == null) _dict_pq = PhysicalQuantities.ToDictionary(k => k.Name, v => v);
+                return _dict_pq;
+            }
+        }
+        public static PhysicalQuantity ByName(string pq_name)
+        {
+            PhysicalQuantity pq = null;
+
+            dict_pq.TryGetValue(pq_name, out pq);
+
+            return pq;
+        }
+
         static List<PhysicalQuantity> physicalQuantities;
         public static IEnumerable<PhysicalQuantity> PhysicalQuantities
         {
