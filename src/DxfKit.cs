@@ -35,6 +35,7 @@ using System.Text;
 using System.Globalization;
 using SearchAThing;
 using SearchAThing.Sci;
+using ColorMine.ColorSpaces;
 
 namespace SearchAThing
 {
@@ -441,6 +442,53 @@ namespace SearchAThing
         {
             eo.Color = color;
             return eo;
+        }
+
+        /// <summary>
+        /// retrieve rainbow rgb color from a double value between [0,1]
+        /// </summary>        
+        public static IRgb FromRainbow(this double factor)
+        {
+            /*
+             * test : http://serennu.com/colour/hsltorgb.php
+             * RGB: 218 165 32
+             * HSL: 43° 74% 49%
+             * Hex: #DAA520
+            */
+
+            /*
+             * RAINBOW COLORS
+             * 
+             * red hsl(0,100%,50%)
+             * orange hsl(30,100%,50%)
+             * yellow hsl(60,100%,50%)
+             * green hsl(120,100%,50%)
+             * cyan hsl(180,100%,50%)
+             * blue hsl(240,100%,50%)
+             * purple hsl(270,100%,50%)
+             * magenta hsl(300,100%,50%)
+             */
+            var hsl = new Hsl();
+
+            // rainbow hue on range [0,300]            
+            hsl.H = factor * 300;
+
+            // 100% saturation
+            hsl.S = 100;
+
+            // 50% luminance
+            hsl.L = 50;
+
+            return hsl.ToRgb();
+        }
+
+        public static AciColor AciColor(this IRgb rgb)
+        {
+            var r = (int)rgb.R;
+            var g = (int)rgb.G;
+            var b = (int)rgb.B;
+
+            return netDxf.AciColor.FromTrueColor((r << 16) + (g << 8) + b);
         }
 
         public static UCS ToDxfUCS(this CoordinateSystem3D cs, string name)
