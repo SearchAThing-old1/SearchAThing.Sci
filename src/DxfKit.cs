@@ -470,8 +470,8 @@ namespace SearchAThing
              */
             var hsl = new Hsl();
 
-            // rainbow hue on range [0,300]            
-            hsl.H = factor * 300;
+            // rainbow hue on range [0,240]
+            hsl.H = (1.0 - factor) * 240;
 
             // 100% saturation
             hsl.S = 100;
