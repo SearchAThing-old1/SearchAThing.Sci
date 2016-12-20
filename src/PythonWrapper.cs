@@ -33,217 +33,228 @@ using System.Globalization;
 using static System.Math;
 using static System.FormattableString;
 using System.Threading;
+using System.Diagnostics;
 
 namespace SearchAThing
 {
 
-    public class PythonWrapper
+    #region python pipe
+    public class PythonPipe
     {
-        ProcessTask processTask = null;
+
+        #region python path
+        static string _PythonExePathfilename;
+
+        internal static string PythonExePathfilename
+        {
+            get
+            {
+                if (_PythonExePathfilename == null)
+                {
+                    var searchFor =
+                        (
+                        Environment.OSVersion.Platform == PlatformID.Unix
+                        ||
+                        Environment.OSVersion.Platform == PlatformID.MacOSX
+                        )
+                        ? "python" : "python.exe";
+
+                    _PythonExePathfilename = Path.SearchInPath(searchFor);
+                    if (_PythonExePathfilename == null) _PythonExePathfilename = "";
+                }
+                return _PythonExePathfilename;
+            }
+        }
+        #endregion
+
+        object wrapper_initialized = new object();
         Action<string> debug = null;
 
-        string _TerminatingFn = "print('>>>')";
-        public string TerminatingFn
-        {
-            get { return _TerminatingFn; }
-            set { _TerminatingFn = value; }
-        }
+        Process process = null;
 
-        string _TerminateExpectedOutput = ">>>";
-        public string TerminateExpectedOutput
-        {
-            get { return _TerminateExpectedOutput; }
-            set { _TerminateExpectedOutput = value; }
-        }
-
-        public PythonWrapper(string args = "-i -q", Action<string> _debug = null)
+        public PythonPipe(string initial_imports = "", Action<string> _debug = null)
         {
             debug = _debug;
-            processTask = new ProcessTask("python.exe", ProcessTaskPathMode.SeachInEnvironment, "PYTHONPATH");
-            debug?.Invoke($" py: running [{processTask.Pathfilename}] [{processTask.Arguments}]");
-            processTask.Arguments = args;
-            processTask.RedirectStandardInput = true;
-            processTask.RedirectStandardOutput = true;
-            processTask.RedirectStandardError = true;
-        }
 
-        public void Start()
-        {
-            processTask.Start();
-        }
-
-        /// <summary>
-        /// restart the interpreter
-        /// </summary>
-        public void Recycle()
-        {
-            processTask.Recycle();
-        }
-
-        public void Kill()
-        {
-            processTask.Kill();
-        }
-
-        /// <summary>
-        /// Writes to the interpreter given command using terminating special function
-        /// in order to allow state the pipeline output end
-        /// </summary>       
-        public void Write(string str)
-        {
-            if (!processTask.IsActive)
+            var th = new Thread(() =>
             {
-                debug?.Invoke($" py: process not active");
-                throw new Exception($"process not active. Use Start()");
+                debug?.Invoke("initializing python");
+                lock (wrapper_initialized)
+                {
+                    var guid = Guid.NewGuid().ToString();
+
+                    process = new Process();
+                    process.StartInfo.FileName = PythonExePathfilename;
+                    process.StartInfo.Arguments = "-i -q";
+                    process.StartInfo.UseShellExecute = false;
+                    process.StartInfo.ErrorDialog = false;
+                    process.StartInfo.CreateNoWindow = true;
+                    process.StartInfo.RedirectStandardInput = true;
+                    process.StartInfo.RedirectStandardOutput = true;
+                    process.StartInfo.RedirectStandardError = true;
+
+                    var started = process.Start();
+
+                    var finished = false;
+                    process.OutputDataReceived += (a, b) =>
+                    {
+                        finished = true;
+                    };
+                    process.BeginOutputReadLine();
+
+                    process.StandardInput.AutoFlush = false;
+                    process.StandardInput.WriteLine($"{initial_imports}\r\nprint('{guid}')\r\n");
+                    process.StandardInput.Flush();
+
+                    while (!finished)
+                    {
+                        Thread.Sleep(250);
+                    }
+
+                    process.CancelOutputRead();
+                }
+                process.WaitForExit();
+            });
+            th.Start();
+        }
+
+        internal const int win32_string_len_safe = 3000;
+        internal const int win32_max_string_len = 4000;
+
+        public string Exec(string code)
+        {
+            if (Extensions.win32.Value)
+            {
+                var lines = code.Lines(removeEmptyLines: false);
+                var q = lines.FirstOrDefault(r => r.Length > win32_max_string_len);
+                if (q != null)
+                    throw new PythonException($"string too much large, use backslash to split. Line [{q}]", "");
             }
 
-            var sb = new StringBuilder(str);
+            var sw = new Stopwatch();
+            sw.Start();
 
-            sb.AppendLine();
-            sb.AppendLine(TerminatingFn);
+            string res = "";
 
-            debug?.Invoke($" py: write [{sb.ToString()}]");
+            debug?.Invoke("python exec");
 
-            processTask.Write(sb.ToString());
-        }
-
-        public async Task<string> Read()
-        {
-            var sb = new StringBuilder();
-
-            while (true)
+            lock (wrapper_initialized)
             {
-                string s = null;
-                try
+                var guid = Guid.NewGuid().ToString();
+
+                var sberr = new StringBuilder();
+                var sbout = new StringBuilder();
+
+                bool finished = false;
+                var hasErr = false;
+
+                process.ErrorDataReceived += (a, b) =>
                 {
-                    debug?.Invoke($" py: waiting output...");
-                    s = await processTask.ReadOutput(TimeSpan.FromMilliseconds(250));
-                }
-                catch (TaskCanceledException)
+                    var s = b.Data;
+                    while (s.StartsWith(">>> ")) s = s.Substring(4);
+                    sberr.AppendLine(s);
+                    hasErr = true;
+                };
+
+                process.OutputDataReceived += (a, b) =>
                 {
-                    if (sb.Length > 0) // something read but not >>> sign
+                    if (b.Data == guid) finished = true;
+                    sbout.AppendLine(b.Data);
+                };
+
+                process.BeginErrorReadLine();
+                process.BeginOutputReadLine();
+
+                process.StandardInput.Write(code + $"\r\nprint('{guid}')\r\n");
+                process.StandardInput.Flush();
+
+                while (!finished)
+                {
+                    Thread.Sleep(250);
+                    if (hasErr)
+                    {
+                        Thread.Sleep(250); // gather other errors
                         break;
+                    }
                 }
-                if (s == TerminateExpectedOutput) break; // normal termination with >>> sign
 
-                debug?.Invoke($" py: read [{s}]");
-                if (!string.IsNullOrEmpty(s)) sb.AppendLine(s);
+                process.CancelErrorRead();
+                process.CancelOutputRead();
+
+                if (hasErr) throw new PythonException($"{sberr.ToString()}", sbout.ToString());
+
+                res = sbout.ToString();
             }
 
-            return sb.ToString();
+            sw.Stop();
+            debug?.Invoke($"python took [{sw.Elapsed}]");
+
+            return res;
         }
 
-        public static MultiArray ParseArray(string res)
-        {
-            var r = res.Trim().StripBegin("array(").StripEnd(")");
+    }
+    #endregion
 
-            return new MultiArray(r);
+
+    public class PythonException : Exception
+    {
+
+        public PythonException(string errmsg, string output) : base(errmsg)
+        {
+            Error = errmsg;
+            Output = output;
         }
 
-        public class MultiArray
+        public string Error { get; private set; }
+        public string Output { get; private set; }
+
+        public override string ToString()
         {
+            return $"output [{Output}] error [{Error}]";
+        }
 
-            public string[] Elements { get; private set; }
-            public List<MultiArray> Children { get; private set; }
+    }
 
-            public IEnumerable<double> ElementsAsDouble
+    public static partial class Extensions
+    {
+
+        static bool? _win32;
+        internal static bool? win32
+        {
+            get
             {
-                get
+                if (!_win32.HasValue)
                 {
-                    string[] ee = Elements;
-
-                    if (Elements == null && Children.Count == 1 && Children.First().Elements != null)
-                        ee = Children.First().Elements;
-
-                    foreach (var x in ee)
-                    {
-                        yield return double.Parse(x, CultureInfo.InvariantCulture);
-                    }
+                    _win32 =
+                        Environment.OSVersion.Platform != PlatformID.Unix;
                 }
+                return _win32.Value;
             }
+        }
 
-            public IEnumerable<int> ElementsAsInt
+        /// <summary>
+        /// split given string using backslash if larger than 8k for win32 platform
+        /// </summary>        
+        public static string PythonSafeString(this string large_string)
+        {
+            var split_size = PythonPipe.win32_string_len_safe;
+
+            if (win32.Value && large_string.Length > split_size)
             {
-                get
+                var sb = new StringBuilder();
+                int i = 0;
+                var len = large_string.Length;
+                while (i < len)
                 {
-                    string[] ee = Elements;
-
-                    if (Elements == null && Children.Count == 1 && Children.First().Elements != null)
-                        ee = Children.First().Elements;
-
-                    foreach (var x in ee)
-                    {
-                        yield return int.Parse(x);
-                    }
+                    if (sb.Length > 0) sb.Append("\\\r\n");
+                    var size = Min(split_size, len - i);
+                    sb.Append(large_string.Substring(i, size));
+                    i += split_size;
                 }
+                return sb.ToString();
             }
-
-            public MultiArray(string s)
-            {
-                if (s.StartsWith(" ") || s.EndsWith(" ")) s = s.Trim();
-                if (s.Length == 0)
-                {
-                    Elements = new string[] { };
-                    return;
-                }
-
-                if (s.StartsWith("["))
-                {
-                    Children = new List<MultiArray>();
-                    var q = s.StripBegin("[").StripEnd("]").Trim();
-                    if (!q.StartsWith("["))
-                        Children.Add(new MultiArray(q));
-                    else
-                    {
-                        var inp = false;
-                        for (int i = 0; i < q.Length; ++i)
-                        {
-                            if (!inp && q[i] == '[')
-                            {
-                                var sb = new StringBuilder();
-                                while (i < q.Length && q[i] != ']')
-                                {
-                                    sb.Append(q[i]);
-                                    ++i;
-                                }
-                                if (i < q.Length) sb.Append(q[i]);
-
-                                Children.Add(new MultiArray(sb.ToString()));
-
-                                while (i < q.Length && q[i] != ',') ++i;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    var nrs = s.Split(',');
-
-                    Elements = nrs
-                        .Where(r => !r.Trim().StartsWith("dtype"))
-                        .Select(w =>
-                    {
-                        var str = w.Replace('\r', ' ').Replace('\n', ' ').StripEnd("]").Trim();
-                        return str;
-                    }
-                    ).ToArray();
-                }
-
-            }
-
-            public override string ToString()
-            {
-                if (Elements != null || Children.Count == 1 && Children.First().Elements != null)
-                {
-                    var dbls = Elements;
-                    if (Children.Count == 1) dbls = Children.First().Elements;
-
-                    return $"({string.Join(",", dbls.Select(w => Invariant($"{w}")))})";
-                }
-                else
-                    return $"array of {Children.Count} elements";
-            }
-
+            else
+                return large_string;
         }
 
     }
