@@ -127,7 +127,7 @@ namespace SearchAThing
                 if (s == TerminateExpectedOutput) break; // normal termination with >>> sign
 
                 debug?.Invoke($" py: read [{s}]");
-                sb.AppendLine(s);
+                if (!string.IsNullOrEmpty(s)) sb.AppendLine(s);
             }
 
             return sb.ToString();
