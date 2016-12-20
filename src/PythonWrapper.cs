@@ -24,16 +24,10 @@
 #endregion
 
 using System;
-using SearchAThing.Core;
-using System.Threading.Tasks;
 using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using System.Globalization;
-using static System.Math;
-using static System.FormattableString;
 using System.Threading;
 using System.Diagnostics;
+using System.IO;
 
 namespace SearchAThing
 {
@@ -59,7 +53,7 @@ namespace SearchAThing
                         )
                         ? "python" : "python.exe";
 
-                    _PythonExePathfilename = Path.SearchInPath(searchFor);
+                    _PythonExePathfilename = Core.Path.SearchInPath(searchFor);
                     if (_PythonExePathfilename == null) _PythonExePathfilename = "";
                 }
                 return _PythonExePathfilename;
@@ -72,8 +66,18 @@ namespace SearchAThing
 
         Process process = null;
 
-        public PythonPipe(string initial_imports = "", Action<string> _debug = null)
+        string TempFolder = null;
+        public bool DeleteTmpFiles { get; set; }
+
+        const string initial_imports_default = @"
+import matplotlib
+matplotlib.use('Agg')
+";
+
+        public PythonPipe(string initial_imports = "", Action<string> _debug = null, string tempFolder = null, bool delete_tmp_files = true)
         {
+            DeleteTmpFiles = delete_tmp_files;
+            TempFolder = tempFolder;
             debug = _debug;
 
             var th = new Thread(() =>
@@ -121,16 +125,32 @@ namespace SearchAThing
         internal const int win32_string_len_safe = 3000;
         internal const int win32_max_string_len = 4000;
 
+        /// <summary>
+        /// exec given code through a temp file
+        /// </summary>        
         public string Exec(string code)
         {
-            if (Extensions.win32.Value)
+            string tmp_pathfilename = null;
+            if (TempFolder == null)
+                tmp_pathfilename = System.IO.Path.GetTempFileName() + ".py";
+            else
+                tmp_pathfilename = System.IO.Path.Combine(TempFolder, "_" + Guid.NewGuid().ToString() + ".py");
+
+            var guid = Guid.NewGuid().ToString();
+
+            using (var sw = new StreamWriter(tmp_pathfilename))
             {
-                var lines = code.Lines(removeEmptyLines: false);
-                var q = lines.FirstOrDefault(r => r.Length > win32_max_string_len);
-                if (q != null)
-                    throw new PythonException($"string too much large, use backslash to split. Line [{q}]", "");
+                sw.WriteLine(code);
+                sw.WriteLine($"print('{guid}')");
             }
 
+            var res = ExecCode($"exec(open('{tmp_pathfilename.Replace('\\', '/')}').read())", _guid: guid);
+
+            return res;
+        }
+
+        public string ExecCode(string code, string _guid = null)
+        {
             var sw = new Stopwatch();
             sw.Start();
 
@@ -140,7 +160,7 @@ namespace SearchAThing
 
             lock (wrapper_initialized)
             {
-                var guid = Guid.NewGuid().ToString();
+                var guid = (_guid == null) ? Guid.NewGuid().ToString() : _guid;
 
                 var sberr = new StringBuilder();
                 var sbout = new StringBuilder();
@@ -158,22 +178,34 @@ namespace SearchAThing
 
                 process.OutputDataReceived += (a, b) =>
                 {
-                    if (b.Data == guid) finished = true;
-                    sbout.AppendLine(b.Data);
+                    var str = b.Data;
+
+                    if (str == guid) finished = true;
+                    else
+                    {
+                        if (str.EndsWith(guid + "\r\n"))
+                        {
+                            str = str.Substring(0, str.Length - guid.Length);
+                            finished = true;
+                        }
+
+                        sbout.AppendLine(str);
+                    }
                 };
 
                 process.BeginErrorReadLine();
                 process.BeginOutputReadLine();
 
-                process.StandardInput.Write(code + $"\r\nprint('{guid}')\r\n");
+                if (_guid == null) code += $"\r\nprint('{guid}')";
+                process.StandardInput.WriteLine(code);
                 process.StandardInput.Flush();
 
                 while (!finished)
                 {
-                    Thread.Sleep(250);
+                    Thread.Sleep(25);
                     if (hasErr)
                     {
-                        Thread.Sleep(250); // gather other errors
+                        Thread.Sleep(25); // gather other errors
                         break;
                     }
                 }
@@ -215,48 +247,6 @@ namespace SearchAThing
 
     }
 
-    public static partial class Extensions
-    {
 
-        static bool? _win32;
-        internal static bool? win32
-        {
-            get
-            {
-                if (!_win32.HasValue)
-                {
-                    _win32 =
-                        Environment.OSVersion.Platform != PlatformID.Unix;
-                }
-                return _win32.Value;
-            }
-        }
-
-        /// <summary>
-        /// split given string using backslash if larger than 8k for win32 platform
-        /// </summary>        
-        public static string PythonSafeString(this string large_string)
-        {
-            var split_size = PythonPipe.win32_string_len_safe;
-
-            if (win32.Value && large_string.Length > split_size)
-            {
-                var sb = new StringBuilder();
-                int i = 0;
-                var len = large_string.Length;
-                while (i < len)
-                {
-                    if (sb.Length > 0) sb.Append("\\\r\n");
-                    var size = Min(split_size, len - i);
-                    sb.Append(large_string.Substring(i, size));
-                    i += split_size;
-                }
-                return sb.ToString();
-            }
-            else
-                return large_string;
-        }
-
-    }
 
 }
