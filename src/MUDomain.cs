@@ -388,7 +388,7 @@ namespace SearchAThing
                 ElectricalConductance = new MeasureUnitWithDefaultTolerance(1e-9, MUCollection.ElectricalConductance.S);
                 ElectricalConductivity = new MeasureUnitWithDefaultTolerance(1e-9, MUCollection.ElectricalConductivity.S_m);
                 Turbidity = new MeasureUnitWithDefaultTolerance(1e-9, MUCollection.Turbidity.FNU);
-                VolumetricFlowRate = new MeasureUnitWithDefaultTolerance(1e-6, MUCollection.VolumetricFlowRate.lt_s);
+                VolumetricFlowRate = new MeasureUnitWithDefaultTolerance(1e-6, MUCollection.VolumetricFlowRate.m3_s);
             }
 
         }
