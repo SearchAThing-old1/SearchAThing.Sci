@@ -154,9 +154,7 @@ matplotlib.use('Agg')
             var sw = new Stopwatch();
             sw.Start();
 
-            string res = "";
-
-            debug?.Invoke("python exec");
+            string res = "";            
 
             lock (wrapper_initialized)
             {
