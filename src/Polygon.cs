@@ -207,6 +207,9 @@ namespace SearchAThing
             var ptHs = new HashSet<Vector3D>(new Vector3DEqualityComparer(tol));
             var ptsFiltered = pts;
 
+            var pts_bbox = _pts.BBox();
+            if (!pts_bbox.Contains2D(tol, _pt)) return false;
+
             if (zapDuplicates)
             {
                 var tmp = new List<Vector3D>();
