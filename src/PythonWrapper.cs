@@ -160,10 +160,13 @@ matplotlib.use('Agg')
         internal const int win32_string_len_safe = 3000;
         internal const int win32_max_string_len = 4000;
 
+        bool hasErr = false;
+        bool finished = false;
+
         /// <summary>
         /// exec given code through a temp file
         /// </summary>        
-        public string Exec(string code)
+        public StringWrapper Exec(StringWrapper code)
         {
             string tmp_pathfilename = null;
             if (TempFolder == null)
@@ -171,24 +174,14 @@ matplotlib.use('Agg')
             else
                 tmp_pathfilename = Path.Combine(TempFolder, "_" + Guid.NewGuid().ToString() + ".py");
 
-            var guid = Guid.NewGuid().ToString();
+            guid = Guid.NewGuid().ToString();
 
-            using (var sw = new StreamWriter(tmp_pathfilename))
+            using (var sw0 = new StreamWriter(tmp_pathfilename))
             {
-                sw.WriteLine(code);
-                sw.WriteLine($"print('{guid}')");
-            }
+                sw0.WriteLine(code.str);
+                sw0.WriteLine($"print('{guid}')");
+            }            
 
-            var res = ExecCode($"exec(open('{tmp_pathfilename.Replace('\\', '/')}').read())", _guid: guid);
-
-            return res;
-        }
-
-        bool hasErr = false;
-        bool finished = false;
-
-        public string ExecCode(string code, string _guid = null)
-        {
             sberr.Clear();
             sbout.Clear();
 
@@ -199,16 +192,15 @@ matplotlib.use('Agg')
 
             lock (wrapper_initialized)
             {
-                guid = (_guid == null) ? Guid.NewGuid().ToString() : _guid;                
-
                 finished = false;
                 hasErr = false;
 
                 process.BeginErrorReadLine();
                 process.BeginOutputReadLine();
 
-                if (_guid == null) code += $"\r\nprint('{guid}')";
-                process.StandardInput.WriteLine(code);
+                var cmd = $"exec(open('{tmp_pathfilename.Replace('\\', '/')}').read())";
+
+                process.StandardInput.WriteLine(cmd);
                 process.StandardInput.Flush();
 
                 while (!finished)
@@ -232,7 +224,9 @@ matplotlib.use('Agg')
             sw.Stop();
             debug?.Invoke($"python took [{sw.Elapsed}]");
 
-            return res;
+            File.Delete(tmp_pathfilename);
+
+            return new StringWrapper() { str = res };
         }
 
     }
