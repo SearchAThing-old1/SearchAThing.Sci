@@ -109,6 +109,12 @@ namespace SearchAThing
     public static partial class Extensions
     {
 
+        public static EntityObject SetLayer(this EntityObject eo, Layer layer)
+        {
+            eo.Layer = layer;
+            return eo;
+        }
+
         /// <summary>
         /// get the midpoint of the 3d polyline
         /// distance is computed over all segments
