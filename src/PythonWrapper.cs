@@ -65,6 +65,8 @@ namespace SearchAThing
         Action<string> debug = null;
 
         Process process = null;
+        StringBuilder sberr = new StringBuilder();
+        StringBuilder sbout = new StringBuilder();
 
         string TempFolder = null;
         public bool DeleteTmpFiles { get; set; }
@@ -97,29 +99,62 @@ matplotlib.use('Agg')
                     process.StartInfo.RedirectStandardOutput = true;
                     process.StartInfo.RedirectStandardError = true;
 
+                    process.OutputDataReceived += Process_OutputDataReceived;
+                    process.ErrorDataReceived += Process_ErrorDataReceived;
+
                     var started = process.Start();
 
-                    var finished = false;
-                    process.OutputDataReceived += (a, b) =>
-                    {
-                        finished = true;
-                    };
                     process.BeginOutputReadLine();
+                    process.BeginErrorReadLine();
 
                     process.StandardInput.AutoFlush = false;
                     process.StandardInput.WriteLine($"{initial_imports}\r\nprint('{guid}')\r\n");
                     process.StandardInput.Flush();
 
-                    while (!finished)
+                    while (!initialized)
                     {
                         Thread.Sleep(250);
                     }
 
                     process.CancelOutputRead();
+                    process.CancelErrorRead();
                 }
                 process.WaitForExit();
             });
             th.Start();
+        }
+
+        bool initialized = false;
+        string guid = null;
+
+        private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (!initialized)
+                initialized = true;
+            else
+            {
+                var str = e.Data;
+
+                if (str == guid) finished = true;
+                else
+                {
+                    if (str.EndsWith(guid + "\r\n"))
+                    {
+                        str = str.Substring(0, str.Length - guid.Length);
+                        finished = true;
+                    }
+
+                    sbout.AppendLine(str);
+                }
+            }
+        }
+
+        private void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            var s = e.Data;
+            while (s.StartsWith(">>> ")) s = s.Substring(4);
+            sberr.AppendLine(s);
+            hasErr = true;
         }
 
         internal const int win32_string_len_safe = 3000;
@@ -132,9 +167,9 @@ matplotlib.use('Agg')
         {
             string tmp_pathfilename = null;
             if (TempFolder == null)
-                tmp_pathfilename = System.IO.Path.GetTempFileName() + ".py";
+                tmp_pathfilename = Path.GetTempFileName() + ".py";
             else
-                tmp_pathfilename = System.IO.Path.Combine(TempFolder, "_" + Guid.NewGuid().ToString() + ".py");
+                tmp_pathfilename = Path.Combine(TempFolder, "_" + Guid.NewGuid().ToString() + ".py");
 
             var guid = Guid.NewGuid().ToString();
 
@@ -149,47 +184,25 @@ matplotlib.use('Agg')
             return res;
         }
 
+        bool hasErr = false;
+        bool finished = false;
+
         public string ExecCode(string code, string _guid = null)
         {
+            sberr.Clear();
+            sbout.Clear();
+
             var sw = new Stopwatch();
             sw.Start();
 
-            string res = "";            
+            string res = "";
 
             lock (wrapper_initialized)
             {
-                var guid = (_guid == null) ? Guid.NewGuid().ToString() : _guid;
+                guid = (_guid == null) ? Guid.NewGuid().ToString() : _guid;                
 
-                var sberr = new StringBuilder();
-                var sbout = new StringBuilder();
-
-                bool finished = false;
-                var hasErr = false;
-
-                process.ErrorDataReceived += (a, b) =>
-                {
-                    var s = b.Data;
-                    while (s.StartsWith(">>> ")) s = s.Substring(4);
-                    sberr.AppendLine(s);
-                    hasErr = true;
-                };
-
-                process.OutputDataReceived += (a, b) =>
-                {
-                    var str = b.Data;
-
-                    if (str == guid) finished = true;
-                    else
-                    {
-                        if (str.EndsWith(guid + "\r\n"))
-                        {
-                            str = str.Substring(0, str.Length - guid.Length);
-                            finished = true;
-                        }
-
-                        sbout.AppendLine(str);
-                    }
-                };
+                finished = false;
+                hasErr = false;
 
                 process.BeginErrorReadLine();
                 process.BeginOutputReadLine();
