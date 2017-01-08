@@ -26,10 +26,12 @@
 '
 
 Sub AutomaticCalc(data_pathfilename As String, output_pathfilename As String)
-'    Application.Visible = False
-'    Application.EnableCancelKey = xlDisabled
-'    Application.ScreenUpdating = False
-    Application.Calculation = xlCalculationManual
+	Application.Visible = False
+	Application.Calculation = xlCalculationManual
+	Application.ScreenUpdating = False
+	Application.DisplayStatusBar = False
+	Application.EnableEvents = False	
+ '   Application.EnableCancelKey = xlDisabled       
 
     ' create a tmp sheet
     Dim ws_tmp As Worksheet
@@ -44,8 +46,10 @@ Sub AutomaticCalc(data_pathfilename As String, output_pathfilename As String)
     ' remove tmp sheet
     DeleteSheetIfExists "tmp"
 
-'    Application.EnableCancelKey = xlInterrupt
- '   Application.ScreenUpdating = True
+'    Application.EnableCancelKey = xlInterrupt	
+	Application.EnableEvents = True
+	Application.DisplayStatusBar = True
+    Application.ScreenUpdating = True
     Application.Calculation = xlCalculationAutomatic
 End Sub
 
