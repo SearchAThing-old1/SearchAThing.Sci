@@ -415,7 +415,7 @@ namespace SearchAThing
         {
             var sb = new StringBuilder();
 
-            sb.Append(string.Format(CultureInfo.InvariantCulture, "FACE {0},{1},{2} {3},{4},{5} {6},{7},{8}",
+            sb.Append(string.Format(CultureInfo.InvariantCulture, "_FACE {0},{1},{2} {3},{4},{5} {6},{7},{8}",
                 face.FirstVertex.X, face.FirstVertex.Y, face.FirstVertex.Z,
                 face.SecondVertex.X, face.SecondVertex.Y, face.SecondVertex.Z,
                 face.ThirdVertex.X, face.ThirdVertex.Y, face.ThirdVertex.Z));

@@ -422,7 +422,7 @@ namespace SearchAThing
             {
                 get
                 {
-                    return string.Format(CultureInfo.InvariantCulture, "LINE {0},{1},{2} {3},{4},{5}\r\n",
+                    return string.Format(CultureInfo.InvariantCulture, "_LINE {0},{1},{2} {3},{4},{5}\r\n",
                         From.X, From.Y, From.Z, To.X, To.Y, To.Z);
                 }
             }

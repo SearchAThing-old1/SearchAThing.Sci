@@ -48,7 +48,7 @@ namespace SearchAThing
             {
                 get
                 {
-                    return string.Format(CultureInfo.InvariantCulture, "POINT {0},{1},{2}\r\n", X, Y, Z);
+                    return string.Format(CultureInfo.InvariantCulture, "_POINT {0},{1},{2}\r\n", X, Y, Z);
                 }
             }
 
@@ -56,7 +56,7 @@ namespace SearchAThing
             {
                 get
                 {
-                    return string.Format(CultureInfo.InvariantCulture, "LINE {0},{1},{2}\r\n", X, Y, Z);
+                    return string.Format(CultureInfo.InvariantCulture, "_LINE {0},{1},{2}\r\n", X, Y, Z);
                 }
             }
 

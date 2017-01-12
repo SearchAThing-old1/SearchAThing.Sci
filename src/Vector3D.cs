@@ -709,7 +709,7 @@ namespace SearchAThing
                     {
                         foreach (var p in points)
                         {
-                            sb.AppendLine(string.Format(CultureInfo.InvariantCulture, "POINT {0},{1},{2}", p.X, p.Y, p.Z));
+                            sb.AppendLine(string.Format(CultureInfo.InvariantCulture, "_POINT {0},{1},{2}", p.X, p.Y, p.Z));
                             sb.AppendLine();
                         }
                     }
@@ -719,7 +719,7 @@ namespace SearchAThing
                     {
                         foreach (var p in points)
                         {
-                            sb.AppendLine(string.Format(CultureInfo.InvariantCulture, "CIRCLE {0},{1},{2} {3}", p.X, p.Y, p.Z, radius));
+                            sb.AppendLine(string.Format(CultureInfo.InvariantCulture, "_CIRCLE {0},{1},{2} {3}", p.X, p.Y, p.Z, radius));
                             sb.AppendLine();
                         }
                     }
