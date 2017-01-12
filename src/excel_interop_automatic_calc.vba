@@ -183,6 +183,8 @@ Sub ReadDataIntoSheet(ws As Worksheet, pathfilename As String)
         .TextFileSpaceDelimiter = False
         .TextFileColumnDataTypes = Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
         .TextFileTrailingMinusNumbers = True
+		.TextFileDecimalSeparator = "."
+		.TextFileThousandsSeparator = ","
         .Refresh BackgroundQuery:=False
         .Delete
     End With
