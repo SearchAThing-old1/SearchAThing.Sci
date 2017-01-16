@@ -166,7 +166,7 @@ matplotlib.use('Agg')
         /// <summary>
         /// exec given code through a temp file
         /// </summary>        
-        public StringWrapper Exec(StringWrapper code)
+        public StringWrapper Exec(StringWrapper code, bool remove_tmp_file = true)
         {
             string tmp_pathfilename = null;
             if (TempFolder == null)
@@ -224,7 +224,7 @@ matplotlib.use('Agg')
             sw.Stop();
             debug?.Invoke($"python took [{sw.Elapsed}]");
 
-            File.Delete(tmp_pathfilename);
+            if (remove_tmp_file) File.Delete(tmp_pathfilename);
 
             return new StringWrapper() { str = res };
         }
