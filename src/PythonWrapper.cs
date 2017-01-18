@@ -91,7 +91,10 @@ matplotlib.use('Agg')
 
                     process = new Process();
                     process.StartInfo.FileName = PythonExePathfilename;
-                    process.StartInfo.Arguments = "-i -q";
+                    if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
+                        process.StartInfo.Arguments = "-i";
+                    else
+                        process.StartInfo.Arguments = "-i -q";
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.ErrorDialog = false;
                     process.StartInfo.CreateNoWindow = true;
@@ -104,20 +107,45 @@ matplotlib.use('Agg')
 
                     var started = process.Start();
 
-                    process.BeginOutputReadLine();
-                    process.BeginErrorReadLine();
-
-                    process.StandardInput.AutoFlush = false;
-                    process.StandardInput.WriteLine($"{initial_imports}\r\nprint('{guid}')\r\n");
-                    process.StandardInput.Flush();
-
-                    while (!initialized)
+                    if (started)
                     {
-                        Thread.Sleep(250);
-                    }
+                        try
+                        {
+                            process.BeginOutputReadLine();
+                            process.BeginErrorReadLine();
 
-                    process.CancelOutputRead();
-                    process.CancelErrorRead();
+                            process.StandardInput.AutoFlush = false;
+                            switch (Environment.OSVersion.Platform)
+                            {
+                                case PlatformID.Unix:
+                                case PlatformID.MacOSX:
+                                    {
+                                        process.StandardInput.WriteLine($"{initial_imports.Replace("\r\n", "\n")}\nprint('{guid}')\n");
+                                    }
+                                    break;
+
+                                default:
+                                    {
+                                        process.StandardInput.WriteLine($"{initial_imports}\r\nprint('{guid}')\r\n");
+                                    }
+                                    break;
+                            }
+
+                            process.StandardInput.Flush();                            
+
+                            while (!initialized)
+                            {
+                                Thread.Sleep(250);
+                            }
+
+                            process.CancelOutputRead();
+                            process.CancelErrorRead();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"err [{ex.Details()}]");
+                        }
+                    }
                 }
                 process.WaitForExit();
             });
@@ -128,7 +156,7 @@ matplotlib.use('Agg')
         string guid = null;
 
         private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
-        {
+        {            
             if (!initialized)
                 initialized = true;
             else
@@ -150,11 +178,14 @@ matplotlib.use('Agg')
         }
 
         private void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
-        {
+        {            
+            hasErr = true;
+
+            if (e.Data == null) return;
+
             var s = e.Data;
             while (s.StartsWith(">>> ")) s = s.Substring(4);
             sberr.AppendLine(s);
-            hasErr = true;
         }
 
         internal const int win32_string_len_safe = 3000;
@@ -167,7 +198,7 @@ matplotlib.use('Agg')
         /// exec given code through a temp file
         /// </summary>        
         public StringWrapper Exec(StringWrapper code, bool remove_tmp_file = true)
-        {
+        {            
             string tmp_pathfilename = null;
             if (TempFolder == null)
                 tmp_pathfilename = Path.GetTempFileName() + ".py";
@@ -178,9 +209,23 @@ matplotlib.use('Agg')
 
             using (var sw0 = new StreamWriter(tmp_pathfilename))
             {
-                sw0.WriteLine(code.str);
+                switch (Environment.OSVersion.Platform)
+                {
+                    case PlatformID.Unix:
+                    case PlatformID.MacOSX:
+                        {
+                            sw0.WriteLine(code.str.Replace("\r\n", "\n"));
+                        }
+                        break;
+
+                    default:
+                        {
+                            sw0.WriteLine(code.str);
+                        }
+                        break;
+                }
                 sw0.WriteLine($"print('{guid}')");
-            }            
+            }
 
             sberr.Clear();
             sbout.Clear();
