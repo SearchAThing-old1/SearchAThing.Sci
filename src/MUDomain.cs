@@ -102,6 +102,11 @@ namespace SearchAThing
                     return new MeasureUnitWithDefaultTolerance(DefaultTolerance * MU.PhysicalQuantity.ConvertFactor(MU, toMU), toMU);
             }
 
+            public Measure ToMeasure()
+            {
+                return new Measure(DefaultTolerance, MU);
+            }
+
             public override string ToString()
             {
                 return $"pq=[{PQName}] mu=[{MUName}] deftol=[{DefaultTolerance}]";
