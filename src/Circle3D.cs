@@ -146,6 +146,8 @@ namespace SearchAThing
 
                 yield return origPt.ToWCS(CS);
 
+                alpha += alpha_step;
+
                 while (alpha < alpha_stop)
                 {
                     var nextPt = origPt.RotateAboutZAxis(alpha);
