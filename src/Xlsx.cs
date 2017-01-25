@@ -45,7 +45,8 @@ namespace SearchAThing
             string _sheetName = null,
             bool sheetNameIgnoreCase = true,
             HashSet<string> columnNames = null,
-            bool columnNamesIgnoreCase = true)
+            bool columnNamesIgnoreCase = true,
+            string[] valid_sheetnames = null)
         {
             var wb = new XLWorkbook(xlsxPathfilename);
             string sheetName = _sheetName;
@@ -56,6 +57,8 @@ namespace SearchAThing
             {
                 foreach (var _ws in wb.Worksheets)
                 {
+                    if (valid_sheetnames != null && !valid_sheetnames.Any(r => r.ToLower() == _ws.Name.ToLower())) continue;
+
                     yield return new ImportXlsxDataSheet(_ws.Name, _ws.ParseXlsxData(columnNames, columnNamesIgnoreCase));
                 }
             }
