@@ -120,7 +120,7 @@ namespace SearchAThing
             IEnumerable<MeasureUnitWithDefaultTolerance> _All { get; }
 
             void SetupItem(string physicalQuantityName, string measureUnitName, double? defaultTolerance = null);
-
+            
             MeasureUnitWithDefaultTolerance Length { get; set; }
             MeasureUnitWithDefaultTolerance Length2 { get; set; }
             MeasureUnitWithDefaultTolerance Length3 { get; set; }
@@ -141,6 +141,7 @@ namespace SearchAThing
             MeasureUnitWithDefaultTolerance BendingMoment { get; set; }
             MeasureUnitWithDefaultTolerance Energy { get; set; }
             MeasureUnitWithDefaultTolerance Turbidity { get; set; }
+            MeasureUnitWithDefaultTolerance Frequency { get; set; }
             MeasureUnitWithDefaultTolerance Power { get; set; }
             MeasureUnitWithDefaultTolerance ElectricalConductance { get; set; }
             MeasureUnitWithDefaultTolerance ElectricalConductivity { get; set; }
@@ -286,6 +287,12 @@ namespace SearchAThing
             public MeasureUnitWithDefaultTolerance Turbidity { get; set; }
 
             /// <summary>
+            /// [T-1]
+            /// </summary>
+            [DataMember]
+            public MeasureUnitWithDefaultTolerance Frequency { get; set; }
+
+            /// <summary>
             /// [M L2 T−3]
             /// </summary>
             [DataMember]
@@ -393,6 +400,7 @@ namespace SearchAThing
                 ElectricalConductance = new MeasureUnitWithDefaultTolerance(1e-9, MUCollection.ElectricalConductance.S);
                 ElectricalConductivity = new MeasureUnitWithDefaultTolerance(1e-9, MUCollection.ElectricalConductivity.S_m);
                 Turbidity = new MeasureUnitWithDefaultTolerance(1e-9, MUCollection.Turbidity.FNU);
+                Frequency = new MeasureUnitWithDefaultTolerance(1e-9, MUCollection.Frequency.hz);
                 VolumetricFlowRate = new MeasureUnitWithDefaultTolerance(1e-6, MUCollection.VolumetricFlowRate.m3_s);
             }
 
@@ -428,8 +436,10 @@ namespace SearchAThing
             else if (mud.Energy.MU.PhysicalQuantity.id == id) return mud.Energy;
             else if (mud.Power.MU.PhysicalQuantity.id == id) return mud.Power;
             else if (mud.ElectricalConductance.MU.PhysicalQuantity.id == id) return mud.ElectricalConductance;
+            else if (mud.ElectricalConductivity.MU.PhysicalQuantity.id == id) return mud.ElectricalConductivity;
             else if (mud.VolumetricFlowRate.MU.PhysicalQuantity.id == id) return mud.VolumetricFlowRate;
             else if (mud.Turbidity.MU.PhysicalQuantity.id == id) return mud.Turbidity;
+            else if (mud.Frequency.MU.PhysicalQuantity.id == id) return mud.Frequency;
 
             throw new NotImplementedException($"unable to find measure domain for given physical quantity {physicalQuantity}");
         }
