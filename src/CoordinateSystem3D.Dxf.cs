@@ -36,6 +36,9 @@ namespace SearchAThing
         public partial class CoordinateSystem3D
         {
 
+            /// <summary>
+            /// CS RGB ( X=RED Y=GREEN Z=BLUE )
+            /// </summary>            
             public string ToCadString(double axisLen)
             {
                 var sb = new StringBuilder();
@@ -44,11 +47,11 @@ namespace SearchAThing
                 sb.Append(new Line3D(Origin, BaseX * axisLen, Line3DConstructMode.PointAndVector).CadScript);
                 sb.Append("\r\n");
 
-                sb.Append(string.Format("-COLOR 2\r\n"));
+                sb.Append(string.Format("-COLOR 3\r\n"));
                 sb.Append(new Line3D(Origin, BaseY * axisLen, Line3DConstructMode.PointAndVector).CadScript);
                 sb.Append("\r\n");
 
-                sb.Append(string.Format("-COLOR 3\r\n"));
+                sb.Append(string.Format("-COLOR 5\r\n"));
                 sb.Append(new Line3D(Origin, BaseZ * axisLen, Line3DConstructMode.PointAndVector).CadScript);
                 sb.Append("\r\n");
 
