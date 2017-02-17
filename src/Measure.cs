@@ -86,6 +86,22 @@ namespace SearchAThing.Sci
             return new Measure(v.Value * s, v.MU);
         }
 
+        /// <summary>
+        /// scalar mul
+        /// </summary>        
+        public static Measure operator /(Measure v, double s)
+        {
+            return new Measure(v.Value / s, v.MU);
+        }
+
+        /// <summary>
+        /// scalar mul
+        /// </summary>        
+        public static Measure operator -(Measure a)
+        {
+            return -1 * a;
+        }
+
         #endregion
 
         /// <summary>
@@ -195,6 +211,15 @@ namespace SearchAThing.Sci
 
             return null;
         }
+
+        /// <summary>
+        /// return this measure rounded by the given tol
+        /// </summary>        
+        public Measure MRound(Measure tol)
+        {
+            return Value.MRound(tol.ConvertTo(MU).Value) * MU;
+        }
+
     }
 
 }

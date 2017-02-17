@@ -108,10 +108,20 @@ namespace SearchAThing
                 return new Measure(value, mu);
             }
 
+            /// <summary>
+            /// retrieve correspondent measure unit ( same physical quantity ) from given domain
+            /// </summary>            
+            public MeasureUnit Related(MUDomain mud)
+            {
+                if (PhysicalQuantity.id == PQCollection.Adimensional.id) return MUCollection.Adimensional.adim;
+
+                return mud.ByPhysicalQuantity(PhysicalQuantity).MU;
+            }
+
             public override string ToString()
             {
                 return Name;
-            }
+            }           
 
             public bool Equals(MeasureUnit other)
             {
@@ -189,6 +199,15 @@ namespace SearchAThing
         public static double Convert(this double value, IMUDomain from, MeasureUnit to)
         {
             return Measure.Convert(value, from, to);
+        }
+
+        /// <summary>
+        /// convert given value from the given measure unit in the domain corresponding to the physical quantity of given to
+        /// and build a measure with given to measure unit
+        /// </summary>        
+        public static Measure ConvertToMeasure(this double value, IMUDomain from, MeasureUnit to)
+        {
+            return value.Convert(from, to) * to;
         }
 
     }
