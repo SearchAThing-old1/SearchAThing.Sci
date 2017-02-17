@@ -488,6 +488,9 @@ namespace SearchAThing
             return hsl.ToRgb();
         }
 
+        /// <summary>
+        /// rgb contains r,g,b field each with 0-255 range integer value
+        /// </summary>        
         public static AciColor AciColor(this IRgb rgb)
         {
             var r = (int)rgb.R;
