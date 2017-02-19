@@ -76,7 +76,8 @@ import matplotlib
 matplotlib.use('Agg')
 ";
 
-        public PythonPipe(string initial_imports = "", Action<string> _debug = null, string tempFolder = null, bool delete_tmp_files = true)
+        public PythonPipe(string initial_imports = "", Action<string> _debug = null, string tempFolder = null, bool delete_tmp_files = true,
+            string custom_python_executable = null)
         {
             DeleteTmpFiles = delete_tmp_files;
             TempFolder = tempFolder;
@@ -90,7 +91,7 @@ matplotlib.use('Agg')
                     var guid = Guid.NewGuid().ToString();
 
                     process = new Process();
-                    process.StartInfo.FileName = PythonExePathfilename;
+                    process.StartInfo.FileName = custom_python_executable == null ? PythonExePathfilename : custom_python_executable;
                     if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
                         process.StartInfo.Arguments = "-i";
                     else
@@ -131,7 +132,7 @@ matplotlib.use('Agg')
                                     break;
                             }
 
-                            process.StandardInput.Flush();                            
+                            process.StandardInput.Flush();
 
                             while (!initialized)
                             {
@@ -156,7 +157,7 @@ matplotlib.use('Agg')
         string guid = null;
 
         private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
-        {            
+        {
             if (!initialized)
                 initialized = true;
             else
@@ -178,7 +179,7 @@ matplotlib.use('Agg')
         }
 
         private void Process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
-        {            
+        {
             hasErr = true;
 
             if (e.Data == null) return;
@@ -198,7 +199,7 @@ matplotlib.use('Agg')
         /// exec given code through a temp file
         /// </summary>        
         public StringWrapper Exec(StringWrapper code, bool remove_tmp_file = true)
-        {            
+        {
             string tmp_pathfilename = null;
             if (TempFolder == null)
                 tmp_pathfilename = Path.GetTempFileName() + ".py";
@@ -261,7 +262,7 @@ matplotlib.use('Agg')
                 process.CancelErrorRead();
                 process.CancelOutputRead();
 
-                if (hasErr) throw new PythonException($"{sberr.ToString()}", sbout.ToString());
+                if (hasErr) throw new PythonException($"pyhton[{PythonExePathfilename}] script[{tmp_pathfilename}] : {sberr.ToString()}", sbout.ToString());
 
                 res = sbout.ToString();
             }
