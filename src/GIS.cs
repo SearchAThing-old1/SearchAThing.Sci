@@ -252,6 +252,20 @@ namespace SearchAThing
         public static class CRSCatalog
         {
 
+            static CRSData _GoogleMercator;
+            /// <summary>
+            /// Well known Google Mercator EPSG:3857 world latlon system
+            /// </summary>
+            public static CRSData GoogleMercator
+            {
+                get
+                {
+                    if (_GoogleMercator == null) _GoogleMercator = CRSList["EPSG:3857"];
+
+                    return _GoogleMercator;
+                }
+            }
+
             static CRSData _WGS84;
             /// <summary>
             /// Well known WGS84 world latlon system
