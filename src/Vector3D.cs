@@ -619,11 +619,13 @@ namespace SearchAThing
         /// <summary>
         /// support class for DistinctKeepOrder extension
         /// </summary>
-        public class Vector3DWithOrder : Vector3D
+        public class Vector3DWithOrder
         {
             public int Order { get; private set; }
-            public Vector3DWithOrder(Vector3D v, int order) : base(v.X, v.Y, v.Z)
+            public Vector3D Vector { get; private set; }
+            public Vector3DWithOrder(Vector3D v, int order)
             {
+                Vector = v;
                 Order = order;
             }
         }
@@ -639,12 +641,12 @@ namespace SearchAThing
 
             public bool Equals(Vector3DWithOrder x, Vector3DWithOrder y)
             {
-                return cmp.Equals(x, y);
+                return cmp.Equals(x.Vector, y.Vector);
             }
 
             public int GetHashCode(Vector3DWithOrder obj)
             {
-                return cmp.GetHashCode(obj);
+                return cmp.GetHashCode(obj.Vector);
             }
         }
 
