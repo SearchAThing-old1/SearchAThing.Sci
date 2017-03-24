@@ -23,6 +23,7 @@
 */
 #endregion
 
+using System.Collections.Generic;
 using static System.Math;
 
 namespace SearchAThing.Sci
@@ -132,6 +133,19 @@ namespace SearchAThing.Sci
                 BaseY.RotateAboutAxis(axis, angleRad),
                 BaseZ.RotateAboutAxis(axis, angleRad));
         }
+
+    }
+
+    public static partial class Extensions
+    {
+
+        /// <summary>
+        /// project given vector to the given cs ( zap vector z' to 0 )
+        /// </summary>        
+        public static Vector3D Project(this Vector3D v, CoordinateSystem3D cs)
+        {
+            return v.ToUCS(cs).Set(OrdIdx.Z, 0).ToWCS(cs);
+        }      
 
     }
 
