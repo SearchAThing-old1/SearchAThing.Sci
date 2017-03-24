@@ -589,7 +589,7 @@ namespace SearchAThing
             /// </summary>            
             public string StringRepresentation()
             {
-                return Invariant($"({X}, {Y}, {Z})");                
+                return Invariant($"({X}, {Y}, {Z})");
             }
 
         }
@@ -616,6 +616,38 @@ namespace SearchAThing
             }
         }
 
+        /// <summary>
+        /// support class for DistinctKeepOrder extension
+        /// </summary>
+        public class Vector3DWithOrder : Vector3D
+        {
+            public int Order { get; private set; }
+            public Vector3DWithOrder(Vector3D v, int order) : base(v.X, v.Y, v.Z)
+            {
+                Order = order;
+            }
+        }
+
+        public class Vector3DWithOrderEqualityComparer : IEqualityComparer<Vector3DWithOrder>
+        {
+            Vector3DEqualityComparer cmp;
+
+            public Vector3DWithOrderEqualityComparer(Vector3DEqualityComparer _cmp)
+            {
+                cmp = _cmp;
+            }
+
+            public bool Equals(Vector3DWithOrder x, Vector3DWithOrder y)
+            {
+                return cmp.Equals(x, y);
+            }
+
+            public int GetHashCode(Vector3DWithOrder obj)
+            {
+                return cmp.GetHashCode(obj);
+            }
+        }
+
     }
 
     public enum OrdIdx
@@ -635,12 +667,26 @@ namespace SearchAThing
     {
 
         /// <summary>
+        /// retrieve distinct of given vector set ensuring to maintain given order
+        /// </summary>        
+        public static IEnumerable<Vector3D> DistinctKeepOrder(this IEnumerable<Vector3D> vectors, Vector3DEqualityComparer cmp)
+        {
+            var ocmp = new Vector3DWithOrderEqualityComparer(cmp);
+
+            return vectors
+                .Select((w, i) => new Vector3DWithOrder(w, i))
+                .Distinct(ocmp)
+                .OrderBy(w => w.Order)
+                .Cast<Vector3D>();
+        }
+
+        /// <summary>
         /// array invariant string vector3d representation "(x1,y1,z2);(x2,y2,z2)"
         /// </summary>        
         public static string StringRepresentation(this IEnumerable<Vector3D> pts)
         {
             return string.Join(";", pts.Select(g => g.StringRepresentation()));
-        }        
+        }
 
         /// <summary>
         /// compute length of polyline from given seq_pts
