@@ -214,6 +214,7 @@ namespace SearchAThing.Sci
 
         /// <summary>
         /// return this measure rounded by the given tol
+        /// this will not change current MU
         /// </summary>        
         public Measure MRound(Measure tol)
         {
