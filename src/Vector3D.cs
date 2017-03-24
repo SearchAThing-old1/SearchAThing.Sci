@@ -679,7 +679,7 @@ namespace SearchAThing
                 .Select((w, i) => new Vector3DWithOrder(w, i))
                 .Distinct(ocmp)
                 .OrderBy(w => w.Order)
-                .Cast<Vector3D>();
+                .Select(w => w.Vector);
         }
 
         /// <summary>
