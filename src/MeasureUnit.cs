@@ -108,6 +108,13 @@ namespace SearchAThing
                 return new Measure(value, mu);
             }
 
+            public static Measure operator *(double? value, MeasureUnit mu)
+            {
+                if (value.HasValue) return value.Value * mu;
+
+                return null;
+            }
+
             /// <summary>
             /// retrieve correspondent measure unit ( same physical quantity ) from given domain
             /// </summary>            
