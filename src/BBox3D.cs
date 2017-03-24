@@ -26,6 +26,7 @@
 using static System.Math;
 using System.Collections.Generic;
 using SearchAThing.Sci;
+using System.Linq;
 
 namespace SearchAThing
 {
@@ -55,6 +56,31 @@ namespace SearchAThing
                 }
             }
 
+            /// <summary>
+            /// build 8 coords 3d of current bbox
+            /// </summary>
+            public IEnumerable<Vector3D> Coords3D
+            {
+                get
+                {
+                    var min = Min;
+                    var max = Max;
+                    var dx = new Vector3D(Size.X, 0, 0);
+                    var dy = new Vector3D(0, Size.Y, 0);
+                    var dz = new Vector3D(0, 0, Size.Z);
+
+                    yield return min;
+                    yield return min + dx;
+                    yield return min + dx + dy;
+                    yield return min + dy;
+
+                    yield return min + dz;
+                    yield return min + dx + dz;
+                    yield return min + dx + dy + dz;
+                    yield return min + dy + dz;
+                }
+            }
+           
             public BBox3D()
             {
             }
