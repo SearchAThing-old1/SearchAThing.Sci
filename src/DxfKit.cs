@@ -220,17 +220,20 @@ namespace SearchAThing
 
         /// <summary>
         /// given points a,b,c it will return a,b,c,a ( first is repeated at end )
+        /// it avoid to repeat first at end when latest point already equals the first one
         /// </summary>        
-        public static IEnumerable<Vector3D> RepeatFirstAtEnd(this IEnumerable<Vector3D> pts)
+        public static IEnumerable<Vector3D> RepeatFirstAtEnd(this IEnumerable<Vector3D> pts, double tol)
         {
             Vector3D first = null;
+            Vector3D last = null;
             foreach (var x in pts)
             {
                 if (first == null) first = x;
+                last = x;
                 yield return x;
             }
-            yield return first;
 
+            if (!last.EqualsTol(tol, first)) yield return first;
         }
 
         public static IEnumerable<EntityObject> CoordTransform(this DxfDocument dxf, Func<Vector3D, Vector3D> transform)
