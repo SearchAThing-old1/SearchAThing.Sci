@@ -150,7 +150,7 @@
       <Version>10.0.1</Version>
     </PackageReference>
     <PackageReference Include="Npgsql">
-      <Version>3.2.2</Version>
+      <Version>3.1.9</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
