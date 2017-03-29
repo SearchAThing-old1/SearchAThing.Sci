@@ -203,7 +203,16 @@ namespace SearchAThing
                 var dp = this.DotProduct(to);
 
                 // alfa = acos(dp / (|a| |b|))
-                var w = dp / (Length * to.Length);
+                var L2 = Length * to.Length;
+                var w = dp / L2;
+
+                if (Abs(dp).EqualsTol(tolLen, L2))
+                {
+                    if (dp * L2 < 0)
+                        return PI;
+                    else
+                        return 0;
+                }
 
                 return Acos(w);
             }
