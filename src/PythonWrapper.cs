@@ -33,7 +33,7 @@ namespace SearchAThing
 {
 
     #region python pipe
-    public class PythonPipe
+    public class PythonPipe : IDisposable
     {
 
         #region python path
@@ -76,6 +76,8 @@ import matplotlib
 matplotlib.use('Agg')
 ";
 
+        Thread th_pipe = null;
+
         public PythonPipe(string initial_imports = "", Action<string> _debug = null, string tempFolder = null, bool delete_tmp_files = true,
             string custom_python_executable = null)
         {
@@ -83,7 +85,7 @@ matplotlib.use('Agg')
             TempFolder = tempFolder;
             debug = _debug;
 
-            var th = new Thread(() =>
+            th_pipe = new Thread(() =>
             {
                 debug?.Invoke("initializing python");
                 lock (wrapper_initialized)
@@ -150,7 +152,7 @@ matplotlib.use('Agg')
                 }
                 process.WaitForExit();
             });
-            th.Start();
+            th_pipe.Start();
         }
 
         bool initialized = false;
@@ -275,6 +277,16 @@ matplotlib.use('Agg')
             return new StringWrapper() { str = res };
         }
 
+        public void Dispose()
+        {
+            if (th_pipe != null)
+            {
+                debug?.Invoke($"kill python");
+                process.Kill();
+                th_pipe.Abort();
+                th_pipe = null;
+            }
+        }
     }
     #endregion
 
