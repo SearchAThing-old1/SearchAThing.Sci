@@ -126,7 +126,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ClosedXML">
-      <Version>0.86.0</Version>
+      <Version>0.87.1</Version>
     </PackageReference>
     <PackageReference Include="ColorMine">
       <Version>1.1.3</Version>
@@ -147,10 +147,10 @@
       <Version>2.4.3</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>10.0.1</Version>
+      <Version>10.0.2</Version>
     </PackageReference>
     <PackageReference Include="Npgsql">
-      <Version>3.1.9</Version>
+      <Version>3.2.2</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
