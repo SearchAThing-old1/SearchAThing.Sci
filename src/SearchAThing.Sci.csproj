@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Vbe.Interop, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -140,8 +143,8 @@
     <PackageReference Include="DocX">
       <Version>1.0.0.22</Version>
     </PackageReference>
-    <PackageReference Include="ExcelDna.Interop">
-      <Version>14.0.1</Version>
+    <PackageReference Include="Microsoft.Office.Interop.Excel">
+      <Version>15.0.4795.1000</Version>
     </PackageReference>
     <PackageReference Include="MongoDB.Bson">
       <Version>2.4.3</Version>
