@@ -33,9 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Vbe.Interop, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -52,7 +49,6 @@
     <Compile Include="BBox3D.Dxf.cs" />
     <Compile Include="Circle3D.cs" />
     <Compile Include="CoordinateSystem3D.Dxf.cs" />
-    <EmbeddedResource Include="excel_interop_automatic_calc.vba" />
     <Compile Include="DocX.cs" />
     <Compile Include="Fluent.cs" />
     <Compile Include="DxfKit.cs" />
@@ -67,7 +63,6 @@
     <Compile Include="Postgres.cs" />
     <Compile Include="Polygon.cs" />
     <Compile Include="Matrix3D.cs" />
-    <Compile Include="Interop.Excel.cs" />
     <Compile Include="PythonWrapper.cs" />
     <Compile Include="SampleModel.cs" />
     <Compile Include="Line3D.cs" />
@@ -142,9 +137,6 @@
     </PackageReference>
     <PackageReference Include="DocX">
       <Version>1.0.0.22</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Office.Interop.Excel">
-      <Version>15.0.4795.1000</Version>
     </PackageReference>
     <PackageReference Include="MongoDB.Bson">
       <Version>2.4.3</Version>
