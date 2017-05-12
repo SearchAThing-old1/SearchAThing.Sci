@@ -30,7 +30,7 @@ using System.Drawing.Imaging;
 using System.IO;
 
 //
-// extensions to the http://docx.codeplex.com/
+// extensions to the https://github.com/devel0/DocX
 //
 
 namespace SearchAThing
@@ -67,6 +67,14 @@ namespace SearchAThing
             return (int)(measure.ConvertTo(MUCollection.Length.inch).Value * 72.0);
         }
 
+        public static Picture SetSizeInches(this Picture pic, double wInch, double hInch)
+        {
+            pic.WidthInches = wInch;
+            pic.HeightInches = hInch;
+
+            return pic;
+        }
+
         /// <summary>
         /// fit image 100% considering margin
         /// </summary>        
@@ -79,26 +87,12 @@ namespace SearchAThing
 
             factor = factor * (page_width_avail_in / page_width_in);
 
-            Picture res = null;
+            var img = docx.AddImage(pathfilename);
+            var res = img.CreatePicture();
+            var ratio_w_h = (double)res.Width / res.Height;            
 
-            using (var ms = new MemoryStream())
-            {
-                var _img = System.Drawing.Image.FromFile(pathfilename);
-
-                var horiz_scale = 96f / _img.HorizontalResolution;
-                var vert_scale = 96f / _img.VerticalResolution;
-
-                var resized_img = new Bitmap(_img, new Size((int)(_img.Width * horiz_scale), (int)(_img.Height * vert_scale)));
-                resized_img.Save(ms, ImageFormat.Bmp);
-                ms.Seek(0, SeekOrigin.Begin);
-
-                var img = docx.AddImage(ms);
-                res = img.CreatePicture();
-
-                res.Width = (int)(horiz_scale * factor * _img.Width);
-                res.Height = (int)(vert_scale * factor * _img.Height);
-            }
-
+            res.SetSizeInches(page_width_avail_in, page_width_avail_in / ratio_w_h);
+            
             return res;
         }
 
