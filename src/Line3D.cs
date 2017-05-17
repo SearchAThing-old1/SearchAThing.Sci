@@ -200,7 +200,7 @@ namespace SearchAThing
             /// <summary>
             /// Infinite line contains point.            
             /// </summary>        
-            public bool LineContainsPoint(double tol, Vector3D p, bool segmentMode = false)
+            public bool LineContainsPoint(double tol, Vector3D p, bool segmentMode = false, bool excludeExtreme = false)
             {
                 var prj = p.Project(this);
 
@@ -221,17 +221,27 @@ namespace SearchAThing
                     else if (!(V.Y.EqualsTol(tol, 0))) s = (p.Y - From.Y) / V.Y;
                     else if (!(V.Z.EqualsTol(tol, 0))) s = (p.Z - From.Z) / V.Z;
 
-                    // s is the scalar of V vector that runs From->To 
+                    if (excludeExtreme)
+                    {
+                        if (p.EqualsTol(tol, From)) return false;
+                        if (p.EqualsTol(tol, To)) return false;
 
-                    if (s >= 0.0 && s <= 1.0) return true;
-
-                    // point on the line but outside exact segment
-                    // check with tolerance
-
-                    if (s < 0)
-                        return p.EqualsTol(tol, From);
+                        return (s > 0 && s < 1);
+                    }
                     else
-                        return p.EqualsTol(tol, To);
+                    {
+                        // s is the scalar of V vector that runs From->To 
+
+                        if (s >= 0.0 && s <= 1.0) return true;
+
+                        // point on the line but outside exact segment
+                        // check with tolerance
+
+                        if (s < 0)
+                            return p.EqualsTol(tol, From);
+                        else
+                            return p.EqualsTol(tol, To);
+                    }
                 }
 
                 return true;
@@ -242,9 +252,9 @@ namespace SearchAThing
             /// Note: tol must be Constant.NormalizedLengthTolerance
             /// if comparing normalized vectors
             /// </summary>        
-            public bool SegmentContainsPoint(double tol, Vector3D p)
+            public bool SegmentContainsPoint(double tol, Vector3D p, bool excludeExtreme = false)
             {
-                return LineContainsPoint(tol, p, segmentMode: true);
+                return LineContainsPoint(tol, p, segmentMode: true, excludeExtreme: excludeExtreme);
             }
 
             /// <summary>
@@ -418,6 +428,68 @@ namespace SearchAThing
             }
             public Vector3D MidPoint { get { return (From + To) / 2; } }
 
+            /// <summary>
+            /// split current segment into one or more depending on which of given split points was found on the segment
+            /// TODO : not optimized
+            /// </summary>            
+            public IReadOnlyList<Line3D> Split(double tolLen, IReadOnlyList<Vector3D> splitPts)
+            {
+                var res = new List<Line3D>() { this };
+
+                if (splitPts == null || splitPts.Count == 0) return res;
+
+                var splitPtIdx = 0;
+
+                while (splitPtIdx < splitPts.Count)
+                {
+                    List<Line3D> repl = null;
+
+                    for (int i = 0; i < res.Count; ++i)
+                    {
+                        var spnt = splitPts[splitPtIdx];
+                        if (res[i].SegmentContainsPoint(tolLen, spnt, excludeExtreme: true))
+                        {
+                            repl = new List<Line3D>();
+                            for (int h = 0; h < res.Count; ++h)
+                            {
+                                if (h == i)
+                                {
+                                    var l = res[h];
+                                    repl.Add(new Line3D(l.From, spnt));
+                                    repl.Add(new Line3D(spnt, l.To));
+                                }
+                                else
+                                    repl.Add(res[h]);
+                            }
+
+                            break; // break cause need to reeval
+                        }
+                    }
+
+                    if (repl != null)
+                    {
+                        res = repl;
+                        continue;
+                    }
+                    else
+                        splitPtIdx++;
+                }
+
+                return res;
+            }
+
+            /// <summary>
+            /// Retrieve this segment if from matches the given one
+            /// or a new segment reversed
+            /// precondition: this segment must have from or to equals given from                        
+            /// </summary>            
+            public Line3D EnsureFrom(double tolLen, Vector3D from)
+            {
+                if (From.EqualsTol(tolLen, from)) return this;
+                if (To.EqualsTol(tolLen, from)) return Reverse();
+                throw new System.Exception($"not found valuable from-to in seg [{this}] that can satisfy from or to equals [{from}]");
+            }
+
             public string CadScript
             {
                 get
@@ -425,6 +497,25 @@ namespace SearchAThing
                     return string.Format(CultureInfo.InvariantCulture, "_LINE {0},{1},{2} {3},{4},{5}\r\n",
                         From.X, From.Y, From.Z, To.X, To.Y, To.Z);
                 }
+            }
+
+            /// <summary>
+            /// hash string with given tolerance
+            /// </summary>            
+            public string ToString(double tolLen)
+            {
+                var pts_en = DisambiguatedPoints.GetEnumerator();
+
+                var res = "";
+
+                while (pts_en.MoveNext())
+                {
+                    if (res.Length > 0) res += "_";
+
+                    res += pts_en.Current.ToString(tolLen);
+                }
+
+                return res;
             }
 
             public override string ToString()
@@ -523,6 +614,7 @@ namespace SearchAThing
                     {
                         var i_contains_j_from = segs[i].SegmentContainsPoint(tol_len, segs[j].From);
                         var i_contains_j_to = segs[i].SegmentContainsPoint(tol_len, segs[j].To);
+                        if (!segs[i].Colinear(tol_len, segs[j])) continue;
 
                         // i contains j entirely
                         if (i_contains_j_from && i_contains_j_to)
@@ -569,6 +661,105 @@ namespace SearchAThing
 
             return segs;
         }
+
+        /// <summary>
+        /// autointersect given list of segments
+        /// ( duplicates and overlapping are removed )
+        /// TODO : dummy function, optimize
+        /// </summary>       
+        public static IReadOnlyList<Line3D> AutoIntersect(this IReadOnlyList<Line3D> segs, double tolLen,
+            bool mergeColinearSegments = true, IEnumerable<Vector3D> addictionalSplitPoints = null)
+        {
+            segs = segs.MergeColinearSegments(tolLen).ToList();
+
+            var segCmp = new Line3DEqualityComparer(tolLen);
+            var vecCmp = new Vector3DEqualityComparer(tolLen);
+
+            // line_hs -> split points
+            var splitPts = new Dictionary<Line3D, HashSet<Vector3D>>(segCmp);
+
+            // fill splitPts dictionary with list of segments split points
+            for (int i = 0; i < segs.Count; ++i)
+            {
+                for (int j = 0; j < segs.Count; ++j)
+                {
+                    if (i == j) continue;
+
+                    var seg_i = segs[i];
+                    var seg_j = segs[j];
+
+                    System.Console.WriteLine($"seg_i = {seg_i}");
+                    System.Console.WriteLine($"seg_j = {seg_j}");
+
+                    var q = seg_i.Intersect(tolLen, seg_j, true, true);
+                    if (q != null)
+                    {
+                        System.Console.WriteLine($"  intersect at {q}");
+
+                        HashSet<Vector3D> i_hs = null;
+                        HashSet<Vector3D> j_hs = null;
+
+                        if (!q.EqualsTol(tolLen, seg_i.From) && !q.EqualsTol(tolLen, seg_i.To))
+                        {
+                            if (!splitPts.TryGetValue(seg_i, out i_hs))
+                            {
+                                i_hs = new HashSet<Vector3D>(vecCmp);
+                                splitPts.Add(seg_i, i_hs);
+                            }
+                            i_hs.Add(q);
+                        }
+
+                        if (!q.EqualsTol(tolLen, seg_j.From) && !q.EqualsTol(tolLen, seg_j.To))
+                        {
+                            if (!splitPts.TryGetValue(seg_j, out j_hs))
+                            {
+                                j_hs = new HashSet<Vector3D>(vecCmp);
+                                splitPts.Add(seg_j, j_hs);
+                            }
+                            j_hs.Add(q);
+                        }
+                    }
+                }
+            }
+
+            // process addictional split points
+            if (addictionalSplitPoints != null)
+            {
+                foreach (var pt in addictionalSplitPoints)
+                {
+                    foreach (var seg in segs)
+                    {
+                        if (seg.SegmentContainsPoint(tolLen, pt, excludeExtreme: true))
+                        {
+                            HashSet<Vector3D> hs = null;
+                            if (!splitPts.TryGetValue(seg, out hs))
+                            {
+                                hs = new HashSet<Vector3D>(vecCmp);
+                                splitPts.Add(seg, hs);
+                            }
+                            hs.Add(pt);
+                        }
+                    }
+                }
+            }
+
+            // split segment by split points and rebuild res list
+            if (splitPts.Count > 0)
+            {
+                HashSet<Vector3D> qSplitPts = null;
+                var res = new List<Line3D>();
+                for (int i = 0; i < segs.Count; ++i)
+                {
+                    if (splitPts.TryGetValue(segs[i], out qSplitPts))
+                        res.AddRange(segs[i].Split(tolLen, qSplitPts.ToList()));
+                    else
+                        res.Add(segs[i]);
+                }
+                segs = res;
+            }
+
+            return segs;
+        } 
 
     }
 
