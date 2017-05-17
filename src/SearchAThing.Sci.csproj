@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BBox3D.Dxf.cs" />
+    <Compile Include="Arc3D.cs" />
     <Compile Include="Circle3D.cs" />
     <Compile Include="CoordinateSystem3D.Dxf.cs" />
     <Compile Include="DocX.cs" />
