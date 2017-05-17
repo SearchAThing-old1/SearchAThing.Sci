@@ -29,7 +29,10 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.Serialization;
 using System;
+using static System.FormattableString;
+using static System.Math;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SearchAThing.Sci
 {
@@ -67,6 +70,14 @@ namespace SearchAThing.Sci
             Value = value;
             MU = mu;
         }
+
+        /// <summary>
+        /// use of exponential pref
+        /// eg. 
+        /// 120 with ExpPref=2 -> 1.2e2
+        /// 120 with ExpPref=-1 -> 1200e-1
+        /// </summary>
+        public int? ExpPref { get; set; }
 
         #region operators
 
@@ -154,7 +165,20 @@ namespace SearchAThing.Sci
 
         public string ToString(CultureInfo culture, bool includePQ = false)
         {
-            var res = string.Format(culture, "{0}{1}", Value, MU);
+            var res = "";
+
+            var mustr = "";
+            if (MU != MUCollection.Adimensional.adim)
+                mustr = MU.ToString();
+
+            if (!ExpPref.HasValue || ExpPref.Value == 0)
+                res = Invariant($"{Value} {mustr}");
+            else
+            {
+                var v = Value / Pow(10, ExpPref.Value);
+                res = Invariant($"{v}e{ExpPref.Value} {mustr}");
+
+            }
 
             if (includePQ) res += $" [{MU.PhysicalQuantity}]";
 
@@ -163,7 +187,7 @@ namespace SearchAThing.Sci
 
         public override string ToString()
         {
-            return $"{Value}{MU}";
+            return this.ToString(CultureInfo.InvariantCulture, includePQ: false);
         }
 
         public static Measure TryParse(string text, PhysicalQuantity pq = null, CultureInfo culture = null)
@@ -184,7 +208,16 @@ namespace SearchAThing.Sci
             if (pq.Equals(PQCollection.Adimensional))
             {
                 double n;
-                if (double.TryParse(text, NumberStyles.Number, culture, out n)) return new Measure(n, MUCollection.Adimensional.adim);
+                if (double.TryParse(text, NumberStyles.Number | NumberStyles.AllowExponent, culture, out n))
+                {
+                    var res = new Measure(n, MUCollection.Adimensional.adim);
+                    var regex = new Regex("([0-9.]*)([eE])(.*)");
+                    var q = regex.Match(text);
+                    if (q.Success)
+                        res.ExpPref = int.Parse(q.Groups[3].Value);
+
+                    return res;
+                }
             }
             else
             {
@@ -206,7 +239,17 @@ namespace SearchAThing.Sci
                 s = s.StripEnd(mu.ToString());
 
                 double n;
-                if (double.TryParse(s, NumberStyles.Number, culture, out n)) return new Measure(n, mu);
+                if (double.TryParse(s, NumberStyles.Number | NumberStyles.AllowExponent, culture, out n))
+                {
+                    var res = new Measure(n, mu);
+
+                    var regex = new Regex("([0-9.]*)([eE])(.*)");
+                    var q = regex.Match(s);
+                    if (q.Success)
+                        res.ExpPref = int.Parse(q.Groups[3].Value);
+
+                    return res;
+                }
             }
 
             return null;
