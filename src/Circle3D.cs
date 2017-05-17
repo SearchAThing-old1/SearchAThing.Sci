@@ -127,9 +127,18 @@ namespace SearchAThing
 
             public Vector3D Center { get { return CS.Origin; } }
 
-            public bool Contains(double tol, Vector3D pt)
+            /// <summary>
+            /// check if this circle contains given point
+            /// </summary>            
+            public bool Contains(double tol, Vector3D pt, bool onlyAtCircumnfere = false)
             {
-                return pt.ToUCS(CS).Z.EqualsTol(tol, 0) && pt.Distance(CS.Origin).LessThanOrEqualsTol(tol, Radius);
+                var onplane = pt.ToUCS(CS).Z.EqualsTol(tol, 0);
+                var center_dst = pt.Distance(CS.Origin);
+
+                if (onlyAtCircumnfere)
+                    return onplane && center_dst.EqualsTol(tol, Radius);
+                else
+                    return onplane && center_dst.LessThanOrEqualsTol(tol, Radius);
             }
 
             /// <summary>
@@ -218,6 +227,11 @@ namespace SearchAThing
             if (pts.Length != 3) throw new Exception("expected 3 points for circle3d");
 
             return new Circle3D(pts[0], pts[1], pts[2]);
+        }
+
+        public static Circle3D ToCircle3D(this netDxf.Entities.Circle dxf_circle)
+        {
+            return new Circle3D(new CoordinateSystem3D(dxf_circle.Center, dxf_circle.Normal, CoordinateSystem3DAutoEnum.AAA), dxf_circle.Radius);
         }
 
     }
