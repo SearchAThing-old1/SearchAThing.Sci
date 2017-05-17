@@ -116,7 +116,7 @@ namespace SearchAThing
                 if (angles_rad[angles_rad.Count - 1] < angles_rad[angles_rad.Count - 2])
                     throw new Exception($"split at angle_rad [{angles_rad[angles_rad.Count - 2]}] must smallers than end angle_rad [{angles_rad[angles_rad.Count]}]");
 
-                for (int i = 0; i < angles_rad.Count - 2; ++i)
+                for (int i = 0; i < angles_rad.Count - 1; ++i)
                 {
                     yield return new Arc3D(CS, Radius, angles_rad[i], angles_rad[i + 1]);
                 }
