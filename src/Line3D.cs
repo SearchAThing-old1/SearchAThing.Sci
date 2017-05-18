@@ -60,7 +60,7 @@ namespace SearchAThing
             FromTo
         };
 
-        public class Line3D
+        public class Line3D : Geometry
         {
             public static Line3D XAxisLine = new Line3D(Vector3D.Zero, Vector3D.XAxis);
             public static Line3D YAxisLine = new Line3D(Vector3D.Zero, Vector3D.YAxis);
@@ -104,7 +104,7 @@ namespace SearchAThing
             /// <summary>
             /// build segment
             /// </summary>            
-            public Line3D(Vector3D from, Vector3D to)
+            public Line3D(Vector3D from, Vector3D to) : base(GeometryType.Line3D)
             {
                 From = from;
                 V = to - from;
@@ -113,7 +113,7 @@ namespace SearchAThing
             /// <summary>
             /// build segment from plus the given vector form to
             /// </summary>            
-            public Line3D(Vector3D from, Vector3D v, Line3DConstructMode mode)
+            public Line3D(Vector3D from, Vector3D v, Line3DConstructMode mode) : base(GeometryType.Line3D)
             {
                 From = from;
                 V = v;
@@ -687,15 +687,10 @@ namespace SearchAThing
 
                     var seg_i = segs[i];
                     var seg_j = segs[j];
-
-                    System.Console.WriteLine($"seg_i = {seg_i}");
-                    System.Console.WriteLine($"seg_j = {seg_j}");
-
+                    
                     var q = seg_i.Intersect(tolLen, seg_j, true, true);
                     if (q != null)
-                    {
-                        System.Console.WriteLine($"  intersect at {q}");
-
+                    {                        
                         HashSet<Vector3D> i_hs = null;
                         HashSet<Vector3D> j_hs = null;
 
@@ -759,7 +754,7 @@ namespace SearchAThing
             }
 
             return segs;
-        } 
+        }
 
     }
 

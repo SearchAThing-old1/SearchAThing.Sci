@@ -594,6 +594,14 @@ namespace SearchAThing
             }
 
             /// <summary>
+            /// hash string with given tolerance
+            /// </summary>            
+            public string ToString(double tol)
+            {
+                return Invariant($"({X.MRound(tol)}, {Y.MRound(tol)}, {Z.MRound(3)})");
+            }
+
+            /// <summary>
             /// string invariant representation "(x,y,z)"
             /// </summary>            
             public string StringRepresentation()
@@ -904,6 +912,59 @@ namespace SearchAThing
                     hs.Add(p);
                 }
             }
+        }
+
+        /// <summary>
+        /// build polygons from given list of segments
+        /// if want to represent arcs, add them as dummy lines to segs
+        /// </summary>        
+        public static IEnumerable<IReadOnlyList<Vector3D>> ClosedPolys(this IEnumerable<Line3D> segs, double tolLen)
+        {
+            var vcmp = new Vector3DEqualityComparer(tolLen);
+            var lcmp = new Line3DEqualityComparer(tolLen);
+            var segsDict = segs.ToDictionary(k => k.ToString(tolLen), v => v);
+            var segsFromDict = segs.GroupBy(g => g.From, v => v, vcmp).ToDictionary(k => k.Key, v => v.ToList(), vcmp);
+            var segsToDict = segs.GroupBy(g => g.To, v => v, vcmp).ToDictionary(k => k.Key, v => v.ToList(), vcmp);
+
+            var segsLeft = segs.ToHashSet(lcmp);
+            var polys = new List<List<Vector3D>>();
+            var polyCentroidDone = new HashSet<Vector3D>(vcmp);
+
+            while (segsLeft.Count > 0)
+            {
+                Console.WriteLine($"segsLeft: {segsLeft.Count} polys:{polys.Count}");
+
+                var seg = segsLeft.First();
+                segsLeft.Remove(seg);
+                var poly = new List<Vector3D>() { seg.From };
+                while (true)
+                {
+                    var segsNext = new HashSet<Line3D>(lcmp);
+                    {
+                        List<Line3D> tmp = null;
+                        if (segsFromDict.TryGetValue(seg.To, out tmp)) foreach (var x in tmp.Where(r => !r.EqualsTol(tolLen, seg))) segsNext.Add(x);
+                        if (segsToDict.TryGetValue(seg.To, out tmp)) foreach (var x in tmp.Where(r => !r.EqualsTol(tolLen, seg))) segsNext.Add(x);
+                    }
+
+                    var segNext = segsNext.Select(w => w.EnsureFrom(tolLen, seg.To)).ToList()
+                        .OrderBy(w => w.V.AngleToward(tolLen, -seg.V, Vector3D.ZAxis)).First();
+
+                    poly.Add(segNext.From);
+                    //segsLeft.Remove(segNext);
+                    if (segNext.To.EqualsTol(tolLen, poly[0])) break;
+
+                    seg = segNext;
+                }
+
+                var polyCentroid = poly.Centroid(tolLen);
+                if (!polyCentroidDone.Contains(polyCentroid))
+                {
+                    polys.Add(poly);
+                    polyCentroidDone.Add(polyCentroid);
+                }
+            }
+
+            return polys.OrderByDescending(w => w.Count).Skip(1);
         }
 
     }

@@ -399,9 +399,37 @@ namespace SearchAThing
         /// build 2d dxf polyline.
         /// note: use RepeatFirstAtEnd extension to build a closed polyline
         /// </summary>        
-        public static netDxf.Entities.LwPolyline ToLwPolyline(this IEnumerable<Vector3D> pts)
+        public static netDxf.Entities.LwPolyline ToLwPolyline(this IEnumerable<Vector3D> _pts, double tolLen, IReadOnlyDictionary<Line3D, Arc3D> dummy_arcs = null)
         {
-            return new netDxf.Entities.LwPolyline(pts.Select(r => r.ToVector2()).ToList(), true);
+            if (dummy_arcs == null)
+                return new netDxf.Entities.LwPolyline(_pts.Select(r => r.ToVector2()).ToList(), true);
+            else
+            {
+                var pvtx = new List<netDxf.Entities.LwPolylineVertex>();
+
+                var pts = _pts.ToList();
+                for (int i = 0; i < pts.Count; ++i)
+                {
+                    Vector3D nextPt = null;
+                    if (i == pts.Count - 1)
+                        nextPt = pts[0];
+                    else
+                        nextPt = pts[i + 1];
+
+                    Arc3D arc = null;
+                    if (dummy_arcs.TryGetValue(new Line3D(pts[i], nextPt), out arc))
+                    {                        
+                        var lwpv = new netDxf.Entities.LwPolylineVertex(pts[i].ToVector2(), arc.Bulge(tolLen, pts[i], nextPt));
+                        pvtx.Add(lwpv);
+                    }
+                    else
+                    {
+                        pvtx.Add(new netDxf.Entities.LwPolylineVertex(pts[i].ToVector2()));
+                    }
+                }
+
+                return new netDxf.Entities.LwPolyline(pvtx, isClosed: true);
+            }
         }
 
         /// <summary>

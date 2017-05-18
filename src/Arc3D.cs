@@ -41,6 +41,7 @@ namespace SearchAThing
             public Arc3D(CoordinateSystem3D cs, double r, double angleRadStart, double angleRadEnd) :
                 base(cs, r)
             {
+                Type = GeometryType.Arc3D;
                 AngleStartRad = angleRadStart;
                 AngleEndRad = angleRadEnd;
             }
@@ -52,12 +53,20 @@ namespace SearchAThing
             public Arc3D(Vector3D p1, Vector3D p2, Vector3D p3, double angleStart, double angleEnd) :
                 base(p1, p2, p3)
             {
+                Type = GeometryType.Arc3D;
                 AngleStartRad = angleStart;
                 AngleEndRad = angleEnd;
             }
 
             public double AngleStartRad { get; private set; }
             public double AngleEndRad { get; private set; }
+            public double AngleRad
+            {
+                get
+                {
+                    return AngleEndRad - AngleStartRad;
+                }
+            }
 
             public Vector3D PtAtAngle(double angleRad)
             {
@@ -78,6 +87,18 @@ namespace SearchAThing
 
             public Vector3D From { get { return PtAtAngle(AngleStartRad); } }
             public Vector3D To { get { return PtAtAngle(AngleEndRad); } }
+
+            /// <summary>
+            /// http://www.lee-mac.com/bulgeconversion.html
+            /// </summary>            
+            public double Bulge(double tolLen, Vector3D from, Vector3D to)
+            {
+                var factor = 1.0;
+                if (from.CrossProduct(to).Z < 0) // TODO unit test 3d
+                    factor = -1.0;
+
+                return factor * AngleRad / 4;
+            }
 
             /// <summary>
             /// verify if given point is in this arc between its start-to arc angles

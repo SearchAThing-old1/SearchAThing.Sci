@@ -35,14 +35,14 @@ namespace SearchAThing
     namespace Sci
     {
 
-        public class Circle3D
+        public class Circle3D : Geometry
         {
 
             public CoordinateSystem3D CS { get; private set; }
             public double Radius { get; private set; }
 
-            public Circle3D(CoordinateSystem3D cs, double r)
-            {
+            public Circle3D(CoordinateSystem3D cs, double r) : base(GeometryType.Circle3D)
+            {                
                 CS = cs;
                 Radius = r;
             }
@@ -51,7 +51,7 @@ namespace SearchAThing
             /// Build 3d circle that intersect p1,p2,p3
             /// ( the inside CS will centered in the circle center and Xaxis toward p1 )
             /// </summary>        
-            public Circle3D(Vector3D p1, Vector3D p2, Vector3D p3)
+            public Circle3D(Vector3D p1, Vector3D p2, Vector3D p3) : base(GeometryType.Circle3D)
             {
                 // https://en.wikipedia.org/wiki/Circumscribed_circle
                 // Cartesian coordinates from cross- and dot-products

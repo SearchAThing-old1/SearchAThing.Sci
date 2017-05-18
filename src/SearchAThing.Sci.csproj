@@ -56,6 +56,7 @@
     <Compile Include="GIS.cs" />
     <Compile Include="Int64Map.cs" />
     <Compile Include="DiscreteSpace.cs" />
+    <Compile Include="Geometry.cs" />
     <Compile Include="Plane3D.cs" />
     <Compile Include="CoordinateSystem3D.cs" />
     <Compile Include="Constants.cs" />
