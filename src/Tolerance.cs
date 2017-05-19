@@ -51,7 +51,7 @@ namespace SearchAThing
 
             public int GetHashCode(double obj)
             {
-                return (int)(obj / tolHc);
+                return (int)(Round(obj / tolHc));
             }
         }
 
@@ -61,8 +61,8 @@ namespace SearchAThing
     public static partial class Extensions
     {
 
-        
+
 
     }
-  
+
 }

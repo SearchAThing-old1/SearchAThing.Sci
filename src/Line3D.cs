@@ -28,6 +28,7 @@ using SearchAThing.Sci;
 using System.Text;
 using System.Globalization;
 using System.Linq;
+using static System.Math;
 
 namespace SearchAThing
 {
@@ -543,10 +544,10 @@ namespace SearchAThing
 
             public int GetHashCode(Line3D obj)
             {
-                return (int)((
+                return (int)(Round((
                     (obj.From.X + obj.To.X) / 2 +
                     (obj.From.Y + obj.To.Y) / 2 +
-                    (obj.From.Z + obj.To.Z) / 2) / tolHc);
+                    (obj.From.Z + obj.To.Z) / 2) / tolHc));
             }
 
         }
@@ -687,10 +688,10 @@ namespace SearchAThing
 
                     var seg_i = segs[i];
                     var seg_j = segs[j];
-                    
+
                     var q = seg_i.Intersect(tolLen, seg_j, true, true);
                     if (q != null)
-                    {                        
+                    {
                         HashSet<Vector3D> i_hs = null;
                         HashSet<Vector3D> j_hs = null;
 

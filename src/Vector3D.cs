@@ -629,7 +629,7 @@ namespace SearchAThing
 
             public int GetHashCode(Vector3D obj)
             {
-                return (int)((obj.X + obj.Y + obj.Z) / tolHc);
+                return (int)(Math.Round((obj.X + obj.Y + obj.Z) / tolHc));
             }
         }
 
@@ -946,11 +946,17 @@ namespace SearchAThing
                         if (segsToDict.TryGetValue(seg.To, out tmp)) foreach (var x in tmp.Where(r => !r.EqualsTol(tolLen, seg))) segsNext.Add(x);
                     }
 
+                    if (segsNext.Count == 0)
+                    {
+                        var q = segsFromDict[seg.To];
+                    }
+
                     var segNext = segsNext.Select(w => w.EnsureFrom(tolLen, seg.To)).ToList()
-                        .OrderBy(w => w.V.AngleToward(tolLen, -seg.V, Vector3D.ZAxis)).First();
+                        .OrderBy(w => (-seg.V).AngleToward(tolLen, w.V, Vector3D.ZAxis))
+                        .First();
 
                     poly.Add(segNext.From);
-                    //segsLeft.Remove(segNext);
+                    segsLeft.Remove(segNext);
                     if (segNext.To.EqualsTol(tolLen, poly[0])) break;
 
                     seg = segNext;
@@ -964,7 +970,7 @@ namespace SearchAThing
                 }
             }
 
-            return polys.OrderByDescending(w => w.Count).Skip(1);
+            return polys.OrderByDescending(w => w.Count);
         }
 
     }
