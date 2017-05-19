@@ -127,9 +127,14 @@ namespace SearchAThing
 
                 if (validate_pts) splitPts = _splitPts.Where(pt => Contains(tolLen, tolRad, pt)).ToList();
 
-                var angles_rad = new List<double>() { AngleStartRad };
-                angles_rad.AddRange(splitPts.Select(pt => PtAngle(tolLen, pt)).OrderBy(w => w).ToList());
-                angles_rad.Add(AngleEndRad);
+                var radCmp = new DoubleEqualityComparer(tolRad);
+
+                var hs_angles_rad = new HashSet<double>(radCmp) { AngleStartRad };
+                foreach (var splitPt in splitPts.Select(pt => PtAngle(tolLen, pt)))
+                    hs_angles_rad.Add(splitPt.NormalizeAngle2PI());
+                hs_angles_rad.Add(AngleEndRad.NormalizeAngle2PI());
+
+                var angles_rad = hs_angles_rad.OrderBy(w => w).ToList();
 
                 if (angles_rad[1] < angles_rad[0])
                     throw new Exception($"split at angle_rad [{angles_rad[1]}] must great than start angle_rad [{angles_rad[0]}]");
