@@ -79,7 +79,7 @@ namespace SearchAThing
 
         /// <summary>
         /// Centroid of a polygon (does not consider z)
-        /// points must ordered
+        /// note: points must ordered anticlockwise
         /// ( if have area specify the parameter to avoid recomputation )
         /// https://en.wikipedia.org/wiki/Centroid        
         /// </summary>        
@@ -91,7 +91,7 @@ namespace SearchAThing
 
         /// <summary>
         /// Centroid of a polygon (does not consider z)
-        /// points must ordered
+        /// note: points must ordered anticlockwise
         /// https://en.wikipedia.org/wiki/Centroid        
         /// </summary>        
         public static Vector3D Centroid(this IList<Vector3D> pts, double tol, double area)
@@ -262,33 +262,39 @@ namespace SearchAThing
             return intCnt % 2 != 0;
         }
 
-        public static IEnumerable<Vector3D> SortPoly(this IEnumerable<Vector3D> pts, double tol)
+        public static IEnumerable<Vector3D> SortPoly(this IEnumerable<Vector3D> pts, double tol, Vector3D refAxis = null)
         {
-            return pts.SortPoly(tol, (p) => p);
+            return pts.SortPoly(tol, (p) => p, refAxis);
         }
 
         /// <summary>
         /// Sort polygon segments so that they can form a polygon ( if they really form one ).
         /// It will not check for segment versus adjancency
         /// </summary>        
-        public static IEnumerable<Line3D> SortPoly(this IEnumerable<Line3D> segs, double tol)
+        public static IEnumerable<Line3D> SortPoly(this IEnumerable<Line3D> segs, double tol, Vector3D refAxis = null)
         {
-            return segs.SortPoly(tol, (s) => s.MidPoint);
+            return segs.SortPoly(tol, (s) => s.MidPoint, refAxis);
         }
 
-        public static IEnumerable<T> SortPoly<T>(this IEnumerable<T> pts, double tol, Func<T, Vector3D> getPoint)
+        public static IEnumerable<T> SortPoly<T>(this IEnumerable<T> pts, double tol, Func<T, Vector3D> getPoint, Vector3D refAxis = null)
         {
             if (pts.Count() == 1) return pts;
 
             var c = pts.Select(w => getPoint(w)).Mean();
 
+            var r = getPoint(pts.First()) - c;
+
             // search non-null ref axis
             Vector3D N = null;
-            var r = getPoint(pts.First()) - c;
-            foreach (var r2 in pts.Skip(1))
+            if (refAxis != null)
+                N = refAxis;
+            else
             {
-                N = r.CrossProduct(getPoint(r2) - c);
-                if (!N.Length.EqualsTol(tol, 0)) break;
+                foreach (var r2 in pts.Skip(1))
+                {
+                    N = r.CrossProduct(getPoint(r2) - c);
+                    if (!N.Length.EqualsTol(tol, 0)) break;
+                }
             }
 
             var q = pts.Select(p => new
@@ -418,7 +424,7 @@ namespace SearchAThing
 
                     Arc3D arc = null;
                     if (dummy_arcs.TryGetValue(new Line3D(pts[i], nextPt), out arc))
-                    {                        
+                    {
                         var lwpv = new netDxf.Entities.LwPolylineVertex(pts[i].ToVector2(), arc.Bulge(tolLen, pts[i], nextPt));
                         pvtx.Add(lwpv);
                     }
