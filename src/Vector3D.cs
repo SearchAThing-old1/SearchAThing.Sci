@@ -936,26 +936,45 @@ namespace SearchAThing
 
                 var seg = segsLeft.First();
                 segsLeft.Remove(seg);
-                var poly = new List<Vector3D>() { seg.From };
+                var poly = new List<Vector3D>() { seg.From, seg.To };
+                var rotDir = 1.0; // 1=+Z, -1=-Z
                 while (true)
                 {
-                    var segsNext = new HashSet<Line3D>(lcmp);
+                    List<Line3D> segsNext = null;
                     {
-                        List<Line3D> tmp = null;
-                        if (segsFromDict.TryGetValue(seg.To, out tmp)) foreach (var x in tmp.Where(r => !r.EqualsTol(tolLen, seg))) segsNext.Add(x);
-                        if (segsToDict.TryGetValue(seg.To, out tmp)) foreach (var x in tmp.Where(r => !r.EqualsTol(tolLen, seg))) segsNext.Add(x);
+                        var hs = new HashSet<Line3D>(lcmp);
+                        {
+                            List<Line3D> tmp = null;
+                            if (segsFromDict.TryGetValue(seg.To, out tmp)) foreach (var x in tmp.Where(r => !r.EqualsTol(tolLen, seg))) hs.Add(x);
+                            if (segsToDict.TryGetValue(seg.To, out tmp)) foreach (var x in tmp.Where(r => !r.EqualsTol(tolLen, seg))) hs.Add(x);
+                        }
+                        segsNext = hs.Select(w => w.EnsureFrom(tolLen, seg.To)).ToList();
                     }
 
-                    if (segsNext.Count == 0)
+                    Line3D segNext = null;
+
+                    if (poly.Count == 2)
                     {
-                        var q = segsFromDict[seg.To];
+                        segNext = segsNext
+                            .OrderBy(w => (-seg.V).AngleRad(tolLen, w.V))
+                            .First();
+                        rotDir = seg.V.CrossProduct(segNext.V).Z > 0 ? 1 : -1;
+                    }
+                    else
+                    {
+                        // retrieve next segment with current rotation direction w/acutest angle
+                        segNext = segsNext
+                            .Select(w => new
+                            {
+                                arad = (seg.V).AngleToward(tolLen, w.V, Vector3D.ZAxis * rotDir),
+                                seg = w
+                            })
+                            .Where(r => r.arad <= PI)
+                            .OrderByDescending(r => r.arad)
+                            .First().seg;
                     }
 
-                    var segNext = segsNext.Select(w => w.EnsureFrom(tolLen, seg.To)).ToList()
-                        .OrderBy(w => (-seg.V).AngleToward(tolLen, w.V, Vector3D.ZAxis))
-                        .First();
-
-                    poly.Add(segNext.From);
+                    poly.Add(segNext.To);
                     segsLeft.Remove(segNext);
                     if (segNext.To.EqualsTol(tolLen, poly[0])) break;
 
