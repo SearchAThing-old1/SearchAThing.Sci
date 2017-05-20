@@ -835,8 +835,9 @@ namespace SearchAThing
 
         /// <summary>
         /// mean of given vetor3d list
+        /// note: if used to compute poly center enable skipFirstAtEnd
         /// </summary>        
-        public static Vector3D Mean(this IEnumerable<Vector3D> lst)
+        public static Vector3D Mean(this IEnumerable<Vector3D> lst, bool skipFirstAtEnd = false)
         {
             var n = 0;
             var s = Vector3D.Zero;
@@ -918,15 +919,17 @@ namespace SearchAThing
         /// build polygons from given list of segments
         /// if want to represent arcs, add them as dummy lines to segs
         /// </summary>        
-        public static IEnumerable<IReadOnlyList<Vector3D>> ClosedPolys(this IEnumerable<Line3D> segs, double tolLen)
+        public static IEnumerable<IReadOnlyList<Vector3D>> ClosedPolys2D(this IEnumerable<Line3D> segs, double tolLen)
         {
+            var minCoord = new BBox3D(segs.SelectMany(r => new[] { r.From, r.To })).Min;
+
             var vcmp = new Vector3DEqualityComparer(tolLen);
             var lcmp = new Line3DEqualityComparer(tolLen);
             var segsDict = segs.ToDictionary(k => k.ToString(tolLen), v => v);
             var segsFromDict = segs.GroupBy(g => g.From, v => v, vcmp).ToDictionary(k => k.Key, v => v.ToList(), vcmp);
             var segsToDict = segs.GroupBy(g => g.To, v => v, vcmp).ToDictionary(k => k.Key, v => v.ToList(), vcmp);
 
-            var segsLeft = segs.ToHashSet(lcmp);
+            var segsLeft = segs.OrderBy(w => w.MidPoint.Distance(minCoord)).ToList();
             var polys = new List<List<Vector3D>>();
             var polyCentroidDone = new HashSet<Vector3D>(vcmp);
 
@@ -981,6 +984,7 @@ namespace SearchAThing
                     seg = segNext;
                 }
 
+                poly = poly.SortPoly(tolLen, Vector3D.ZAxis).ToList();
                 var polyCentroid = poly.Centroid(tolLen);
                 if (!polyCentroidDone.Contains(polyCentroid))
                 {
