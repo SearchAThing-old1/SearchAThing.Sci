@@ -138,7 +138,7 @@ namespace SearchAThing
             {
                 if (!Center.EqualsTol(tolLen, other.Center)) return false;
                 if (!Radius.EqualsTol(tolLen, other.Radius)) return false;
-                if (Segment.EqualsTol(tolLen, other.Segment)) return false;
+                if (!Segment.EqualsTol(tolLen, other.Segment)) return false;
                 return true;
             }
 
