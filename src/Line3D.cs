@@ -29,6 +29,7 @@ using System.Text;
 using System.Globalization;
 using System.Linq;
 using static System.Math;
+using netDxf.Entities;
 
 namespace SearchAThing
 {
@@ -71,6 +72,18 @@ namespace SearchAThing
             public Vector3D V { get; private set; }
             public Vector3D To { get { return From + V; } }
             public Vector3D Dir { get { return (To - From).Normalized(); } }
+
+            public override Vector3D GeomFrom => From;
+            public override Vector3D GeomTo => To;
+
+            public override IEnumerable<Vector3D> Vertexes
+            {
+                get
+                {
+                    yield return From;
+                    yield return To;
+                }
+            }
 
             /// <summary>
             /// retrieve a unique endpoint representation of this line3d segment (regardless its from-to or to-from order)
@@ -497,6 +510,14 @@ namespace SearchAThing
                 {
                     return string.Format(CultureInfo.InvariantCulture, "_LINE {0},{1},{2} {3},{4},{5}\r\n",
                         From.X, From.Y, From.Z, To.X, To.Y, To.Z);
+                }
+            }
+
+            public override EntityObject DxfEntity
+            {
+                get
+                {
+                    return this.ToLine();
                 }
             }
 

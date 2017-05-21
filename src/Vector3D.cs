@@ -42,13 +42,16 @@ namespace SearchAThing
     namespace Sci
     {
 
-        public partial class Vector3D
+        public partial class Vector3D : Geometry
         {
 
             public static Vector3D Zero = new Vector3D(0, 0, 0);
             public static Vector3D XAxis = new Vector3D(1, 0, 0);
             public static Vector3D YAxis = new Vector3D(0, 1, 0);
             public static Vector3D ZAxis = new Vector3D(0, 0, 1);
+
+            public override Vector3D GeomFrom => this;
+            public override Vector3D GeomTo => this;
 
             public static Vector3D Axis(int ord)
             {
@@ -65,14 +68,14 @@ namespace SearchAThing
             public double Y { get; private set; }
             public double Z { get; private set; }
 
-            public Vector3D()
+            public Vector3D() : base(GeometryType.Vector3D)
             {
             }
 
             /// <summary>
             /// build a vector (x,y,0) or (x,y,z) from given 2 or 3 doubles
             /// </summary>            
-            public Vector3D(double[] arr)
+            public Vector3D(double[] arr) : base(GeometryType.Vector3D)
             {
                 X = arr[0];
                 Y = arr[1];
@@ -80,7 +83,7 @@ namespace SearchAThing
                 if (arr.Length > 3) throw new Exception($"too much coordinates to build a vector3d");
             }
 
-            public Vector3D(double x, double y, double z)
+            public Vector3D(double x, double y, double z) : base(GeometryType.Vector3D)
             {
                 X = x; Y = y; Z = z;
             }
@@ -88,9 +91,17 @@ namespace SearchAThing
             /// <summary>
             /// initialize 3d vector with z implicitly 0
             /// </summary>        
-            public Vector3D(double x, double y)
+            public Vector3D(double x, double y) : base(GeometryType.Vector3D)
             {
                 X = x; Y = y;
+            }
+
+            public override IEnumerable<Vector3D> Vertexes
+            {
+                get
+                {
+                    yield return this;
+                }
             }
 
             /// <summary>
@@ -145,6 +156,14 @@ namespace SearchAThing
             }
 
             public double Length { get { return Sqrt(X * X + Y * Y + Z * Z); } }
+
+            public override netDxf.Entities.EntityObject DxfEntity
+            {
+                get
+                {
+                    return this.ToDxfPoint();
+                }
+            }
 
             public Vector3D Normalized()
             {
@@ -918,6 +937,7 @@ namespace SearchAThing
         /// <summary>
         /// build polygons from given list of segments
         /// if want to represent arcs, add them as dummy lines to segs
+        /// polys returned are ordered anticlockwise
         /// </summary>        
         public static IEnumerable<IReadOnlyList<Vector3D>> ClosedPolys2D(this IEnumerable<Line3D> segs, double tolLen)
         {
@@ -977,9 +997,9 @@ namespace SearchAThing
                             .First().seg;
                     }
 
-                    poly.Add(segNext.To);
                     segsLeft.Remove(segNext);
                     if (segNext.To.EqualsTol(tolLen, poly[0])) break;
+                    poly.Add(segNext.To);
 
                     seg = segNext;
                 }
@@ -994,6 +1014,14 @@ namespace SearchAThing
             }
 
             return polys.OrderByDescending(w => w.Count);
+        }
+
+        /// <summary>
+        /// create dxf point from given vector3d
+        /// </summary>        
+        public static netDxf.Entities.Point ToDxfPoint(this Vector3D pt)
+        {
+            return new netDxf.Entities.Point(pt);
         }
 
     }

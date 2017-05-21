@@ -35,38 +35,49 @@ namespace SearchAThing
     namespace Sci
     {
 
-        public class Circle3D : Geometry
+        public class Circle3D : Arc3D
         {
-
-            public CoordinateSystem3D CS { get; private set; }
-            public double Radius { get; private set; }
-
-            public Circle3D(CoordinateSystem3D cs, double r) : base(GeometryType.Circle3D)
-            {                
-                CS = cs;
-                Radius = r;
+            
+            public Circle3D(CoordinateSystem3D cs, double r) : base(cs, r, 0, 2 * PI)
+            {
+                Type = GeometryType.Circle3D;                
             }
 
             /// <summary>
             /// Build 3d circle that intersect p1,p2,p3
             /// ( the inside CS will centered in the circle center and Xaxis toward p1 )
             /// </summary>        
-            public Circle3D(Vector3D p1, Vector3D p2, Vector3D p3) : base(GeometryType.Circle3D)
+            public Circle3D(Vector3D p1, Vector3D p2, Vector3D p3) : base(p1, p2, p3, 0, 2 * PI)
             {
-                // https://en.wikipedia.org/wiki/Circumscribed_circle
-                // Cartesian coordinates from cross- and dot-products
+                Type = GeometryType.Circle3D;                
+            }
 
-                var d = ((p1 - p2).CrossProduct(p2 - p3)).Length;
+            /// <summary>
+            /// creates a polygon approximation of this circle with segments of given maxLength
+            /// </summary>            
+            public IEnumerable<Vector3D> ToPolygon3D(double segLenMax)
+            {
+                var alpha_step = segLenMax / Radius;
+                var alpha = 0.0;
+                var alpha_stop = 2 * PI;
 
-                Radius = ((p1 - p2).Length * (p2 - p3).Length * (p3 - p1).Length) / (2 * d);
+                var origPt = new Vector3D(Radius, 0);
+                Vector3D prevPt = origPt;
 
-                var alpha = Pow((p2 - p3).Length, 2) * (p1 - p2).DotProduct(p1 - p3) / (2 * Pow(d, 2));
-                var beta = Pow((p1 - p3).Length, 2) * (p2 - p1).DotProduct(p2 - p3) / (2 * Pow(d, 2));
-                var gamma = Pow((p1 - p2).Length, 2) * (p3 - p1).DotProduct(p3 - p2) / (2 * Pow(d, 2));
+                yield return origPt.ToWCS(CS);
 
-                var c = alpha * p1 + beta * p2 + gamma * p3;
+                alpha += alpha_step;
 
-                CS = new CoordinateSystem3D(c, p1 - c, p2 - c);
+                while (alpha < alpha_stop)
+                {
+                    var nextPt = origPt.RotateAboutZAxis(alpha);
+
+                    yield return nextPt.ToWCS(CS);
+
+                    prevPt = nextPt;
+
+                    alpha += alpha_step;
+                }
             }
 
             /// <summary>
@@ -125,96 +136,6 @@ namespace SearchAThing
             public double Area { get { return PI * Radius * Radius; } }
             public double Length { get { return 2 * PI * Radius; } }
 
-            public Vector3D Center { get { return CS.Origin; } }
-
-            /// <summary>
-            /// check if this circle contains given point
-            /// </summary>            
-            public bool Contains(double tol, Vector3D pt, bool onlyAtCircumnfere = false)
-            {
-                var onplane = pt.ToUCS(CS).Z.EqualsTol(tol, 0);
-                var center_dst = pt.Distance(CS.Origin);
-
-                if (onlyAtCircumnfere)
-                    return onplane && center_dst.EqualsTol(tol, Radius);
-                else
-                    return onplane && center_dst.LessThanOrEqualsTol(tol, Radius);
-            }
-
-            /// <summary>
-            /// creates a polygon approximation of this circle with segments of given maxLength
-            /// </summary>            
-            public IEnumerable<Vector3D> ToPolygon3D(double segLenMax)
-            {
-                var alpha_step = segLenMax / Radius;
-                var alpha = 0.0;
-                var alpha_stop = 2 * PI;
-
-                var origPt = new Vector3D(Radius, 0);
-                Vector3D prevPt = origPt;
-
-                yield return origPt.ToWCS(CS);
-
-                alpha += alpha_step;
-
-                while (alpha < alpha_stop)
-                {
-                    var nextPt = origPt.RotateAboutZAxis(alpha);
-
-                    yield return nextPt.ToWCS(CS);
-
-                    prevPt = nextPt;
-
-                    alpha += alpha_step;
-                }
-            }
-
-            /// <summary>
-            /// intersect this 3d circle with given 3d line
-            /// </summary>            
-            public IEnumerable<Vector3D> Intersect(double tol, Line3D l, bool segment_mode = false)
-            {
-                var lprj = new Line3D(l.From.ToUCS(CS).Set(OrdIdx.Z, 0), l.To.ToUCS(CS).Set(OrdIdx.Z, 0));
-
-                var a = Pow(lprj.To.X - lprj.From.X, 2) + Pow(lprj.To.Y - lprj.From.Y, 2);
-                var b = 2 * lprj.From.X * (lprj.To.X - lprj.From.X) + 2 * lprj.From.Y * (lprj.To.Y - lprj.From.Y);
-                var c = Pow(lprj.From.X, 2) + Pow(lprj.From.Y, 2) - Pow(Radius, 2);
-                var d = Pow(b, 2) - 4 * a * c;
-
-                if (d.LessThanTol(tol, 0)) yield break; // no intersection at all
-
-                var sd = Sqrt(Abs(d));
-                var f1 = (-b + sd) / (2 * a);
-                var f2 = (-b - sd) / (2 * a);
-
-                // one intersection point is
-                var ip = new Vector3D(
-                    lprj.From.X + (lprj.To.X - lprj.From.X) * f1,
-                    lprj.From.Y + (lprj.To.Y - lprj.From.Y) * f1,
-                    0);
-
-                Vector3D ip2 = null;
-
-                if (!f1.EqualsTol(Constants.NormalizedLengthTolerance, f2))
-                {
-                    // second intersection point is
-                    ip2 = new Vector3D(
-                        lprj.From.X + (lprj.To.X - lprj.From.X) * f2,
-                        lprj.From.Y + (lprj.To.Y - lprj.From.Y) * f2,
-                        0);
-                }
-
-                // back to wcs, check line contains point
-                var wcs_ip = ip.ToWCS(CS);
-                Vector3D wcs_ip2 = null;
-                if (ip2 != null) wcs_ip2 = ip2.ToWCS(CS);
-
-                if (l.LineContainsPoint(tol, wcs_ip, segment_mode))
-                    yield return wcs_ip;
-
-                if (ip2 != null && l.LineContainsPoint(tol, wcs_ip2, segment_mode))
-                    yield return wcs_ip2;
-            }
         }
     }
 
