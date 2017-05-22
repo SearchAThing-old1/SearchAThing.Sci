@@ -197,15 +197,16 @@ namespace SearchAThing.Sci
             if (pq == null)
             {
                 var pqstart = text.LastIndexOf('[') + 1;
-                if (pqstart == 0) return null;
+                if (pqstart != 0)
+                {                    
+                    var pqname = text.Substring(pqstart, text.Length - pqstart - 1);
+                    pq = PQCollection.PhysicalQuantities.First(w => w.Name == pqname);
 
-                var pqname = text.Substring(pqstart, text.Length - pqstart - 1);
-                pq = PQCollection.PhysicalQuantities.First(w => w.Name == pqname);
-
-                text = text.Substring(0, pqstart - 1);
+                    text = text.Substring(0, pqstart - 1);
+                }
             }
 
-            if (pq.Equals(PQCollection.Adimensional))
+            if (pq != null && pq.Equals(PQCollection.Adimensional))
             {
                 double n;
                 if (double.TryParse(text, NumberStyles.Number | NumberStyles.AllowExponent, culture, out n))
@@ -225,12 +226,33 @@ namespace SearchAThing.Sci
 
                 MeasureUnit mu = null;
 
-                foreach (var _mu in pq.MeasureUnits.OrderByDescending(w => w.Name.Length))
+                if (pq == null)
                 {
-                    if (s.EndsWith(_mu.ToString()))
+                    var all_mus = MUCollection.MeasureUnits;
+
+                    foreach (var _mu in all_mus.OrderByDescending(w => w.Name.Length))
                     {
-                        mu = _mu;
-                        break;
+                        if (s.EndsWith(_mu.ToString()))
+                        {
+                            mu = _mu;
+                            break;
+                        }
+                    }
+
+                    if (mu == null) return null;
+
+                    // ambiguity between different pq with same mu name
+                    if (all_mus.Count(r => r.ToString() == mu.ToString()) != 1) return null;
+                }
+                else
+                {
+                    foreach (var _mu in pq.MeasureUnits.OrderByDescending(w => w.Name.Length))
+                    {
+                        if (s.EndsWith(_mu.ToString()))
+                        {
+                            mu = _mu;
+                            break;
+                        }
                     }
                 }
 
