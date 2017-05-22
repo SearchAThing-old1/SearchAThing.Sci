@@ -241,6 +241,7 @@ namespace SearchAThing.Sci
         {
             public static readonly MeasureUnit rad = new MeasureUnit(PQCollection.PlaneAngle, "rad");
             public static readonly MeasureUnit grad = new MeasureUnit(PQCollection.PlaneAngle, "grad", rad, PI / 180.0);
+            public static readonly MeasureUnit deg = new MeasureUnit(PQCollection.PlaneAngle, "deg", rad, PI / 180.0);
         }
 
         #endregion
