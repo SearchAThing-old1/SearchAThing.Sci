@@ -77,6 +77,11 @@ namespace SearchAThing
                 CS = new CoordinateSystem3D(c, p1 - c, p2 - c);
             }
 
+            public Arc3D Move(Vector3D delta)
+            {
+                return new Arc3D(CS.Move(delta), Radius, AngleStartRad, AngleEndRad);
+            }
+
             public double AngleStartRad { get; private set; }
             public double AngleEndRad { get; private set; }
             public double AngleRad
