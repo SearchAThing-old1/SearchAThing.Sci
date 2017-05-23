@@ -53,6 +53,11 @@ namespace SearchAThing
             public abstract Vector3D GeomTo { get; }
 
             public abstract netDxf.Entities.EntityObject DxfEntity { get; }
+               
+            public static implicit operator netDxf.Entities.EntityObject(Geometry geom)
+            {
+                return geom.DxfEntity;
+            }
 
         }
 
