@@ -28,6 +28,7 @@ using System.Linq;
 using static System.Math;
 using System.Collections.Generic;
 using SearchAThing.Sci;
+using netDxf.Entities;
 
 namespace SearchAThing
 {
@@ -37,10 +38,10 @@ namespace SearchAThing
 
         public class Circle3D : Arc3D
         {
-            
+
             public Circle3D(CoordinateSystem3D cs, double r) : base(cs, r, 0, 2 * PI)
             {
-                Type = GeometryType.Circle3D;                
+                Type = GeometryType.Circle3D;
             }
 
             /// <summary>
@@ -49,7 +50,17 @@ namespace SearchAThing
             /// </summary>        
             public Circle3D(Vector3D p1, Vector3D p2, Vector3D p3) : base(p1, p2, p3, 0, 2 * PI)
             {
-                Type = GeometryType.Circle3D;                
+                Type = GeometryType.Circle3D;
+            }
+
+            public override EntityObject DxfEntity
+            {
+                get
+                {
+                    var c = new netDxf.Entities.Circle(CS.Origin, Radius);
+                    c.Normal = CS.BaseZ;
+                    return c;
+                }
             }
 
             /// <summary>
