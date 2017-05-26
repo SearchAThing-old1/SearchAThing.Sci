@@ -37,7 +37,7 @@ namespace SearchAThing.Sci
         /// </summary>        
         public static double NormalizeAngle2PI(this double angle_rad)
         {
-            var n = (int)(angle_rad / PI);
+            var n = (int)(angle_rad / (2 * PI));
 
             var excess = (n != 0) ? (n.Sign() * 2 * PI) : 0;
 
