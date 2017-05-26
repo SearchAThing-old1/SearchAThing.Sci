@@ -401,6 +401,7 @@ namespace SearchAThing
             yield break;
         }
 
+        /*
         /// <summary>
         /// build 2d dxf polyline.
         /// note: use RepeatFirstAtEnd extension to build a closed polyline
@@ -436,7 +437,7 @@ namespace SearchAThing
 
                 return new netDxf.Entities.LwPolyline(pvtx, isClosed: true);
             }
-        }
+        }*/
 
         /// <summary>
         /// build 2d dxf polyline.
@@ -444,96 +445,92 @@ namespace SearchAThing
         /// </summary>        
         public static netDxf.Entities.LwPolyline ToLwPolyline(this IEnumerable<Geometry> _geom, double tolLen)
         {
-            var geom = _geom.ToList();
+            var geom = _geom.ToList();           
 
-            Vector3D N = null;
-            {
-                Line3D l1 = null, l2 = null;
-                foreach (var g in geom)
-                {
-                    if (g.Type == GeometryType.Arc3D)
-                    {
-                        N = (g as Arc3D).CS.BaseZ;
-                        break;
-                    }
-                    if (g.Type == GeometryType.Line3D)
-                    {
-                        var l = (g as Line3D);
-                        if (l1 == null)
-                            l1 = l;
-                        else if (l2 == null)
-                            l2 = l;
-                        else if (Abs(l1.V.AngleRad(tolLen, l.V) - PI / 2) < Abs(l1.V.AngleRad(tolLen, l2.V) - PI / 2))
-                            l2 = l;
-                    }
-                }
-                if (N == null) N = l1.V.CrossProduct(l2.V);
-            }
+            var N = Vector3D.ZAxis;
 
             var cs = new CoordinateSystem3D(Vector3D.Zero, N, CoordinateSystem3DAutoEnum.AAA);
 
             var pvtx = new List<netDxf.Entities.LwPolylineVertex>();
 
             Vector3D lastPt = null;
+
             for (int i = 0; i < geom.Count; ++i)
             {
-                Vector3D nextPt = null;
-                if (i == geom.Count - 1)
-                {
-                    if (geom[0].Type == GeometryType.Line3D)
-                    {
-                        nextPt = (geom[0] as Line3D).From;
-                    }
-                    else if (geom[0].Type == GeometryType.Arc3D)
-                    {
-                        nextPt = (geom[0] as Arc3D).From;
-                    }
-                }
-                else
-                {
-                    if (geom[i + 1].Type == GeometryType.Line3D)
-                    {
-                        nextPt = (geom[i + 1] as Line3D).From;
-                    }
-                    else if (geom[i + 1].Type == GeometryType.Arc3D)
-                    {
-                        nextPt = (geom[i + 1] as Arc3D).From;
-                    }
-                }
+                Vector3D from = null;
+                Vector3D to = null;
 
-                if (geom[i].Type == GeometryType.Arc3D)
+                switch (geom[i].Type)
                 {
-                    var arc = geom[i] as Arc3D;
-
-                    if (N == null) N = arc.CS.BaseZ;
-
-                    if (lastPt != null)
-                    {
-                        if (arc.From.EqualsTol(tolLen, lastPt))
+                    case GeometryType.Line3D:
                         {
-                            var lwpv = new netDxf.Entities.LwPolylineVertex(lastPt.ToUCS(cs).ToVector2(), arc.Bulge(tolLen, arc.From, arc.To));
-                            pvtx.Add(lwpv);
-                            lastPt = arc.To;
+                            var seg = geom[i] as Line3D;
+                            from = seg.From;
+                            to = seg.To;
+
+                            if (lastPt == null || lastPt.EqualsTol(tolLen, from))
+                            {
+                                var lwpv = new netDxf.Entities.LwPolylineVertex(from.ToUCS(cs).ToVector2());
+                                pvtx.Add(lwpv);
+                                lastPt = to;
+                            }
+                            else
+                            {
+                                var lwpv = new netDxf.Entities.LwPolylineVertex(to.ToUCS(cs).ToVector2());
+                                pvtx.Add(lwpv);
+                                lastPt = from;
+                            }
                         }
-                        else
+                        break;
+                    case GeometryType.Arc3D:
                         {
-                            var lwpv = new netDxf.Entities.LwPolylineVertex(lastPt.ToUCS(cs).ToVector2(), arc.Bulge(tolLen, arc.To, arc.From));
-                            pvtx.Add(lwpv);
-                            lastPt = arc.From;
+                            var arc = geom[i] as Arc3D;
+                            from = arc.From;
+                            to = arc.To;
+                            var bulge = arc.Bulge(tolLen, arc.From, arc.To, N);
+
+                            if (lastPt == null)
+                            {
+                                if (i < geom.Count - 1)
+                                {
+                                    if (geom[i + 1].GeomFrom.EqualsTol(tolLen, to))
+                                    {
+                                        var lwpv = new netDxf.Entities.LwPolylineVertex(from.ToUCS(cs).ToVector2()) { Bulge = bulge };
+                                        pvtx.Add(lwpv);
+                                        lastPt = to;
+                                    }
+                                    else
+                                    {
+                                        var lwpv = new netDxf.Entities.LwPolylineVertex(to.ToUCS(cs).ToVector2()) { Bulge = -bulge };
+                                        pvtx.Add(lwpv);
+                                        lastPt = from;
+                                    }
+                                }
+                                else
+                                {
+                                    var lwpv = new netDxf.Entities.LwPolylineVertex(from.ToUCS(cs).ToVector2()) { Bulge = bulge };
+                                    pvtx.Add(lwpv);
+                                    lastPt = to;
+                                }
+                            }
+                            else
+                            {
+                                if (lastPt.EqualsTol(tolLen, from))
+                                {
+                                    var lwpv = new netDxf.Entities.LwPolylineVertex(from.ToUCS(cs).ToVector2()) { Bulge = bulge };
+                                    pvtx.Add(lwpv);
+                                    lastPt = to;
+                                }
+                                else
+                                {
+                                    var lwpv = new netDxf.Entities.LwPolylineVertex(to.ToUCS(cs).ToVector2()) { Bulge = -bulge };
+                                    pvtx.Add(lwpv);
+                                    lastPt = from;
+                                }
+                            }
+
                         }
-                    }
-                    else
-                    {
-                        var lwpv = new netDxf.Entities.LwPolylineVertex(arc.From.ToUCS(cs).ToVector2(), arc.Bulge(tolLen, arc.From, arc.To));
-                        pvtx.Add(lwpv);
-                        lastPt = arc.To;
-                    }
-                }
-                else if (geom[i].Type == GeometryType.Line3D)
-                {
-                    var seg = geom[i] as Line3D;
-                    lastPt = seg.To;
-                    pvtx.Add(new netDxf.Entities.LwPolylineVertex(seg.From.ToUCS(cs).ToVector2()));
+                        break;
                 }
             }
 
