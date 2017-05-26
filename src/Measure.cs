@@ -172,15 +172,14 @@ namespace SearchAThing.Sci
                 mustr = MU.ToString();
 
             if (!ExpPref.HasValue || ExpPref.Value == 0)
-                res = Invariant($"{Value} {mustr}");
+                res = Invariant($"{Value}{(mustr.Length > 0 ? mustr : "")}");
             else
             {
                 var v = Value / Pow(10, ExpPref.Value);
-                res = Invariant($"{v}e{ExpPref.Value} {mustr}");
-
+                res = Invariant($"{v}e{ExpPref.Value}{(mustr.Length > 0 ? mustr : "")}");
             }
 
-            if (includePQ) res += $" [{MU.PhysicalQuantity}]";
+            if (includePQ) res += $" [{MU.PhysicalQuantity}]";            
 
             return res;
         }
@@ -198,7 +197,7 @@ namespace SearchAThing.Sci
             {
                 var pqstart = text.LastIndexOf('[') + 1;
                 if (pqstart != 0)
-                {                    
+                {
                     var pqname = text.Substring(pqstart, text.Length - pqstart - 1);
                     pq = PQCollection.PhysicalQuantities.First(w => w.Name == pqname);
 
@@ -263,12 +262,14 @@ namespace SearchAThing.Sci
                 double n;
                 if (double.TryParse(s, NumberStyles.Number | NumberStyles.AllowExponent, culture, out n))
                 {
-                    var res = new Measure(n, mu);
+                    var res = new Measure(n, mu);                    
 
                     var regex = new Regex("([0-9.]*)([eE])(.*)");
                     var q = regex.Match(s);
                     if (q.Success)
-                        res.ExpPref = int.Parse(q.Groups[3].Value);
+                    {
+                        res.ExpPref = int.Parse(q.Groups[3].Value);                        
+                    }
 
                     return res;
                 }
