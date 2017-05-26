@@ -125,6 +125,21 @@ namespace SearchAThing
             }
 
             /// <summary>
+            /// z=0
+            /// </summary>            
+            public Line3D(double x1, double y1, double x2, double y2) : base(GeometryType.Line3D)
+            {
+                From = new Vector3D(x1, y1);
+                V = new Vector3D(x2, y2) - From;
+            }
+
+            public Line3D(double x1, double y1, double z1, double x2, double y2, double z2) : base(GeometryType.Line3D)
+            {
+                From = new Vector3D(x1, y1, z1);
+                V = new Vector3D(x2, y2, z2) - From;
+            }
+
+            /// <summary>
             /// build segment from plus the given vector form to
             /// </summary>            
             public Line3D(Vector3D from, Vector3D v, Line3DConstructMode mode) : base(GeometryType.Line3D)
@@ -216,6 +231,8 @@ namespace SearchAThing
             /// </summary>        
             public bool LineContainsPoint(double tol, Vector3D p, bool segmentMode = false, bool excludeExtreme = false)
             {
+                if (this.Length.EqualsTol(tol, 0)) return false;
+
                 var prj = p.Project(this);
 
                 var dprj = p.Distance(prj);
@@ -411,7 +428,10 @@ namespace SearchAThing
 
             public bool Colinear(double tol, Line3D other)
             {
-                return LineContainsPoint(tol, other.From) && LineContainsPoint(tol, other.To);
+                return
+                    (LineContainsPoint(tol, other.From) && LineContainsPoint(tol, other.To))
+                    ||
+                    (other.LineContainsPoint(tol, From) && other.LineContainsPoint(tol, To));
             }
 
             public bool IsParallelTo(double tol, Plane3D plane)
@@ -620,7 +640,6 @@ namespace SearchAThing
         /// </summary>        
         public static IEnumerable<Line3D> MergeColinearSegments(this IEnumerable<Line3D> _segs, double tol_len)
         {
-            var result_dir = _segs.First().V;
             var segs = new List<Line3D>(_segs);
 
             bool found_overlaps;
@@ -632,10 +651,13 @@ namespace SearchAThing
 
                 for (int i = 0; !found_overlaps && i < segs.Count; ++i)
                 {
-                    for (int j = i + 1; j < segs.Count; ++j)
+                    for (int j = 0; j < segs.Count; ++j)
                     {
+                        if (i == j) continue;
+
                         var i_contains_j_from = segs[i].SegmentContainsPoint(tol_len, segs[j].From);
                         var i_contains_j_to = segs[i].SegmentContainsPoint(tol_len, segs[j].To);
+
                         if (!segs[i].Colinear(tol_len, segs[j])) continue;
 
                         // i contains j entirely
