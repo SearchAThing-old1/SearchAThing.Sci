@@ -760,7 +760,7 @@ namespace SearchAThing
         /// <summary>
         /// produce a string with x1,y1,x2,y2, ...
         /// </summary>        
-        public static string ToCoordSequence2D(this IEnumerable<Vector3D> points)
+        public static string ToCoordString2D(this IEnumerable<Vector3D> points)
         {
             var sb = new StringBuilder();
 
@@ -772,6 +772,32 @@ namespace SearchAThing
                 {
                     var p = en.Current;
                     sb.Append(string.Format(CultureInfo.InvariantCulture, "{0},{1}", p.X, p.Y));
+
+                    if (en.MoveNext())
+                        sb.Append(",");
+                    else
+                        break;
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// produce a string with x1,y1,z1,x2,y2,z2, ...
+        /// </summary>        
+        public static string ToCoordString3D(this IEnumerable<Vector3D> points)
+        {
+            var sb = new StringBuilder();
+
+            var en = points.GetEnumerator();
+
+            if (en.MoveNext())
+            {
+                while (true)
+                {
+                    var p = en.Current;
+                    sb.Append(string.Format(CultureInfo.InvariantCulture, "{0},{1},{2}", p.X, p.Y, p.Z));
 
                     if (en.MoveNext())
                         sb.Append(",");
@@ -939,7 +965,8 @@ namespace SearchAThing
         /// if want to represent arcs, add them as dummy lines to segs
         /// polys returned are ordered anticlockwise
         /// </summary>        
-        public static IEnumerable<IReadOnlyList<Vector3D>> ClosedPolys2D(this IEnumerable<Line3D> segs, double tolLen)
+        public static IEnumerable<IReadOnlyList<Vector3D>> ClosedPolys2D(this IEnumerable<Line3D> segs, double tolLen,
+            int polyMaxPoints = 0)
         {
             var minCoord = new BBox3D(segs.SelectMany(r => new[] { r.From, r.To })).Min;
 
@@ -975,9 +1002,28 @@ namespace SearchAThing
                     }
 
                     Line3D segNext = null;
+                    var force_close_poly = false;
+
+                    if (polyMaxPoints > 0 && poly.Count > polyMaxPoints)
+                        throw new Exception($"polygon [{poly.PolygonSegments(tolLen).ToCadScript()}] max point exceeded");
+
+#if DEBUG
+
+                    if (//poly.Count >= 2 &&
+                        poly.Any(r => r.EqualsTol(tolLen, 45.1411, 0))
+                        //&&
+                        //poly.Any(r => r.EqualsTol(tolLen, -42.9561, 0))
+                        )
+                        ;
+#endif
 
                     if (poly.Count == 2)
                     {
+                        if (segsNext.Count == 0)
+                        {
+                            throw new Exception($"check singular segment [{seg}] cadscript [{seg.CadScript}]");
+                        }
+
                         segNext = segsNext
                             .OrderBy(w => (-seg.V).AngleRad(tolLen, w.V))
                             .First();
@@ -985,17 +1031,28 @@ namespace SearchAThing
                     }
                     else
                     {
-                        // retrieve next segment with current rotation direction w/acutest angle
-                        segNext = segsNext
+                        var qSegsNext = segsNext
                             .Select(w => new
                             {
                                 arad = (seg.V).AngleToward(tolLen, w.V, Vector3D.ZAxis * rotDir),
                                 seg = w
                             })
-                            .Where(r => r.arad <= PI)
-                            .OrderByDescending(r => r.arad)
-                            .First().seg;
+                            .Where(r => r.arad <= PI).ToList();
+
+                        if (qSegsNext.Count == 0)
+                        {
+                            force_close_poly = true;
+                        }
+                        else
+                        {
+                            // retrieve next segment with current rotation direction w/acutest angle
+                            segNext = qSegsNext
+                                .OrderByDescending(r => r.arad)
+                                .First().seg;
+                        }
                     }
+
+                    if (force_close_poly) break;
 
                     segsLeft.Remove(segNext);
                     if (segNext.To.EqualsTol(tolLen, poly[0])) break;
@@ -1004,12 +1061,20 @@ namespace SearchAThing
                     seg = segNext;
                 }
 
-                poly = poly.SortPoly(tolLen, Vector3D.ZAxis).ToList();
-                var polyCentroid = poly.Centroid(tolLen);
-                if (!polyCentroidDone.Contains(polyCentroid))
+                if (poly.Count > 2)
                 {
-                    polys.Add(poly);
-                    polyCentroidDone.Add(polyCentroid);
+                    poly = poly.SortPoly(tolLen, Vector3D.ZAxis).ToList();
+
+                    var polyCentroid = poly.Centroid(tolLen);
+                    if (!polyCentroidDone.Contains(polyCentroid))
+                    {
+                        polys.Add(poly);
+                        polyCentroidDone.Add(polyCentroid);
+                    }
+                }
+                else
+                {
+                    // todo warning
                 }
             }
 
