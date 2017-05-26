@@ -92,6 +92,17 @@ namespace SearchAThing
                 }
             }
 
+            /// <summary>
+            /// Length of Arc from start to end
+            /// </summary>
+            public double Length
+            {
+                get
+                {
+                    return AngleRad * Radius;
+                }
+            }
+
             public override Vector3D GeomFrom => From;
             public override Vector3D GeomTo => To;
 
@@ -150,13 +161,16 @@ namespace SearchAThing
             /// <summary>
             /// http://www.lee-mac.com/bulgeconversion.html
             /// </summary>            
-            public double Bulge(double tolLen, Vector3D from, Vector3D to)
+            public double Bulge(double tolLen, Vector3D from, Vector3D to, Vector3D N)
             {
+                var v1 = from - Center;
+                var v2 = to - Center;
+                var ang = v1.AngleToward(tolLen, v2, CS.BaseZ);
                 var factor = 1.0;
-                if (from.CrossProduct(to).Z < 0) // TODO unit test 3d
+                if (!N.Concordant(Constants.NormalizedLengthTolerance, CS.BaseZ))
                     factor = -1.0;
 
-                return factor * AngleRad / 4;
+                return Tan(ang / 4) * factor;                
             }
 
             /// <summary>
@@ -295,12 +309,12 @@ namespace SearchAThing
                 }
             }
 
-            public IEnumerable<Vector3D> IntersectArc(double tol, Line3D l, bool segment_mode = false, bool arc_mode = true)
+            public IEnumerable<Vector3D> IntersectArc(double tol, double tolRad, Line3D l, bool segment_mode = false, bool arc_mode = true)
             {
                 var q = Intersect(tol, l, segment_mode);
                 if (q == null) return null;
 
-                q = q.Where(r => this.Contains(tol, r, onlyAtCircumnfere: true)).ToList();
+                q = q.Where(r => this.Contains(tol, tolRad, r)).ToList();
                 if (q.Count() == 0) return null;
 
                 return q;
@@ -308,7 +322,7 @@ namespace SearchAThing
 
             public override string ToString()
             {
-                return $"C:{Center} r:{Round(Radius, 3)} from:{Round(AngleStartRad.ToDeg(), 1)} to:{Round(AngleEndRad.ToDeg(), 1)}";
+                return $"C:{Center} r:{Round(Radius, 3)} from: {From} ({Round(AngleStartRad.ToDeg(), 1)} deg) to:{To} ({Round(AngleEndRad.ToDeg(), 1)} deg)";
             }
 
         }
