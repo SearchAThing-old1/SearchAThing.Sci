@@ -150,6 +150,7 @@ namespace SearchAThing
                 var A = Area(segs, tolLen);
                 var centroid = Centroid(segs, tolLen, A);
 
+                /*
                 // search for arcs
                 foreach (var geom in geometry_block)
                 {
@@ -167,6 +168,7 @@ namespace SearchAThing
                         centroid = new Vector3D(new_centroid_x, new_centroid_y, 0);
                     }
                 }
+                */
 
                 return centroid;
             }
