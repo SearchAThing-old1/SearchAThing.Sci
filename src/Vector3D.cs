@@ -288,6 +288,14 @@ namespace SearchAThing
             }
 
             /// <summary>
+            /// this relative to given origin
+            /// </summary>            
+            public Vector3D Rel(Vector3D origin)
+            {
+                return this - origin;
+            }
+
+            /// <summary>
             /// Angle (rad) between this going toward the given other vector
             /// rotating (right-hand-rule) around the given comparing axis
             /// Note: tol must be Constant.NormalizedLengthTolerance
@@ -1007,15 +1015,15 @@ namespace SearchAThing
                     if (polyMaxPoints > 0 && poly.Count > polyMaxPoints)
                         throw new Exception($"polygon [{poly.PolygonSegments(tolLen).ToCadScript()}] max point exceeded");
 
-#if DEBUG
+//#if DEBUG
 
-                    if (//poly.Count >= 2 &&
-                        poly.Any(r => r.EqualsTol(tolLen, 45.1411, 0))
-                        //&&
-                        //poly.Any(r => r.EqualsTol(tolLen, -42.9561, 0))
-                        )
-                        ;
-#endif
+//                    if (//poly.Count >= 2 &&
+//                        poly.Any(r => r.EqualsTol(1e-2, 31.0626,-0.0018))
+//                        //&&
+//                        //poly.Any(r => r.EqualsTol(tolLen, -42.9561, 0))
+//                        )
+//                        ;
+//#endif
 
                     if (poly.Count == 2)
                     {
