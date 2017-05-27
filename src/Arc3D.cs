@@ -88,7 +88,13 @@ namespace SearchAThing
             {
                 get
                 {
-                    return AngleEndRad - AngleStartRad;
+                    var astart = AngleStartRad.NormalizeAngle2PI();
+                    var aend = AngleEndRad.NormalizeAngle2PI();
+
+                    if (astart > aend)
+                        return aend + (2 * PI - astart);
+                    else
+                        return aend - astart;
                 }
             }
 
@@ -170,7 +176,7 @@ namespace SearchAThing
                 if (!N.Concordant(Constants.NormalizedLengthTolerance, CS.BaseZ))
                     factor = -1.0;
 
-                return Tan(ang / 4) * factor;                
+                return Tan(ang / 4) * factor;
             }
 
             /// <summary>
@@ -197,8 +203,11 @@ namespace SearchAThing
 
                 var pt_angle = PtAngle(tolLen, pt);
 
+                var lower_bound_angle = AngleStartRad;
+                if (AngleStartRad > AngleEndRad) lower_bound_angle -= 2 * PI;
+
                 return
-                    pt_angle.GreatThanOrEqualsTol(tolRad, AngleStartRad)
+                    pt_angle.GreatThanOrEqualsTol(tolRad, lower_bound_angle)
                     &&
                     pt_angle.LessThanOrEqualsTol(tolRad, AngleEndRad);
             }
@@ -216,22 +225,21 @@ namespace SearchAThing
 
                 var radCmp = new DoubleEqualityComparer(tolRad);
 
-                var hs_angles_rad = new HashSet<double>(radCmp) { AngleStartRad };
+                var hs_angles_rad = new HashSet<double>(radCmp);
                 foreach (var splitPt in splitPts.Select(pt => PtAngle(tolLen, pt)))
+                {
+                    if (PtAtAngle(splitPt).EqualsTol(tolLen, From) || PtAtAngle(splitPt).EqualsTol(tolLen, To)) continue;
                     hs_angles_rad.Add(splitPt.NormalizeAngle2PI());
-                hs_angles_rad.Add(AngleEndRad.NormalizeAngle2PI());
+                }
 
                 var angles_rad = hs_angles_rad.OrderBy(w => w).ToList();
-
-                if (angles_rad[1] < angles_rad[0])
-                    throw new Exception($"split at angle_rad [{angles_rad[1]}] must great than start angle_rad [{angles_rad[0]}]");
-
-                if (angles_rad[angles_rad.Count - 1] < angles_rad[angles_rad.Count - 2])
-                    throw new Exception($"split at angle_rad [{angles_rad[angles_rad.Count - 2]}] must smallers than end angle_rad [{angles_rad[angles_rad.Count]}]");
+                if (!hs_angles_rad.Contains(AngleStartRad)) angles_rad.Insert(0, AngleStartRad);
+                if (!hs_angles_rad.Contains(AngleEndRad)) angles_rad.Add(AngleEndRad);
 
                 for (int i = 0; i < angles_rad.Count - 1; ++i)
                 {
-                    yield return new Arc3D(CS, Radius, angles_rad[i], angles_rad[i + 1]);
+                    var arc = new Arc3D(CS, Radius, angles_rad[i], angles_rad[i + 1]);
+                    yield return arc;
                 }
             }
 
@@ -322,7 +330,7 @@ namespace SearchAThing
 
             public override string ToString()
             {
-                return $"C:{Center} r:{Round(Radius, 3)} from: {From} ({Round(AngleStartRad.ToDeg(), 1)} deg) to:{To} ({Round(AngleEndRad.ToDeg(), 1)} deg)";
+                return $"C:{Center} r:{Round(Radius, 3)} ANGLE:{AngleRad.ToDeg()}deg from: {From} ({Round(AngleStartRad.ToDeg(), 1)} deg) to:{To} ({Round(AngleEndRad.ToDeg(), 1)} deg)";
             }
 
         }
