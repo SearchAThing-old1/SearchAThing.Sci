@@ -187,7 +187,7 @@ namespace SearchAThing
             /// </summary>        
             public static Line3D operator *(double s, Line3D l)
             {
-                return new Line3D(l.From, (l.To - l.From) * s, Line3DConstructMode.PointAndVector);
+                return new Line3D(l.From, l.V * s, Line3DConstructMode.PointAndVector);
             }
 
             /// <summary>
@@ -196,7 +196,7 @@ namespace SearchAThing
             /// </summary>        
             public static Line3D operator *(Line3D l, double s)
             {
-                return new Line3D(l.From, (l.To - l.From) * s, Line3DConstructMode.PointAndVector);
+                return new Line3D(l.From, l.V * s, Line3DConstructMode.PointAndVector);
             }
 
             /// <summary>
