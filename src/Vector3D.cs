@@ -295,6 +295,11 @@ namespace SearchAThing
                 return this - origin;
             }
 
+            public bool Colinear(double tol, Vector3D other)
+            {
+                return new Line3D(Vector3D.Zero, this).Colinear(tol, new Line3D(Vector3D.Zero, other));
+            }
+
             /// <summary>
             /// Angle (rad) between this going toward the given other vector
             /// rotating (right-hand-rule) around the given comparing axis
@@ -1015,15 +1020,15 @@ namespace SearchAThing
                     if (polyMaxPoints > 0 && poly.Count > polyMaxPoints)
                         throw new Exception($"polygon [{poly.PolygonSegments(tolLen).ToCadScript()}] max point exceeded");
 
-//#if DEBUG
+                    //#if DEBUG
 
-//                    if (//poly.Count >= 2 &&
-//                        poly.Any(r => r.EqualsTol(1e-2, 31.0626,-0.0018))
-//                        //&&
-//                        //poly.Any(r => r.EqualsTol(tolLen, -42.9561, 0))
-//                        )
-//                        ;
-//#endif
+                    //                    if (//poly.Count >= 2 &&
+                    //                        poly.Any(r => r.EqualsTol(1e-2, 31.0626,-0.0018))
+                    //                        //&&
+                    //                        //poly.Any(r => r.EqualsTol(tolLen, -42.9561, 0))
+                    //                        )
+                    //                        ;
+                    //#endif
 
                     if (poly.Count == 2)
                     {

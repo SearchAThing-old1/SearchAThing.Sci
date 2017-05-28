@@ -48,7 +48,7 @@ namespace SearchAThing
             /// Build 3d circle that intersect p1,p2,p3
             /// ( the inside CS will centered in the circle center and Xaxis toward p1 )
             /// </summary>        
-            public Circle3D(Vector3D p1, Vector3D p2, Vector3D p3) : base(p1, p2, p3, 0, 2 * PI)
+            public Circle3D(Vector3D p1, Vector3D p2, Vector3D p3) : base(p1, p2, p3)
             {
                 Type = GeometryType.Circle3D;
             }

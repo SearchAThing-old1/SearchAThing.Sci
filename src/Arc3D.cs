@@ -50,23 +50,14 @@ namespace SearchAThing
                 Radius = r;
             }
 
-            /// <summary>
-            /// Build 3d circle that intersect p1,p2,p3
-            /// ( the inside CS will centered in the circle center and Xaxis toward p1 )
-            /// </summary>        
-            public Arc3D(Vector3D p1, Vector3D p2, Vector3D p3, double angleStart, double angleEnd) :
-                base(GeometryType.Arc3D)
+            public static (CoordinateSystem3D CS, double Radius) CircleBy3Points(Vector3D p1, Vector3D p2, Vector3D p3)
             {
-                Type = GeometryType.Arc3D;
-                AngleStartRad = angleStart;
-                AngleEndRad = angleEnd;
-
                 // https://en.wikipedia.org/wiki/Circumscribed_circle
                 // Cartesian coordinates from cross- and dot-products
 
                 var d = ((p1 - p2).CrossProduct(p2 - p3)).Length;
 
-                Radius = ((p1 - p2).Length * (p2 - p3).Length * (p3 - p1).Length) / (2 * d);
+                var Radius = ((p1 - p2).Length * (p2 - p3).Length * (p3 - p1).Length) / (2 * d);
 
                 var alpha = Pow((p2 - p3).Length, 2) * (p1 - p2).DotProduct(p1 - p3) / (2 * Pow(d, 2));
                 var beta = Pow((p1 - p3).Length, 2) * (p2 - p1).DotProduct(p2 - p3) / (2 * Pow(d, 2));
@@ -74,7 +65,54 @@ namespace SearchAThing
 
                 var c = alpha * p1 + beta * p2 + gamma * p3;
 
-                CS = new CoordinateSystem3D(c, p1 - c, p2 - c);
+                var CS = new CoordinateSystem3D(c, p1 - c, p2 - c);
+
+                return (CS, Radius);
+            }
+
+            /// <summary>
+            /// Build arc by 3 given points with angle 2*PI
+            /// ( the inside CS will centered in the arc center and Xaxis toward p1 )
+            /// </summary>        
+            internal Arc3D(Vector3D p1, Vector3D p2, Vector3D p3) :
+                base(GeometryType.Arc3D)
+            {
+                Type = GeometryType.Arc3D;
+
+                var nfo = Arc3D.CircleBy3Points(p1, p2, p3);
+
+                CS = nfo.CS;
+                Radius = nfo.Radius;
+
+                AngleStartRad = 0;
+                AngleEndRad = 2 * PI;
+            }
+
+            /// <summary>
+            /// Build arc by 3 given points
+            /// ( the inside CS will centered in the arc center and Xaxis toward p1 )
+            /// </summary>        
+            public Arc3D(double tol_len, Vector3D p1, Vector3D p2, Vector3D p3, Vector3D normal = null) :
+                base(GeometryType.Arc3D)
+            {
+                Type = GeometryType.Arc3D;
+
+                var nfo = Arc3D.CircleBy3Points(p1, p2, p3);
+
+                CS = nfo.CS;
+                Radius = nfo.Radius;
+
+                if (normal != null)
+                {
+                    if (!normal.Colinear(tol_len, CS.BaseZ)) throw new Exception($"invalid given normal not colinear to arc axis");
+                    if (!normal.Concordant(tol_len, CS.BaseZ))
+                    {
+                        CS = CS.Rotate(CS.BaseX, PI);
+                    }
+                }
+
+                AngleStartRad = CS.BaseX.AngleToward(tol_len, p1 - CS.Origin, CS.BaseZ);
+                AngleEndRad = CS.BaseX.AngleToward(tol_len, p3 - CS.Origin, CS.BaseZ);
             }
 
             public Arc3D Move(Vector3D delta)
@@ -114,7 +152,7 @@ namespace SearchAThing
 
             public Vector3D PtAtAngle(double angleRad)
             {
-                return (CS.BaseX * Radius).RotateAboutZAxis(angleRad).ToWCS(CS);
+                return (Vector3D.XAxis * Radius).RotateAboutZAxis(angleRad).ToWCS(CS);
             }
 
             public Vector3D MidPoint
@@ -311,7 +349,10 @@ namespace SearchAThing
             {
                 get
                 {
-                    var arc = new Arc(Center, Radius, AngleStartRad.ToDeg(), AngleEndRad.ToDeg());
+                    var dxf_cs = new CoordinateSystem3D(CS.Origin, CS.BaseZ, CoordinateSystem3DAutoEnum.AAA);
+                    var astart = dxf_cs.BaseX.AngleToward(Constants.NormalizedLengthTolerance, From - CS.Origin, CS.BaseZ);
+                    var aend = dxf_cs.BaseX.AngleToward(Constants.NormalizedLengthTolerance, To - CS.Origin, CS.BaseZ);
+                    var arc = new Arc(Center, Radius, astart.ToDeg(), aend.ToDeg());
                     arc.Normal = CS.BaseZ;
                     return arc;
                 }
@@ -330,7 +371,7 @@ namespace SearchAThing
 
             public override string ToString()
             {
-                return $"C:{Center} r:{Round(Radius, 3)} ANGLE:{AngleRad.ToDeg()}deg from: {From} ({Round(AngleStartRad.ToDeg(), 1)} deg) to:{To} ({Round(AngleEndRad.ToDeg(), 1)} deg)";
+                return $"C:{Center} r:{Round(Radius, 3)} ANGLE:{AngleRad.ToDeg()}deg FROM[{From} {Round(AngleStartRad.ToDeg(), 1)} deg] TO[{To} {Round(AngleEndRad.ToDeg(), 1)} deg]";
             }
 
         }
