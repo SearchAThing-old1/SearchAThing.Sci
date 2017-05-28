@@ -34,7 +34,13 @@ namespace SearchAThing.Sci
         /// <summary>
         /// Arbitrary Axis Alghoritm ( dxf spec )
         /// </summary>
-        AAA
+        AAA,
+
+        /// <summary>
+        /// Strand7 ( Element Library : Beam Principal Axis System ; Default principal axes of a beam element )
+        /// Note: Normal must beam Start to End direction
+        /// </summary>
+        St7
     }
 
     public partial class CoordinateSystem3D
@@ -53,19 +59,41 @@ namespace SearchAThing.Sci
 
         public CoordinateSystem3D(Vector3D o, Vector3D normal, CoordinateSystem3DAutoEnum csAutoType = CoordinateSystem3DAutoEnum.AAA)
         {
-            Vector3D Ax = null;
+            switch (csAutoType)
+            {
+                case CoordinateSystem3DAutoEnum.AAA:
+                    {
+                        Vector3D Ax = null;
 
-            if (Abs(normal.X) < aaaSmall && Abs(normal.Y) < aaaSmall)
-                Ax = Vector3D.YAxis.CrossProduct(normal).Normalized();
-            else
-                Ax = Vector3D.ZAxis.CrossProduct(normal).Normalized();
+                        if (Abs(normal.X) < aaaSmall && Abs(normal.Y) < aaaSmall)
+                            Ax = Vector3D.YAxis.CrossProduct(normal).Normalized();
+                        else
+                            Ax = Vector3D.ZAxis.CrossProduct(normal).Normalized();
 
-            var Ay = normal.CrossProduct(Ax).Normalized();
+                        var Ay = normal.CrossProduct(Ax).Normalized();
 
-            Origin = o;
-            BaseX = Ax;
-            BaseY = Ay;
-            BaseZ = Ax.CrossProduct(Ay).Normalized();
+                        Origin = o;
+                        BaseX = Ax;
+                        BaseY = Ay;
+                        BaseZ = Ax.CrossProduct(Ay).Normalized();
+                    }
+                    break;
+
+                case CoordinateSystem3DAutoEnum.St7:
+                    {
+                        BaseZ = normal.Normalized();
+
+                        // axis 2
+                        if (BaseZ.IsParallelTo(Constants.NormalizedLengthTolerance, Vector3D.ZAxis))
+                            BaseY = Vector3D.YAxis;
+                        else
+                            BaseY = Vector3D.ZAxis.CrossProduct(BaseZ).Normalized();
+
+                        // axis 1
+                        BaseX = BaseY.CrossProduct(BaseZ).Normalized();
+                    }
+                    break;
+            }
 
             m = Matrix3D.FromVectorsAsColumns(BaseX, BaseY, BaseZ);
             mInv = m.Inverse();
@@ -145,7 +173,7 @@ namespace SearchAThing.Sci
         public static Vector3D Project(this Vector3D v, CoordinateSystem3D cs)
         {
             return v.ToUCS(cs).Set(OrdIdx.Z, 0).ToWCS(cs);
-        }      
+        }
 
     }
 
