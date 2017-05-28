@@ -534,6 +534,12 @@ namespace SearchAThing
                 }
             }
 
+            if (!closed)
+            {
+                var lwpv = new netDxf.Entities.LwPolylineVertex(lastPt.ToUCS(cs).ToVector2());
+                pvtx.Add(lwpv);
+            }
+
             var lwpoly = new netDxf.Entities.LwPolyline(pvtx, isClosed: closed);
 
             lwpoly.Normal = N.Normalized();
