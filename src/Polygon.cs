@@ -443,9 +443,9 @@ namespace SearchAThing
         /// build 2d dxf polyline.
         /// note: use RepeatFirstAtEnd extension to build a closed polyline
         /// </summary>        
-        public static netDxf.Entities.LwPolyline ToLwPolyline(this IEnumerable<Geometry> _geom, double tolLen)
+        public static netDxf.Entities.LwPolyline ToLwPolyline(this IEnumerable<Geometry> _geom, double tolLen, bool closed = true)
         {
-            var geom = _geom.ToList();           
+            var geom = _geom.ToList();
 
             var N = Vector3D.ZAxis;
 
@@ -534,7 +534,7 @@ namespace SearchAThing
                 }
             }
 
-            var lwpoly = new netDxf.Entities.LwPolyline(pvtx, isClosed: true);
+            var lwpoly = new netDxf.Entities.LwPolyline(pvtx, isClosed: closed);
 
             lwpoly.Normal = N.Normalized();
 
