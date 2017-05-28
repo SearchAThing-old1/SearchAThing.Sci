@@ -463,6 +463,39 @@ namespace SearchAThing
             public Vector3D MidPoint { get { return (From + To) / 2; } }
 
             /// <summary>
+            /// rotate this segment about given axis
+            /// </summary>            
+            public Line3D RotateAboutAxis(Line3D axisSegment, double angleRad)
+            {
+                return new Line3D(From.RotateAboutAxis(axisSegment, angleRad), To.RotateAboutAxis(axisSegment, angleRad));
+            }
+
+            /// <summary>
+            /// resize this segment to a new one with same From
+            /// </summary>            
+            public Line3D SetLength(double len)
+            {
+                return new Line3D(From, V.Normalized() * len, Line3DConstructMode.PointAndVector);
+            }
+
+            /// <summary>
+            /// move this segment of given delta
+            /// </summary>            
+            public Line3D Move(Vector3D delta)
+            {
+                return new Line3D(From + delta, To + delta);
+            }
+
+            /// <summary>
+            /// Move this segment midpoint to the given coord
+            /// </summary>            
+            public Line3D MoveMidpoint(Vector3D newMidpoint)
+            {
+                var mid = MidPoint;
+                return Move(newMidpoint - mid);
+            }
+
+            /// <summary>
             /// split current segment into one or more depending on which of given split points was found on the segment
             /// TODO : not optimized
             /// </summary>            
