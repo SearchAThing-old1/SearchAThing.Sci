@@ -462,6 +462,15 @@ namespace SearchAThing
 
                 switch (geom[i].Type)
                 {
+                    case GeometryType.Vector3D:
+                        {
+                            to = geom[i] as Vector3D;
+                            var lwpv = new netDxf.Entities.LwPolylineVertex(to.ToVector2());
+                            pvtx.Add(lwpv);
+                            lastPt = to;
+                        }
+                        break;
+
                     case GeometryType.Line3D:
                         {
                             var seg = geom[i] as Line3D;
