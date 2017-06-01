@@ -196,27 +196,7 @@ namespace SearchAThing
                 yield return MathHelper.Transform(
                     new Vector3(v.Position.X, v.Position.Y, lwp.Elevation), lwp.Normal, CoordinateSystem.Object, CoordinateSystem.World);
             }
-        }
-
-        /// <summary>
-        /// from a set of pts returns segments from1-to1, from2-to2, ...
-        /// where 
-        /// - from_0 = pts[0]
-        /// - to_i = from_(i+1)
-        /// </summary>        
-        public static IEnumerable<Line3D> Segments(this IEnumerable<Vector3D> pts)
-        {
-            var en = pts.GetEnumerator();
-
-            Vector3D prev = null;
-
-            while (en.MoveNext())
-            {
-                if (prev != null) yield return new Line3D(prev, en.Current);
-
-                prev = en.Current;
-            }
-        }
+        }       
 
         /// <summary>
         /// given points a,b,c it will return a,b,c,a ( first is repeated at end )

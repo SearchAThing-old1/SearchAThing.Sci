@@ -30,6 +30,7 @@ using System.Globalization;
 using System.Linq;
 using static System.Math;
 using netDxf.Entities;
+using Newtonsoft.Json;
 
 namespace SearchAThing
 {
@@ -73,9 +74,13 @@ namespace SearchAThing
             public Vector3D To { get { return From + V; } }
             public Vector3D Dir { get { return (To - From).Normalized(); } }
 
+            [JsonIgnore]
             public override Vector3D GeomFrom => From;
+
+            [JsonIgnore]
             public override Vector3D GeomTo => To;
 
+            [JsonIgnore]
             public override IEnumerable<Vector3D> Vertexes
             {
                 get

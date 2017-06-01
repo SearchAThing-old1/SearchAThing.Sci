@@ -53,7 +53,7 @@ namespace SearchAThing
             public abstract Vector3D GeomTo { get; }
 
             public abstract netDxf.Entities.EntityObject DxfEntity { get; }
-               
+
             public static implicit operator netDxf.Entities.EntityObject(Geometry geom)
             {
                 return geom.DxfEntity;
@@ -92,14 +92,74 @@ namespace SearchAThing
         /// segments representation of given geometries
         /// if arc found a segment between endpoints returns
         /// </summary>        
-        public static IEnumerable<Line3D> Segments(this IReadOnlyList<Geometry> geometry_block)
+        public static IEnumerable<Line3D> Segments(this IEnumerable<Geometry> geometry_block, double tol_len)
         {
-            foreach (var geom in geometry_block)
+            var en = geometry_block.GetEnumerator();
+
+            Vector3D prev = null;
+
+            while (en.MoveNext())
             {
+                var geom = en.Current;
+
                 switch (geom.Type)
                 {
-                    case GeometryType.Line3D: yield return geom as Line3D; break;
-                    case GeometryType.Arc3D: yield return (geom as Arc3D).Segment; break;
+                    case GeometryType.Vector3D:
+                        {
+                            var cur = geom as Vector3D;
+                            if (prev != null) yield return new Line3D(prev, cur);
+                            prev = cur;
+                        }
+                        break;
+
+                    case GeometryType.Line3D:
+                        {
+                            var cur = geom as Line3D;
+                            if (prev == null)
+                            {
+                                yield return cur;
+                                prev = cur.To;
+                            }
+                            else
+                            {
+                                if (cur.From.EqualsTol(tol_len, prev))
+                                {
+                                    yield return cur;
+                                    prev = cur.To;
+                                }
+                                else
+                                {
+                                    yield return cur.Reverse();
+                                    prev = cur.From;
+                                }
+                            }
+                        }
+                        break;
+
+                    case GeometryType.Arc3D:
+                        {
+                            var cur = geom as Arc3D;
+                            if (prev == null)
+                            {
+                                yield return cur.Segment;
+                                prev = cur.To;
+                            }
+                            else
+                            {
+                                if (cur.From.EqualsTol(tol_len, prev))
+                                {
+                                    yield return cur.Segment;
+                                    prev = cur.To;
+                                }
+                                else
+                                {
+                                    yield return cur.Segment.Reverse();
+                                    prev = cur.From;
+                                }
+                            }
+                        }
+                        break;
+
                     default: throw new System.Exception($"unsupported type [{geom.Type}] on Segments function");
                 }
             }

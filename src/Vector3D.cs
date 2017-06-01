@@ -50,7 +50,10 @@ namespace SearchAThing
             public static Vector3D YAxis = new Vector3D(0, 1, 0);
             public static Vector3D ZAxis = new Vector3D(0, 0, 1);
 
+            [JsonIgnore]
             public override Vector3D GeomFrom => this;
+
+            [JsonIgnore]
             public override Vector3D GeomTo => this;
 
             public static Vector3D Axis(int ord)
@@ -96,6 +99,7 @@ namespace SearchAThing
                 X = x; Y = y;
             }
 
+            [JsonIgnore]
             public override IEnumerable<Vector3D> Vertexes
             {
                 get
