@@ -361,12 +361,12 @@ namespace SearchAThing
             public IEnumerable<Vector3D> IntersectArc(double tol, double tolRad, Line3D l, bool segment_mode = false, bool arc_mode = true)
             {
                 var q = Intersect(tol, l, segment_mode);
-                if (q == null) return null;
+                if (q == null) yield break;
 
                 q = q.Where(r => this.Contains(tol, tolRad, r)).ToList();
-                if (q.Count() == 0) return null;
+                if (q.Count() == 0) yield break;
 
-                return q;
+                foreach (var x in q) yield return x;
             }
 
             public override string ToString()
