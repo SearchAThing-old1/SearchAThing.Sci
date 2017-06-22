@@ -618,6 +618,62 @@ namespace SearchAThing
                 }
                 if (include_endpoints) yield return GeomTo;
             }
+
+            /// <summary>
+            /// if this segment share a node with the other given
+            /// return that null elsewhere
+            /// </summary>            
+            public Vector3D CommonNode(double tol_len, Line3D other)
+            {
+                if (From.EqualsTol(tol_len, other.From)) return From;
+                if (From.EqualsTol(tol_len, other.To)) return From;
+                if (To.EqualsTol(tol_len, other.From)) return To;
+                if (To.EqualsTol(tol_len, other.To)) return To;
+
+                return null;
+            }
+
+            /// <summary>
+            /// return inverted segment
+            /// </summary>
+            public Line3D Inverted
+            {
+                get
+                {
+                    return new Line3D(From, -V, Line3DConstructMode.PointAndVector);
+                }
+            }
+
+            public override BBox3D BBox(double tol_len, double tol_rad)
+            {
+                return new BBox3D(new[] { From, To });
+            }
+
+            /// <summary>
+            /// returns bisect of two given segment/lines
+            /// ( if given segment not share nodes but intesects returned bisect start from ip )
+            /// bisect choosen will be the one between this and other withing shortest angle
+            /// 
+            /// if two given lines are parallel and parallelRotationAxis is given then
+            /// bisect results as this segment rotated PI/2 about given axis using To as rotcenter
+            /// </summary>            
+            public Line3D Bisect(double tol_len, Line3D other, Vector3D parallelRotationAxis = null)
+            {
+                if (V.IsParallelTo(tol_len, other.V))
+                {
+                    if (parallelRotationAxis == null) return null;
+
+                    return new Line3D(To, V.RotateAboutAxis(parallelRotationAxis, PI / 2), Line3DConstructMode.PointAndVector);
+                }
+
+                var ip = this.Intersect(tol_len, other);
+                if (ip == null) return null;
+
+                var c = V.RotateAs(tol_len, V, other.V, angleFactor: .5);
+
+                return new Line3D(ip, c, Line3DConstructMode.PointAndVector);
+            }
+
         }
 
         public class Line3DEqualityComparer : IEqualityComparer<Line3D>

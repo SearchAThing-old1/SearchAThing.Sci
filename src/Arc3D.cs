@@ -350,6 +350,21 @@ namespace SearchAThing
                 }
             }
 
+            public override BBox3D BBox(double tol_len, double tol_rad)
+            {
+                var pts = new List<Vector3D>() { From, To };
+
+                foreach (var csdir in new[] { CS.BaseX, CS.BaseY })
+                {
+                    pts.AddRange(IntersectArc(tol_len, tol_rad,
+                        new Line3D(CS.Origin, csdir, Line3DConstructMode.PointAndVector),
+                        segment_mode: false,
+                        arc_mode: true));
+                }
+
+                return new BBox3D(pts);
+            }
+
             public IEnumerable<Vector3D> IntersectArc(double tol, double tolRad, Line3D l, bool segment_mode = false, bool arc_mode = true)
             {
                 var q = Intersect(tol, l, segment_mode);

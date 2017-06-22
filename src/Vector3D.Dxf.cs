@@ -24,15 +24,10 @@
 #endregion
 
 using System;
-using static System.Math;
 
 //using sVector3D = System.Windows.Media.Media3D.Vector3D;
-using sVector3D = Microsoft.Xna.Framework.Vector3;
 using System.Globalization;
 using System.Collections.Generic;
-using SearchAThing.Sci;
-using System.Text;
-using System.Windows;
 using netDxf;
 
 namespace SearchAThing
@@ -58,7 +53,12 @@ namespace SearchAThing
                 {
                     return string.Format(CultureInfo.InvariantCulture, "_LINE {0},{1},{2}\r\n", X, Y, Z);
                 }
-            }            
+            }
+
+            public override BBox3D BBox(double tol_len, double tol_rad)
+            {
+                return new BBox3D();
+            }
 
             public override IEnumerable<Vector3D> Divide(int cnt, bool include_endpoints = false)
             {
