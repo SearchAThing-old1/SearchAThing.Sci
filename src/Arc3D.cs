@@ -376,21 +376,23 @@ namespace SearchAThing
 
             public override IEnumerable<Vector3D> Divide(int cnt, bool include_endpoints = false)
             {
-                var p = GeomFrom;
-                if (include_endpoints) yield return p;
+                var from = GeomFrom;
+                if (include_endpoints) yield return from;
+
+                var p = from;
                 var ang_step = AngleRad / cnt;
 
-                var ang = 0d;
-                var from = GeomFrom;
+                var ang = ang_step;
                 var ax_rot = new Line3D(Center, CS.BaseZ, Line3DConstructMode.PointAndVector);
 
-                while (cnt > 0)
+                for (int i = 0; i < cnt - 1; ++i)
                 {
                     p = from.RotateAboutAxis(ax_rot, ang);
                     yield return p;
-                    --cnt;
+
                     ang += ang_step;
                 }
+
                 if (include_endpoints) yield return GeomTo;
             }
         }
