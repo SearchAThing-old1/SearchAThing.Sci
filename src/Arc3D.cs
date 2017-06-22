@@ -139,7 +139,7 @@ namespace SearchAThing
             /// <summary>
             /// Length of Arc from start to end
             /// </summary>
-            public double Length
+            public override double Length
             {
                 get
                 {
@@ -374,6 +374,21 @@ namespace SearchAThing
                 return $"C:{Center} r:{Round(Radius, 3)} ANGLE:{AngleRad.ToDeg()}deg FROM[{From} {Round(AngleStartRad.ToDeg(), 1)} deg] TO[{To} {Round(AngleEndRad.ToDeg(), 1)} deg]";
             }
 
+            public override IEnumerable<Vector3D> Divide(int cnt, bool include_endpoints = false)
+            {
+                var p = GeomFrom;
+                if (include_endpoints) yield return p;
+                var ang_step = AngleRad / cnt;
+                var ax_rot = new Line3D(Center, CS.BaseZ);
+                --cnt;
+                while (cnt > 0)
+                {
+                    p = p.RotateAboutAxis(ax_rot, ang_step);
+                    yield return p;
+                    --cnt;
+                }
+                if (include_endpoints) yield return GeomTo;
+            }
         }
 
     }

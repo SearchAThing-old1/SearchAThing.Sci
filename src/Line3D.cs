@@ -31,6 +31,7 @@ using System.Linq;
 using static System.Math;
 using netDxf.Entities;
 using Newtonsoft.Json;
+using System;
 
 namespace SearchAThing
 {
@@ -153,7 +154,7 @@ namespace SearchAThing
                 V = v;
             }
 
-            public double Length { get { return V.Length; } }
+            public override double Length { get { return V.Length; } }
 
             /// <summary>
             /// Checks if two lines are equals ( it checks agains swapped from-to too )
@@ -603,6 +604,20 @@ namespace SearchAThing
                 return $"{From}-{To} L={Length.ToString(2)} Δ={To - From}";
             }
 
+            public override IEnumerable<Vector3D> Divide(int cnt, bool include_endpoints = false)
+            {
+                var step = Length / cnt * V.Normalized();
+                var p = GeomFrom;
+                if (include_endpoints) yield return p;
+                --cnt;
+                while (cnt > 0)
+                {
+                    p = p + step;
+                    yield return p;
+                    --cnt;
+                }
+                if (include_endpoints) yield return GeomTo;
+            }
         }
 
         public class Line3DEqualityComparer : IEqualityComparer<Line3D>

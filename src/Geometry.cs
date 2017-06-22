@@ -51,6 +51,8 @@ namespace SearchAThing
             public abstract IEnumerable<Vector3D> Vertexes { get; }
             public abstract Vector3D GeomFrom { get; }
             public abstract Vector3D GeomTo { get; }
+            public abstract double Length { get; }
+            public abstract IEnumerable<Vector3D> Divide(int cnt, bool include_endpoints = false);
 
             public abstract netDxf.Entities.EntityObject DxfEntity { get; }
 
