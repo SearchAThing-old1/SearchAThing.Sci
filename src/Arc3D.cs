@@ -371,7 +371,7 @@ namespace SearchAThing
 
             public override string ToString()
             {
-                return $"C:{Center} r:{Round(Radius, 3)} ANGLE:{AngleRad.ToDeg()}deg FROM[{From} {Round(AngleStartRad.ToDeg(), 1)} deg] TO[{To} {Round(AngleEndRad.ToDeg(), 1)} deg]";
+                return $"C:{Center} r:{Round(Radius, 3)} ANGLE:{Round(AngleRad.ToDeg(), 1)}deg FROM[{From} {Round(AngleStartRad.ToDeg(), 1)} deg] TO[{To} {Round(AngleEndRad.ToDeg(), 1)} deg]";
             }
 
             public override IEnumerable<Vector3D> Divide(int cnt, bool include_endpoints = false)
