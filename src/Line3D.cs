@@ -634,6 +634,17 @@ namespace SearchAThing
             }
 
             /// <summary>
+            /// return segment with swapped from,to
+            /// </summary>
+            public Line3D Swapped
+            {
+                get
+                {
+                    return new Line3D(To, From);
+                }
+            }
+
+            /// <summary>
             /// return inverted segment
             /// </summary>
             public Line3D Inverted
@@ -663,7 +674,12 @@ namespace SearchAThing
                 {
                     if (parallelRotationAxis == null) return null;
 
-                    return new Line3D(To, V.RotateAboutAxis(parallelRotationAxis, PI / 2), Line3DConstructMode.PointAndVector);
+                    var p = From;
+
+                    if (To.EqualsTol(tol_len, other.From) || To.EqualsTol(tol_len, other.To))
+                        p = To;
+
+                    return new Line3D(p, V.RotateAboutAxis(parallelRotationAxis, PI / 2), Line3DConstructMode.PointAndVector);
                 }
 
                 var ip = this.Intersect(tol_len, other);
