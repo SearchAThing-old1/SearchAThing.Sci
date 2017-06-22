@@ -239,15 +239,7 @@ namespace SearchAThing
                 // if not in circle stop
                 if (!this.Contains(tolLen, pt)) return false;
 
-                var pt_angle = PtAngle(tolLen, pt);
-
-                var lower_bound_angle = AngleStartRad;
-                if (AngleStartRad > AngleEndRad) lower_bound_angle -= 2 * PI;
-
-                return
-                    pt_angle.GreatThanOrEqualsTol(tolRad, lower_bound_angle)
-                    &&
-                    pt_angle.LessThanOrEqualsTol(tolRad, AngleEndRad);
+                return PtAngle(tolLen, pt).AngleContained(tolRad, AngleStartRad, AngleEndRad);
             }
 
             /// <summary>
@@ -406,6 +398,21 @@ namespace SearchAThing
         {
             return new Arc3D(new CoordinateSystem3D(dxf_arc.Center, dxf_arc.Normal, CoordinateSystem3DAutoEnum.AAA), dxf_arc.Radius,
                 dxf_arc.StartAngle.ToRad(), dxf_arc.EndAngle.ToRad());
+        }
+
+        /// <summary>
+        /// states if given angle is contained in from, to angle range
+        /// where angle_from assumed smaller angle
+        /// and angle_to gets normalized taking in account 2*PI difference when angle_to < angle_from
+        /// </summary>        
+        public static bool AngleContained(this double pt_angle, double tol_rad, double angle_from, double angle_to)
+        {
+            if (pt_angle.LessThanTol(tol_rad, angle_from)) pt_angle += 2 * PI;
+
+            var upper_bound_angle = angle_to;
+            if (upper_bound_angle.LessThanTol(tol_rad, angle_from)) upper_bound_angle += 2 * PI;
+
+            return pt_angle.GreatThanOrEqualsTol(tol_rad, angle_from) && pt_angle.LessThanOrEqualsTol(tol_rad, upper_bound_angle);
         }
 
     }
