@@ -379,13 +379,17 @@ namespace SearchAThing
                 var p = GeomFrom;
                 if (include_endpoints) yield return p;
                 var ang_step = AngleRad / cnt;
-                var ax_rot = new Line3D(Center, CS.BaseZ);
-                --cnt;
+
+                var ang = 0d;
+                var from = GeomFrom;
+                var ax_rot = new Line3D(Center, CS.BaseZ, Line3DConstructMode.PointAndVector);
+
                 while (cnt > 0)
                 {
-                    p = p.RotateAboutAxis(ax_rot, ang_step);
+                    p = from.RotateAboutAxis(ax_rot, ang);
                     yield return p;
                     --cnt;
+                    ang += ang_step;
                 }
                 if (include_endpoints) yield return GeomTo;
             }
