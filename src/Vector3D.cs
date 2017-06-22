@@ -159,7 +159,7 @@ namespace SearchAThing
                 return X.EqualsTol(tol, x) && Y.EqualsTol(tol, y) && Z.EqualsTol(tol, z);
             }
 
-            public double Length { get { return Sqrt(X * X + Y * Y + Z * Z); } }
+            public override double Length { get { return Sqrt(X * X + Y * Y + Z * Z); } }
 
             public override netDxf.Entities.EntityObject DxfEntity
             {

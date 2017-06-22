@@ -58,6 +58,11 @@ namespace SearchAThing
                 {
                     return string.Format(CultureInfo.InvariantCulture, "_LINE {0},{1},{2}\r\n", X, Y, Z);
                 }
+            }            
+
+            public override IEnumerable<Vector3D> Divide(int cnt, bool include_endpoints = false)
+            {
+                throw new NotImplementedException();
             }
 
             /// <summary>
