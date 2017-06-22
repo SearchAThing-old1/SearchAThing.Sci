@@ -239,7 +239,7 @@ namespace SearchAThing
                 // if not in circle stop
                 if (!this.Contains(tolLen, pt)) return false;
 
-                return PtAngle(tolLen, pt).AngleContained(tolRad, AngleStartRad, AngleEndRad);
+                return PtAngle(tolLen, pt).AngleInRange(tolRad, AngleStartRad, AngleEndRad);
             }
 
             /// <summary>
@@ -405,7 +405,7 @@ namespace SearchAThing
         /// where angle_from assumed smaller angle
         /// and angle_to gets normalized taking in account 2*PI difference when angle_to < angle_from
         /// </summary>        
-        public static bool AngleContained(this double pt_angle, double tol_rad, double angle_from, double angle_to)
+        public static bool AngleInRange(this double pt_angle, double tol_rad, double angle_from, double angle_to)
         {
             if (pt_angle.LessThanTol(tol_rad, angle_from)) pt_angle += 2 * PI;
 
