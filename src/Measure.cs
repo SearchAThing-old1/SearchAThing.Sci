@@ -163,7 +163,7 @@ namespace SearchAThing.Sci
             return value.Convert(from.ByPhysicalQuantity(to.PhysicalQuantity).MU, to);
         }
 
-        public string ToString(CultureInfo culture, bool includePQ = false)
+        public string ToString(CultureInfo culture, bool includePQ = false, int? digits = null)
         {
             var res = "";
 
@@ -172,14 +172,19 @@ namespace SearchAThing.Sci
                 mustr = MU.ToString();
 
             if (!ExpPref.HasValue || ExpPref.Value == 0)
-                res = Invariant($"{Value}{(mustr.Length > 0 ? mustr : "")}");
+            {
+                var v = Value;
+                if (digits.HasValue) v = Round(v, digits.Value);
+                res = Invariant($"{v}{(mustr.Length > 0 ? mustr : "")}");
+            }
             else
             {
                 var v = Value / Pow(10, ExpPref.Value);
+                if (digits.HasValue) v = Round(v, digits.Value);
                 res = Invariant($"{v}e{ExpPref.Value}{(mustr.Length > 0 ? mustr : "")}");
             }
 
-            if (includePQ) res += $" [{MU.PhysicalQuantity}]";            
+            if (includePQ) res += $" [{MU.PhysicalQuantity}]";
 
             return res;
         }
@@ -187,6 +192,11 @@ namespace SearchAThing.Sci
         public override string ToString()
         {
             return this.ToString(CultureInfo.InvariantCulture, includePQ: false);
+        }
+
+        public string ToString(int digits)
+        {
+            return this.ToString(CultureInfo.InvariantCulture, includePQ: false, digits: digits);
         }
 
         public static Measure TryParse(string text, PhysicalQuantity pq = null, CultureInfo culture = null)
@@ -262,13 +272,13 @@ namespace SearchAThing.Sci
                 double n;
                 if (double.TryParse(s, NumberStyles.Number | NumberStyles.AllowExponent, culture, out n))
                 {
-                    var res = new Measure(n, mu);                    
+                    var res = new Measure(n, mu);
 
                     var regex = new Regex("([0-9.]*)([eE])(.*)");
                     var q = regex.Match(s);
                     if (q.Success)
                     {
-                        res.ExpPref = int.Parse(q.Groups[3].Value);                        
+                        res.ExpPref = int.Parse(q.Groups[3].Value);
                     }
 
                     return res;
