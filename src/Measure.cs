@@ -175,13 +175,13 @@ namespace SearchAThing.Sci
             {
                 var v = Value;
                 if (digits.HasValue) v = Round(v, digits.Value);
-                res = Invariant($"{v}{(mustr.Length > 0 ? mustr : "")}");
+                res = Invariant($"{v} {(mustr.Length > 0 ? mustr : "")}");
             }
             else
             {
                 var v = Value / Pow(10, ExpPref.Value);
                 if (digits.HasValue) v = Round(v, digits.Value);
-                res = Invariant($"{v}e{ExpPref.Value}{(mustr.Length > 0 ? mustr : "")}");
+                res = Invariant($"{v}e{ExpPref.Value} {(mustr.Length > 0 ? mustr : "")}");
             }
 
             if (includePQ) res += $" [{MU.PhysicalQuantity}]";
