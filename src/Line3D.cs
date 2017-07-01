@@ -685,7 +685,10 @@ namespace SearchAThing
                 var ip = this.Intersect(tol_len, other);
                 if (ip == null) return null;
 
-                var c = V.RotateAs(tol_len, V, other.V, angleFactor: .5);
+                var k = From.EqualsTol(tol_len, ip) ? To : From;
+                var k2 = other.From.EqualsTol(tol_len, ip) ? other.To : other.From;
+
+                var c = (k - ip).RotateAs(tol_len, (k - ip), (k2 - ip), angleFactor: .5);
 
                 return new Line3D(ip, c, Line3DConstructMode.PointAndVector);
             }

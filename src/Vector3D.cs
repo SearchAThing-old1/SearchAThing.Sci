@@ -229,7 +229,9 @@ namespace SearchAThing
                 var L2 = Length * to.Length;
                 var w = dp / L2;
 
-                if (Abs(dp).EqualsTol(tolLen, L2))
+                var ang = Acos(w);
+
+                if (double.IsNaN(ang))
                 {
                     if (dp * L2 < 0)
                         return PI;
@@ -237,7 +239,7 @@ namespace SearchAThing
                         return 0;
                 }
 
-                return Acos(w);
+                return ang;
             }
 
             /// <summary>
