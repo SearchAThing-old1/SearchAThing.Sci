@@ -186,6 +186,14 @@ namespace SearchAThing
                 return new Line3D(To, From);
             }
 
+            /// <summary>
+            /// scale from,to of this line using given refpt and factor
+            /// </summary>            
+            public Line3D Scale(Vector3D refpt, double factor)
+            {
+                return new Line3D(From.ScaleAbout(refpt, factor), To.ScaleAbout(refpt, factor));
+            }
+
             #region operators
             /// <summary>
             /// multiply Length by given scalar factor
