@@ -155,9 +155,8 @@ namespace SearchAThing
                 case EntityType.Arc:
                     {
                         var arc = (eo as Arc).ToArc3D();
-                        return new BBox3D(new[] { arc.From, arc.To, arc.MidPoint });                        
-                    }
-                    break;
+                        return new BBox3D(new[] { arc.From, arc.To, arc.MidPoint });
+                    }                    
 
                 case EntityType.Circle: return ((Circle)eo).ToPolyline(4).BBox();
 
