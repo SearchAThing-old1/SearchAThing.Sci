@@ -106,7 +106,7 @@ namespace SearchAThing
                     break;
 
                 case EntityType.Insert:
-                    {                                                
+                    {
                         var ins = (Insert)eo;
                         var insPt = ins.Position;
                         var pts = ins.Block.Entities.SelectMany(w => w.Points());
@@ -116,7 +116,7 @@ namespace SearchAThing
                         var N = ins.Normal;
                         var ocs = new CoordinateSystem3D(insPt, N).Rotate(N, ins.Rotation.ToRad());
 
-                        pts = pts.Select(w => w.ToWCS(ocs));                        
+                        pts = pts.Select(w => w.ToWCS(ocs));
 
                         foreach (var x in pts) yield return x;
                     };
@@ -152,6 +152,13 @@ namespace SearchAThing
                 case EntityType.Insert:
                     return eo.Points().BBox();
 
+                case EntityType.Arc:
+                    {
+                        var arc = (eo as Arc).ToArc3D();
+                        return new BBox3D(new[] { arc.From, arc.To, arc.MidPoint });                        
+                    }
+                    break;
+
                 case EntityType.Circle: return ((Circle)eo).ToPolyline(4).BBox();
 
                 case EntityType.LightWeightPolyline:
@@ -163,7 +170,7 @@ namespace SearchAThing
 
                         return new BBox3D(eo.Points().Select(k => k.ToWCS(ocs)));
                     }
-                     
+
 
                 case EntityType.Hatch: return new BBox3D();
 
