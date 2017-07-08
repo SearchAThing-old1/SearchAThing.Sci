@@ -51,7 +51,7 @@ if not "%errorlevel%"=="0" goto failure
 call %nuget% install Codecov -Version 1.0.1 -OutputDirectory packages
 if not "%errorlevel%"=="0" goto failure
 
-packages\Codecov.1.0.1\tools\codecov.exe -f coverage.xml
+packages\Codecov.1.0.1\tools\codecov.exe -f coverage.xml -t %CODECOV_TOKEN%
 if not "%errorlevel%"=="0" goto failure
 
 REM Package
