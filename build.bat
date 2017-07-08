@@ -29,7 +29,7 @@ REM Build
 echo
 echo "---> Build"
 
-%msbuild% SearchAThing.Sci.sln /p:Configuration="%config%" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
+call %msbuild% SearchAThing.Sci.sln /p:Configuration="%config%" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
 if not "%errorlevel%"=="0" goto failure
 
 REM Unit tests
