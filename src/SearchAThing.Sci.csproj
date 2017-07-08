@@ -55,7 +55,6 @@
     <Compile Include="Fluent.cs" />
     <Compile Include="DxfKit.cs" />
     <Compile Include="GIS.cs" />
-    <Compile Include="Line3DTests.cs" />
     <Compile Include="Number.cs" />
     <Compile Include="Int64Map.cs" />
     <Compile Include="DiscreteSpace.cs" />
