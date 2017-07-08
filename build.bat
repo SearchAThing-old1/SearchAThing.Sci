@@ -7,12 +7,14 @@ if "%config%" == "" (
    set config=Release
 )
 
-echo "config = [%config]"
+echo "config = [%config%]"
 
 set version=
 if not "%PackageVersion%" == "" (
    set version=-Version %PackageVersion%
 )
+
+echo "version = [%version%]"
 
 REM Build
 "%programfiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe" SearchAThing.Sci.sln /p:Configuration="%config%" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
