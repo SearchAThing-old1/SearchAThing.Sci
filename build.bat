@@ -34,13 +34,20 @@ echo "---> Build"
 call "%msbuild%" SearchAThing.Sci.sln /t:Restore,Rebuild /p:Configuration="%config%" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
 if not "%errorlevel%"=="0" goto failure
 
-REM Unit tests
+REM Code Coverage
 echo
-echo "---> Unit tests"
-
-call %nuget% install xunit.runner.console -Version 2.2.0 -OutputDirectory packages
-packages\xunit.runner.console.2.2.0\tools\xunit.console.exe tests\bin\%config%\SearchAThing.Sci.Tests.dll
+echo "---> Coverage (token=%CODECOV_TOKEN%)"
+call %nuget% install OpenCover -Version 4.6.519 -OutputDirectory packages
+packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:"packages\xunit.runner.console.2.2.0\tools\xunit.console.exe" -targetargs:".\tests\bin\Release\SearchAThing.Sci.Tests.dll -noshadow" -output:".\coverage.xml"
 if not "%errorlevel%"=="0" goto failure
+
+REM Unit tests
+rem echo
+rem echo "---> Unit tests"
+
+rem call %nuget% install xunit.runner.console -Version 2.2.0 -OutputDirectory packages
+rem packages\xunit.runner.console.2.2.0\tools\xunit.console.exe tests\bin\%config%\SearchAThing.Sci.Tests.dll
+rem if not "%errorlevel%"=="0" goto failure
 
 REM Package
 echo
@@ -49,12 +56,6 @@ echo "---> Package"
 mkdir Build
 call %nuget% pack "src\SearchAThing.Sci.csproj" -symbols -o Build -p Configuration=%config% %version%
 if not "%errorlevel%"=="0" goto failure
-
-REM Code Coverage
-echo
-echo "---> Coverage (token=%CODECOV_TOKEN%)"
-call %nuget% install OpenCover -Version 4.6.519 -OutputDirectory packages
-packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:"xunit.console.x86.exe" -targetargs:".\tests\bin\Release\SearchAThing.Sci.Tests.dll -noshadow" -output:".\coverage.xml"
 
 REM EDIT: commen follows exit for local debug
 
