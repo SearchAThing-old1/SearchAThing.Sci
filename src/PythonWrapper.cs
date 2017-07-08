@@ -300,7 +300,14 @@ matplotlib.use('Agg')
             Output = output;
         }
 
+        /// <summary>
+        /// stderr result
+        /// </summary>
         public string Error { get; private set; }
+
+        /// <summary>
+        /// stdout result
+        /// </summary>
         public string Output { get; private set; }
 
         public override string ToString()
