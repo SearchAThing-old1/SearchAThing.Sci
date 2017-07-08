@@ -7,8 +7,7 @@
     <authors>Lorenzo Delana</authors>
     <owners>Lorenzo Delana</owners>
     <licenseUrl>https://github.com/devel0/SearchAThing.Sci/blob/master/LICENSE.md</licenseUrl>
-    <projectUrl>https://github.com/devel0/SearchAThing.Sci</projectUrl>
-    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
+    <projectUrl>https://github.com/devel0/SearchAThing.Sci</projectUrl>    
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Linear Algebra, 2D, 3D, Measure Units, Python Wrapper, GIS Coordinate Systems</description>
     <releaseNotes>initial package</releaseNotes>

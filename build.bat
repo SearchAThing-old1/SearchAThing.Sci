@@ -30,14 +30,14 @@ if "%nuget%" == "" (
 
 REM Build
 echo
-echo "---> Build"
+echo "====================> Build"
 
 call "%msbuild%" SearchAThing.Sci.sln /t:Restore,Rebuild /p:Configuration="%config%" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
 if not "%errorlevel%"=="0" goto failure
 
 REM Code Coverage
 echo
-echo "---> Coverage"
+echo "====================> Coverage"
 
 call %nuget% install xunit.runner.console -Version 2.2.0 -OutputDirectory packages
 if not "%errorlevel%"=="0" goto failure
@@ -56,14 +56,14 @@ if not "%errorlevel%"=="0" goto failure
 
 REM Package
 echo
-echo "---> Package"
+echo "====================> Package"
 
 mkdir Build
 call %nuget% pack "src\SearchAThing.Sci.csproj" -symbols -o Build -p Configuration=%config% %version%
 if not "%errorlevel%"=="0" goto failure
 
 REM EDIT: uncommen follows exit for local debug
-goto debugend
+rem goto debugend
 
 :success
 exit 0
