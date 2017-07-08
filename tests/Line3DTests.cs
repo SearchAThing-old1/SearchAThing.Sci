@@ -30,19 +30,24 @@ namespace SearchAThing.Sci.Tests
         [TestMethod()]
         public void Line3DTest2()
         {
-            Assert.Fail();
+            var l = new Line3D(1, 2, 3, 4);
+            Assert.IsTrue(l.From.EqualsTol(1e-1, 1, 2, 0));
+            Assert.IsTrue(l.To.EqualsTol(1e-1, 3, 4, 0));
         }
 
         [TestMethod()]
         public void Line3DTest3()
         {
-            Assert.Fail();
+            var l = new Line3D(1, 2, 3, 4, 5, 6);
+            Assert.IsTrue(l.From.EqualsTol(1e-1, 1, 2, 3));
+            Assert.IsTrue(l.From.EqualsTol(1e-1, 4, 5, 6));
         }
 
         [TestMethod()]
         public void EqualsTolTest()
         {
-            Assert.Fail();
+            var l = new Line3D(1, 2, 3, 4, 5, 6);
+            Assert.IsTrue(l.EqualsTol(1e-1, new Line3D(new Vector3D(1, 2, 3), new Vector3D(4, 5, 6))));
         }
 
         [TestMethod()]
