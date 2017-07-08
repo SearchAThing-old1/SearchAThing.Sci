@@ -18,8 +18,8 @@ echo "version = [%version%]"
 
 REM variables
 rem EDIT: set your msbuild for local debug
-rem set msbuild="c:\Program Files (x86)\Microsoft Visual Studio\Preview\Community\MSBuild\15.0\Bin\MSBuild.exe"
-set msbuild="c:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe"
+rem set msbuild=%ProgramFiles(x86)%\Microsoft Visual Studio\Preview\Community\MSBuild\15.0\Bin\MSBuild.exe
+set msbuild=%ProgramFiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe
 
 echo "msbuild = [%msbuild%]"
 
@@ -31,7 +31,7 @@ REM Build
 echo
 echo "---> Build"
 
-call %msbuild% SearchAThing.Sci.sln /p:Configuration="%config%" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
+call "%msbuild%" SearchAThing.Sci.sln /p:Configuration="%config%" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
 if not "%errorlevel%"=="0" goto failure
 
 REM Unit tests
