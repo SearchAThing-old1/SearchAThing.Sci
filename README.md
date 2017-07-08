@@ -1,7 +1,7 @@
 # SearchAThing.Sci
 
 ## Latest build
-[![searchathing MyGet Build Status](https://www.myget.org/BuildSource/Badge/searchathing?identifier=961385ac-4528-445a-9c45-e1abf49fe9c7)](https://www.myget.org/feed/searchathing/package/nuget/SearchAThing.Sci)
+[![searchathing MyGet Build Status](https://www.myget.org/BuildSource/Badge/searchathing?identifier=961385ac-4528-445a-9c45-e1abf49fe9c7)](https://www.myget.org/feed/searchathing/package/nuget/SearchAThing.Sci) 
 
 ## Installation
 - nuget feed : `https://www.myget.org/F/searchathing/api/v3/index.json`
