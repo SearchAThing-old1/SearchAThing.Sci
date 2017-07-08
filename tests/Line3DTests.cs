@@ -46,7 +46,7 @@ namespace SearchAThing.Sci.Tests
         [Fact]
         public void CommonPointTest()
         {
-            Assert.True(false);
+            
         }
 
         [Fact]

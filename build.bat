@@ -48,6 +48,12 @@ mkdir Build
 call %nuget% pack "src\SearchAThing.Sci.csproj" -symbols -o Build -p Configuration=%config% %version%
 if not "%errorlevel%"=="0" goto failure
 
+REM Code Coverage
+echo
+echo "---> Coverage"
+
+OpenCover.Console.exe -register:user -target:"xunit.console.x86.exe" -targetargs:".\tests\bin\Release\SearchAThing.Sci.Tests.dll -noshadow" -output:".\coverage.xml"
+
 REM EDIT: commen follows exit for local debug
 
 :success
