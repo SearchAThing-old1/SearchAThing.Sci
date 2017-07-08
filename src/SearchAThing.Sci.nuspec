@@ -14,5 +14,20 @@
     <releaseNotes>initial package</releaseNotes>
     <copyright>Copyright(C) 2017 Lorenzo Delana</copyright>
     <tags>c# scientific 3d geometry</tags>
-  </metadata>
+    <dependencies>
+      <dependency id="Clipper"/>
+      <dependency id="ClosedXML"/>
+      <dependency id="ColorMine"/>
+      <dependency id="CsvHelper"/>
+      <dependency id="DocumentFormat.OpenXml"/>
+      <dependency id="DocX"/>
+      <dependency id="DotSpatial.Projections"/>      
+      <dependency id="MIConvexHull"/>
+      <dependency id="MongoDB.Bson"/>
+      <dependency id="netdxfstd"/>
+      <dependency id="Newtonsoft.Json"/>
+      <dependency id="Npgsql"/>
+      <dependency id="SearchAThing.Core"/>      
+    </dependencies>
+  </metadata>  
 </package>
