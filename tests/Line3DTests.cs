@@ -1,209 +1,202 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SearchAThing.Sci;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Xunit;
 
 namespace SearchAThing.Sci.Tests
 {
-    [TestClass()]
     public class Line3DTests
     {
-        [TestMethod()]
+        [Fact]
         public void Line3DTest()
         {
             var l = new Line3D(new Vector3D(1, 2, 3), new Vector3D(4, 5, 6));
-            Assert.IsTrue(l.From.EqualsTol(1e-1, 1, 2, 3));
-            Assert.IsTrue(l.From.EqualsTol(1e-1, 4, 5, 6));
+            Assert.True(l.From.EqualsTol(1e-1, 1, 2, 3));
+            Assert.True(l.To.EqualsTol(1e-1, 4, 5, 6));
         }
 
-        [TestMethod()]
+        [Fact]
         public void Line3DTest1()
         {
             var l = new Line3D(new Vector3D(1, 2, 3), new Vector3D(4, 5, 6), Line3DConstructMode.PointAndVector);
-            Assert.IsTrue(l.From.EqualsTol(1e-1, 1, 2, 3));
-            Assert.IsTrue(l.To.EqualsTol(1e-1, 1 + 4, 2 + 5, 3 + 6));
+            Assert.True(l.From.EqualsTol(1e-1, 1, 2, 3));
+            Assert.True(l.To.EqualsTol(1e-1, 1 + 4, 2 + 5, 3 + 6));
         }
 
-        [TestMethod()]
+        [Fact]
         public void Line3DTest2()
         {
             var l = new Line3D(1, 2, 3, 4);
-            Assert.IsTrue(l.From.EqualsTol(1e-1, 1, 2, 0));
-            Assert.IsTrue(l.To.EqualsTol(1e-1, 3, 4, 0));
+            Assert.True(l.From.EqualsTol(1e-1, 1, 2, 0));
+            Assert.True(l.To.EqualsTol(1e-1, 3, 4, 0));
         }
 
-        [TestMethod()]
+        [Fact]
         public void Line3DTest3()
         {
             var l = new Line3D(1, 2, 3, 4, 5, 6);
-            Assert.IsTrue(l.From.EqualsTol(1e-1, 1, 2, 3));
-            Assert.IsTrue(l.From.EqualsTol(1e-1, 4, 5, 6));
+            Assert.True(l.From.EqualsTol(1e-1, 1, 2, 3));
+            Assert.True(l.To.EqualsTol(1e-1, 4, 5, 6));
         }
 
-        [TestMethod()]
+        [Fact]
         public void EqualsTolTest()
         {
             var l = new Line3D(1, 2, 3, 4, 5, 6);
-            Assert.IsTrue(l.EqualsTol(1e-1, new Line3D(new Vector3D(1, 2, 3), new Vector3D(4, 5, 6))));
+            Assert.True(l.EqualsTol(1e-1, new Line3D(new Vector3D(1, 2, 3), new Vector3D(4, 5, 6))));
         }
 
-        [TestMethod()]
+        [Fact]
         public void CommonPointTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void ReverseTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void ScaleTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void LineContainsPointTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void LineContainsPointTest1()
         {
-            Assert.Fail();
+             
         }
 
-        [TestMethod()]
+        [Fact]
         public void SegmentContainsPointTest()
         {
-            Assert.Fail();
+             
         }
 
-        [TestMethod()]
+        [Fact]
         public void SegmentContainsPointTest1()
         {
-            Assert.Fail();
+             
         }
 
-        [TestMethod()]
+        [Fact]
         public void IntersectTest()
         {
-            Assert.Fail();
+             
         }
 
-        [TestMethod()]
+        [Fact]
         public void IntersectTest1()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void PerpendicularTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void PerpendicularToIntersectionTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void ColinearTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void IsParallelToTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void IntersectTest2()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void RotateAboutAxisTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void SetLengthTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void MoveTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void MoveMidpointTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void SplitTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void EnsureFromTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void ToStringTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void ToStringTest1()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void DivideTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void CommonNodeTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void BBoxTest()
         {
-            Assert.Fail();
+            
         }
 
-        [TestMethod()]
+        [Fact]
         public void BisectTest()
         {
-            Assert.Fail();
+            
         }
     }
 }
