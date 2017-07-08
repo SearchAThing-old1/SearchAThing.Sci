@@ -53,8 +53,8 @@ if not "%errorlevel%"=="0" goto failure
 REM Code Coverage
 echo
 echo "---> Coverage"
-
-OpenCover.Console.exe -register:user -target:"xunit.console.x86.exe" -targetargs:".\tests\bin\Release\SearchAThing.Sci.Tests.dll -noshadow" -output:".\coverage.xml"
+call %nuget% install OpenCover -Version 4.6.519 -OutputDirectory packages
+packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:"xunit.console.x86.exe" -targetargs:".\tests\bin\Release\SearchAThing.Sci.Tests.dll -noshadow" -output:".\coverage.xml"
 
 REM EDIT: commen follows exit for local debug
 
