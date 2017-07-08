@@ -17,9 +17,10 @@ if not "%PackageVersion%" == "" (
 echo "version = [%version%]"
 
 REM variables
+set msbuild=%ProgramFiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe
+
 rem EDIT: set your msbuild for local debug
 rem set msbuild=%ProgramFiles(x86)%\Microsoft Visual Studio\Preview\Community\MSBuild\15.0\Bin\MSBuild.exe
-set msbuild=%ProgramFiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe
 
 echo "msbuild = [%msbuild%]"
 
@@ -36,19 +37,14 @@ if not "%errorlevel%"=="0" goto failure
 
 REM Code Coverage
 echo
-echo "---> Coverage (token=%CODECOV_TOKEN%)"
+echo "---> Coverage"
 call %nuget% install xunit.runner.console -Version 2.2.0 -OutputDirectory packages
 call %nuget% install OpenCover -Version 4.6.519 -OutputDirectory packages
 packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:"packages\xunit.runner.console.2.2.0\tools\xunit.console.exe" -targetargs:".\tests\bin\Release\SearchAThing.Sci.Tests.dll -noshadow" -output:".\coverage.xml"
+call %nuget% install Codecov -Version 1.0.1 -OutputDirectory packages
+packages\Codecov.1.0.1\tools\codecov.exe -f coverage.xml
+
 if not "%errorlevel%"=="0" goto failure
-
-REM Unit tests
-rem echo
-rem echo "---> Unit tests"
-
-rem call %nuget% install xunit.runner.console -Version 2.2.0 -OutputDirectory packages
-rem packages\xunit.runner.console.2.2.0\tools\xunit.console.exe tests\bin\%config%\SearchAThing.Sci.Tests.dll
-rem if not "%errorlevel%"=="0" goto failure
 
 REM Package
 echo
@@ -58,10 +54,13 @@ mkdir Build
 call %nuget% pack "src\SearchAThing.Sci.csproj" -symbols -o Build -p Configuration=%config% %version%
 if not "%errorlevel%"=="0" goto failure
 
-REM EDIT: commen follows exit for local debug
+REM EDIT: uncommen follows exit for local debug
+goto debugend
 
 :success
 exit 0
 
 :failure
 exit -1
+
+:debugend

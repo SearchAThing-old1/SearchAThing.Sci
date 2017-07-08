@@ -1,1 +1,0 @@
-OpenCover.Console.exe -register:user -target:"xunit.console.x86.exe" -targetargs:".\tests\bin\Release\SearchAThing.Sci.Tests.dll -noshadow" -output:".\MyProject_coverage.xml"
