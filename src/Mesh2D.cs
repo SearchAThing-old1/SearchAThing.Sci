@@ -269,7 +269,8 @@ namespace SearchAThing
                             var polySegs = orderedPts.PolygonSegments(tol);
                             if (!disableBoundary && polySegs.Any(ps => boundarySegs.Any(bs => bs.Intersect(tol, ps, true, true) != null)))
                             {
-                                var resPoly = orderedPts.Boolean(tol * boundaryPolyBooleanMapToleranceFactor, Boundary, ClipperLib.ClipType.ctIntersection);
+                                var resPoly = orderedPts.Boolean(tol * boundaryPolyBooleanMapToleranceFactor, Boundary,
+                                    Clipper.ClipOperation.Intersection);
                                 if (resPoly.Count() > 0)
                                 {
                                     var extPoly = resPoly.First().ToList();

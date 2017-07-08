@@ -28,7 +28,6 @@ using System.Linq;
 using static System.Math;
 using System.Collections.Generic;
 using SearchAThing.Sci;
-using ClipperLib;
 using System.Drawing.Drawing2D;
 using netDxf;
 using SearchAThing;
@@ -122,16 +121,16 @@ namespace SearchAThing
         {
             var intmap = new Int64Map(tol, pts.SelectMany(x => x.Coordinates));
 
-            var clipper = new ClipperOffset();
+            var clipper = new Clipper.ClipperOffset();
             {
-                var path = pts.Select(p => new IntPoint(intmap.ToInt64(p.X), intmap.ToInt64(p.Y))).ToList();
+                var path = new Clipper.Polygon(pts.Select(p => new Clipper.IntPoint(intmap.ToInt64(p.X), intmap.ToInt64(p.Y))));
                 // http://www.angusj.com/delphi/clipper.php
-                clipper.AddPath(path, JoinType.jtMiter, EndType.etClosedPolygon);
+                clipper.AddPath(path, Clipper.JoinType.Miter, Clipper.EndType.ClosedPolygon);
             }
 
             var intoffset = intmap.ToInt64(intmap.Origin + offset) - intmap.ToInt64(intmap.Origin);
 
-            var sol = new List<List<IntPoint>>();
+            var sol = new Clipper.PolygonPath();
             clipper.Execute(ref sol, intoffset);
 
             return sol.SelectMany(s => s.Select(si => new Vector3D(intmap.FromInt64(si.X), intmap.FromInt64(si.Y), 0)));
@@ -570,21 +569,22 @@ namespace SearchAThing
         /// In that case try with tolerances not too small.
         /// It is suggested to use a lenTol/10 to avoid lost of precision during domain conversions.
         /// </summary>        
-        public static IEnumerable<IEnumerable<Vector3D>> Boolean(this IEnumerable<Vector3D> polyA, double tol, IEnumerable<Vector3D> polyB, ClipType type, bool selfCheckInt64MapTolerance = true)
+        public static IEnumerable<IEnumerable<Vector3D>> Boolean(this IEnumerable<Vector3D> polyA, double tol, IEnumerable<Vector3D> polyB,
+            Clipper.ClipOperation type, bool selfCheckInt64MapTolerance = true)
         {
             var intmap = new Int64Map(tol, polyA.SelectMany(x => x.Coordinates).Union(polyB.SelectMany(x => x.Coordinates)), selfCheckInt64MapTolerance);
 
-            var clipper = new Clipper();
+            var clipper = new Clipper.Clipper();
             {
-                var path = polyA.Select(p => new IntPoint(intmap.ToInt64(p.X), intmap.ToInt64(p.Y))).ToList();
-                clipper.AddPath(path, PolyType.ptSubject, true);
+                var path = new Clipper.Polygon(polyA.Select(p => new Clipper.IntPoint(intmap.ToInt64(p.X), intmap.ToInt64(p.Y))));
+                clipper.AddPath(path, Clipper.PolygonKind.Subject);
             }
             {
-                var path = polyB.Select(p => new IntPoint(intmap.ToInt64(p.X), intmap.ToInt64(p.Y))).ToList();
-                clipper.AddPath(path, PolyType.ptClip, true);
+                var path = new Clipper.Polygon(polyB.Select(p => new Clipper.IntPoint(intmap.ToInt64(p.X), intmap.ToInt64(p.Y))));
+                clipper.AddPath(path, Clipper.PolygonKind.Clip);
             }
 
-            var sol = new List<List<IntPoint>>();
+            var sol = new Clipper.PolygonPath();
             clipper.Execute(type, sol);
 
             var res = sol.Select(s => s.Select(si => new Vector3D(intmap.FromInt64(si.X), intmap.FromInt64(si.Y), 0)));
