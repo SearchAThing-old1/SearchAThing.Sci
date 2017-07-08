@@ -19,7 +19,7 @@ echo "version = [%version%]"
 REM variables
 rem EDIT: set your msbuild for local debug
 rem set msbuild="c:\Program Files (x86)\Microsoft Visual Studio\Preview\Community\MSBuild\15.0\Bin\MSBuild.exe"
-set msbuild="%programfiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe"
+set msbuild="c:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe"
 
 if "%nuget%" == "" (
   set nuget="c:\nuget\nuget.exe"
