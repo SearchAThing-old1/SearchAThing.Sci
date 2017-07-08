@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26621.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchAThing.Sci", "src\SearchAThing.Sci.csproj", "{F9D7F0EE-D4FF-4455-87BE-08539D2D1982}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchAThing.SciTests", "tests\SearchAThing.SciTests.csproj", "{04422A60-1542-4793-BF01-98D36F0991E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,6 +20,12 @@ Global
 		{F9D7F0EE-D4FF-4455-87BE-08539D2D1982}.Debug2|Any CPU.Build.0 = Debug|Any CPU
 		{F9D7F0EE-D4FF-4455-87BE-08539D2D1982}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9D7F0EE-D4FF-4455-87BE-08539D2D1982}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04422A60-1542-4793-BF01-98D36F0991E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04422A60-1542-4793-BF01-98D36F0991E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04422A60-1542-4793-BF01-98D36F0991E5}.Debug2|Any CPU.ActiveCfg = Debug|Any CPU
+		{04422A60-1542-4793-BF01-98D36F0991E5}.Debug2|Any CPU.Build.0 = Debug|Any CPU
+		{04422A60-1542-4793-BF01-98D36F0991E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04422A60-1542-4793-BF01-98D36F0991E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
