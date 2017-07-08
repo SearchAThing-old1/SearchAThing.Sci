@@ -1,4 +1,4 @@
-@echo Off
+rem @echo Off
 
 echo "argument 1 = [%1]"
 
@@ -17,7 +17,10 @@ if not "%PackageVersion%" == "" (
 echo "version = [%version%]"
 
 REM Build
-"%programfiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe" SearchAThing.Sci.sln /p:Configuration="%config%" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
+"c:\Program Files (x86)\Microsoft Visual Studio\Preview\Community\MSBuild\15.0\Bin\MSBuild.exe" SearchAThing.Sci.sln
+rem "c:\Program Files (x86)\Microsoft Visual Studio\Preview\Community\MSBuild\15.0\Bin\MSBuild.exe" SearchAThing.Sci.sln /p:Configuration="%config%" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
+
+rem "%programfiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe" SearchAThing.Sci.sln /p:Configuration="%config%" /m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false
 if not "%errorlevel%"=="0" goto failure
 
 REM Unit tests
@@ -31,7 +34,7 @@ call %nuget% pack "src\SearchAThing.Sci.csproj" -symbols -o Build -p Configurati
 if not "%errorlevel%"=="0" goto failure
 
 :success
-exit 0
+rem exit 0
 
 :failure
-exit -1
+rem exit -1
