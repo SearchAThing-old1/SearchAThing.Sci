@@ -38,12 +38,20 @@ if not "%errorlevel%"=="0" goto failure
 REM Code Coverage
 echo
 echo "---> Coverage"
-call %nuget% install xunit.runner.console -Version 2.2.0 -OutputDirectory packages
-call %nuget% install OpenCover -Version 4.6.519 -OutputDirectory packages
-packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:"packages\xunit.runner.console.2.2.0\tools\xunit.console.exe" -targetargs:".\tests\bin\Release\SearchAThing.Sci.Tests.dll -noshadow" -output:".\coverage.xml"
-call %nuget% install Codecov -Version 1.0.1 -OutputDirectory packages
-packages\Codecov.1.0.1\tools\codecov.exe -f coverage.xml
 
+call %nuget% install xunit.runner.console -Version 2.2.0 -OutputDirectory packages
+if not "%errorlevel%"=="0" goto failure
+
+call %nuget% install OpenCover -Version 4.6.519 -OutputDirectory packages
+if not "%errorlevel%"=="0" goto failure
+
+packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:"packages\xunit.runner.console.2.2.0\tools\xunit.console.exe" -targetargs:".\tests\bin\Release\SearchAThing.Sci.Tests.dll -noshadow" -output:".\coverage.xml"
+if not "%errorlevel%"=="0" goto failure
+
+call %nuget% install Codecov -Version 1.0.1 -OutputDirectory packages
+if not "%errorlevel%"=="0" goto failure
+
+packages\Codecov.1.0.1\tools\codecov.exe -f coverage.xml
 if not "%errorlevel%"=="0" goto failure
 
 REM Package
