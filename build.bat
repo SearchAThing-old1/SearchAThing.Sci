@@ -1,8 +1,13 @@
 @echo Off
+
+echo "argument 1 = [%1]"
+
 set config=%1
 if "%config%" == "" (
    set config=Release
 )
+
+echo "config = [%config]"
 
 set version=
 if not "%PackageVersion%" == "" (
