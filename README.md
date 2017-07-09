@@ -16,4 +16,4 @@ Examples are available [here](https://github.com/devel0/SearchAThing.Sci.Example
 
 ## Unit Tests
 
-Unit tests available [here](https://github.com/devel0/SearchAThing.UnitTest)
+Unit tests available [here](/tests)

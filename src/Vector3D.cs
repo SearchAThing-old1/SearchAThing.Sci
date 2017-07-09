@@ -181,6 +181,14 @@ namespace SearchAThing
             }
 
             /// <summary>
+            /// retrieve perpendicular distance of this point from the given line
+            /// </summary>            
+            public double Distance(double tol, Line3D other)
+            {
+                return other.PerpendicularToIntersection(tol, this).Length;
+            }
+
+            /// <summary>
             /// distance between two points ( without considering Z )
             /// </summary>            
             public double Distance2D(Vector3D other)

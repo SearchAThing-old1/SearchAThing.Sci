@@ -64,6 +64,13 @@ namespace SearchAThing
             FromTo
         };
 
+        public enum LineIntersectBehavior
+        {
+            MidPoint,
+            PointOnThis,
+            PointOnOther
+        }
+
         public class Line3D : Geometry
         {
             public static Line3D XAxisLine = new Line3D(Vector3D.Zero, Vector3D.XAxis);
@@ -172,8 +179,8 @@ namespace SearchAThing
             /// </summary>        
             public Vector3D CommonPoint(double tol, Line3D other)
             {
-                if (From.EqualsTol(tol, other.From)) return From;
-                if (To.EqualsTol(tol, other.To)) return To;
+                if (From.EqualsTol(tol, other.From) || From.EqualsTol(tol, other.To)) return From;
+                if (To.EqualsTol(tol, other.From) || To.EqualsTol(tol, other.To)) return To;
 
                 return null;
             }
@@ -313,94 +320,139 @@ namespace SearchAThing
             }
 
             /// <summary>
-            /// Find intersection of two 3d lines
-            /// </summary>        
-            public Vector3D Intersect(double tol, Line3D other)
+            /// Find intersection point between this and other line using given tolerance.
+            /// Returns null if no intersection, otherwise it returns a point on
+            /// the shortest segment ( the one that's perpendicular to either lines )
+            /// based on given behavior ( default midpoint ).
+            /// </summary>            
+            public Vector3D Intersect(double tol, Line3D other,
+                LineIntersectBehavior behavior = LineIntersectBehavior.MidPoint)
             {
-                var f1x = From.X;
-                var f1y = From.Y;
-                var f1z = From.Z;
+                var res = Intersect2(tol, other);
 
-                var v1x = V.X;
-                var v1y = V.Y;
-                var v1z = V.Z;
-
-                var f2x = other.From.X;
-                var f2y = other.From.Y;
-                var f2z = other.From.Z;
-
-                var v2x = other.V.X;
-                var v2y = other.V.Y;
-                var v2z = other.V.Z;
-
-                // this line  : F + alpha * V
-                // other line : other.F + beta * V
-                //
-                // i = { F + alpha * V == other.F + beta * V }
-                //   = { F1 + alpha * V1 == F2 + beta * V2 }
-                // 
-                // i = 
-                //   f1x + alpha * v1x == f2x + beta * v2x &&
-                //   f1y + alpha * v1y == f2y + beta * v2y &&
-                //   f1z + alpha * v1z == f2z + beta * v2z
-
-                // XY
-                //   f1x + alpha * v1x == f2x + beta * v2x &&
-                //   f1y + alpha * v1y == f2y + beta * v2y
+                if (res != null)
                 {
-                    var alpha_denom = (v1y * v2x - v1x * v2y);
-                    var beta_denom = (v1y * v2x - v1x * v2y);
-
-                    if (!alpha_denom.EqualsTol(tol, 0) && !beta_denom.EqualsTol(tol, 0))
+                    switch (behavior)
                     {
-                        var alpha = -(f1y * v2x - f2y * v2x - f1x * v2y + f2x * v2y) / alpha_denom;
-                        var beta = -(f1y * v1x - f2y * v1x - f1x * v1y + f2x * v1y) / beta_denom;
-
-                        var i = From + alpha * V;
-
-                        if (i.EqualsTol(tol, other.From + beta * other.V)) return i;
+                        case LineIntersectBehavior.MidPoint: return res.MidPoint;
+                        case LineIntersectBehavior.PointOnThis: return res.From;
+                        case LineIntersectBehavior.PointOnOther: return res.To;
                     }
                 }
 
-                // XZ
-                //   f1x + alpha * v1x == f2x + beta * v2x &&            
-                //   f1z + alpha * v1z == f2z + beta * v2z
-                {
-                    var alpha_denom = (v1z * v2x - v1x * v2z);
-                    var beta_denom = (v1z * v2x - v1x * v2z);
-
-                    if (!alpha_denom.EqualsTol(tol, 0) && !beta_denom.EqualsTol(tol, 0))
-                    {
-                        var alpha = -(f1z * v2x - f2z * v2x - f1x * v2z + f2x * v2z) / alpha_denom;
-                        var beta = -(f1z * v1x - f2z * v1x - f1x * v1z + f2x * v1z) / beta_denom;
-
-                        var i = From + alpha * V;
-
-                        if (i.EqualsTol(tol, other.From + beta * other.V)) return i;
-                    }
-                }
-
-                // YZ            
-                //   f1y + alpha * v1y == f2y + beta * v2y &&
-                //   f1z + alpha * v1z == f2z + beta * v2z
-                {
-                    var alpha_denom = (v1z * v2y - v1y * v2z);
-                    var beta_denom = (v1z * v2y - v1y * v2z);
-
-                    if (!alpha_denom.EqualsTol(tol, 0) && !beta_denom.EqualsTol(tol, 0))
-                    {
-                        var alpha = -(f1z * v2y - f2z * v2y - f1y * v2z + f2y * v2z) / alpha_denom;
-                        var beta = -(f1z * v1y - f2z * v1y - f1y * v1z + f2y * v1z) / beta_denom;
-
-                        var i = From + alpha * V;
-
-                        if (i.EqualsTol(tol, other.From + beta * other.V)) return i;
-                    }
-                }
-
-                // no intersection
-
+                // not intersection
                 return null;
+            }
+
+            /// <summary>
+            /// Find intersection point between this and other line using given tolerance.
+            /// Returns null if no intersection, otherwise it returns
+            /// the shortest segment ( the one that's perpendicular to either lines )            
+            /// </summary>        
+            public Line3D Intersect2(double tol, Line3D other)
+            {
+                // this  : t = tf + tu * tv
+                // other : o = of + ou * ov                
+                // res   : r = rf + ru * rv
+                //
+                // giving res starting from this and toward other
+                //   rf = tf + tu * tv
+                //   rv = of + ou * ov - tf - tu * tv
+                //
+                // result:
+                //   r = Line3D(tf + tu * tv, of + ou * ov)
+                //   <=>
+                //   r perpendicular to t and o :
+                //     (1) rv.DotProduct(tv) = 0
+                //     (2) rv.DotProduct(ov) = 0
+                //                
+                //     (1)
+                //       rvx * tvx + rvy * tvy + rvz * tvz = 0 <=>
+                //       (ofx + ou * ovx - tfx - tu * tvx) * tvx +
+                //       (ofy + ou * ovy - tfy - tu * tvy) * tvy +
+                //       (ofz + ou * ovz - tfz - tu * tvz) * tvz = 0
+                //
+                //     (2)
+                //       rvx * ovx + rvy * ovy + rvz * ovz = 0 <=>
+                //       (ofx + ou * ovx - tfx - tu * tvx) * ovx +
+                //       (ofy + ou * ovy - tfy - tu * tvy) * ovy +
+                //       (ofz + ou * ovz - tfz - tu * tvz) * ovz = 0
+                //
+                //     unknowns ( tu, ou )
+                //     
+
+                // solution through python sympy
+                // 
+                /*
+                    from sympy import *
+
+                    ou, tu = symbols('ou tu')
+                    ofx, ovx, tfx, tvx = symbols('ofx ovx tfx tvx')
+                    ofy, ovy, tfy, tvy = symbols('ofy ovy tfy tvy')
+                    ofz, ovz, tfz, tvz = symbols('ofz ovz tfz tvz')
+
+                    eq1 = Eq((ofx + ou * ovx - tfx - tu * tvx) * tvx +
+                             (ofy + ou * ovy - tfy - tu * tvy) * tvy +
+                             (ofz + ou * ovz - tfz - tu * tvz) * tvz, 0)
+                    eq2 = Eq((ofx + ou * ovx - tfx - tu * tvx) * ovx +
+                             (ofy + ou * ovy - tfy - tu * tvy) * ovy +
+                             (ofz + ou * ovz - tfz - tu * tvz) * ovz, 0)
+
+                    print(solve([eq1, eq2], [ou, tu]))                  
+                */
+
+                // live.sympy.org url :
+                // http://live.sympy.org/?evaluate=from%20sympy%20import%20*%0A%23--%0Aou%2C%20tu%20%3D%20symbols('ou%20tu')%0A%23--%0Aofx%2C%20ovx%2C%20tfx%2C%20tvx%20%3D%20symbols('ofx%20ovx%20tfx%20tvx')%0A%23--%0Aofy%2C%20ovy%2C%20tfy%2C%20tvy%20%3D%20symbols('ofy%20ovy%20tfy%20tvy')%0A%23--%0Aofz%2C%20ovz%2C%20tfz%2C%20tvz%20%3D%20symbols('ofz%20ovz%20tfz%20tvz')%0A%23--%0Aeq1%20%3D%20Eq((ofx%20%2B%20ou%20*%20ovx%20-%20tfx%20-%20tu%20*%20tvx)%20*%20tvx%20%2B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20(ofy%20%2B%20ou%20*%20ovy%20-%20tfy%20-%20tu%20*%20tvy)%20*%20tvy%20%2B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20(ofz%20%2B%20ou%20*%20ovz%20-%20tfz%20-%20tu%20*%20tvz)%20*%20tvz%2C%200)%0A%23--%0Aeq2%20%3D%20Eq((ofx%20%2B%20ou%20*%20ovx%20-%20tfx%20-%20tu%20*%20tvx)%20*%20ovx%20%2B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20(ofy%20%2B%20ou%20*%20ovy%20-%20tfy%20-%20tu%20*%20tvy)%20*%20ovy%20%2B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20(ofz%20%2B%20ou%20*%20ovz%20-%20tfz%20-%20tu%20*%20tvz)%20*%20ovz%2C%200)%20%20%20%20%20%20%0A%23--%0Asolve(%5Beq1%2C%20eq2%5D%2C%20%5Bou%2C%20tu%5D)%0A%23--%0A
+
+                //  ou:
+                //    (
+                //      -(tvx**2 + tvy**2 + tvz**2)*(ofx*ovx + ofy*ovy + ofz*ovz - ovx*tfx - ovy*tfy - ovz*tfz) +
+                //      (ovx*tvx + ovy*tvy + ovz*tvz)*(ofx*tvx + ofy*tvy + ofz*tvz - tfx*tvx - tfy*tvy - tfz*tvz)
+                //    )
+                //    /
+                //    ((ovx**2 + ovy**2 + ovz**2)*(tvx**2 + tvy**2 + tvz**2) - (ovx*tvx + ovy*tvy + ovz*tvz)**2)
+                //
+                //  tu:
+                //    (
+                //      (ovx**2 + ovy**2 + ovz**2)*(ofx*tvx + ofy*tvy + ofz*tvz - tfx*tvx - tfy*tvy - tfz*tvz) -
+                //      (ovx*tvx + ovy*tvy + ovz*tvz)*(ofx*ovx + ofy*ovy + ofz*ovz - ovx*tfx - ovy*tfy - ovz*tfz)
+                //    )
+                //    /
+                //    ((ovx**2 + ovy**2 + ovz**2)*(tvx**2 + tvy**2 + tvz**2) - (ovx*tvx + ovy*tvy + ovz*tvz)**2)
+
+                var tfx = this.From.X; var tvx = this.V.X;
+                var tfy = this.From.Y; var tvy = this.V.Y;
+                var tfz = this.From.Z; var tvz = this.V.Z;
+
+                var ofx = other.From.X; var ovx = other.V.X;
+                var ofy = other.From.Y; var ovy = other.V.Y;
+                var ofz = other.From.Z; var ovz = other.V.Z;
+
+                var d = ((ovx * ovx + ovy * ovy + ovz * ovz) * (tvx * tvx + tvy * tvy + tvz * tvz) -
+                    Pow(ovx * tvx + ovy * tvy + ovz * tvz, 2));
+
+                // no solution
+                if (d < double.Epsilon) return null;
+
+                var ou = (
+                    -(tvx * tvx + tvy * tvy + tvz * tvz) * (ofx * ovx + ofy * ovy + ofz * ovz - ovx * tfx - ovy * tfy - ovz * tfz) +
+                    (ovx * tvx + ovy * tvy + ovz * tvz) * (ofx * tvx + ofy * tvy + ofz * tvz - tfx * tvx - tfy * tvy - tfz * tvz)
+                    ) / d;
+
+                var tu = (
+                    (ovx * ovx + ovy * ovy + ovz * ovz) * (ofx * tvx + ofy * tvy + ofz * tvz - tfx * tvx - tfy * tvy - tfz * tvz) -
+                    (ovx * tvx + ovy * tvy + ovz * tvz) * (ofx * ovx + ofy * ovy + ofz * ovz - ovx * tfx - ovy * tfy - ovz * tfz)
+                    ) / d;
+
+                // res
+                var rf = this.From + tu * this.V;
+                var rt = other.From + ou * other.V;
+
+                if (rf.EqualsTol(tol, rt))
+                    return new Line3D(rf, rt);
+                else
+                    // not intersection within given tolerance
+                    return null;
             }
 
             /// <summary>
@@ -433,7 +485,7 @@ namespace SearchAThing
             /// </summary>        
             public Line3D PerpendicularToIntersection(double tol, Vector3D p)
             {
-                if (LineContainsPoint(tol, p)) return null;
+                //if (LineContainsPoint(tol, p)) return null;
 
                 var i = new Line3D(p, p.Project(V)).Intersect(tol, this);
 
@@ -848,7 +900,7 @@ namespace SearchAThing
         /// TODO : dummy function, optimize
         /// </summary>       
         public static IReadOnlyList<Line3D> AutoIntersect(this IReadOnlyList<Line3D> segs, double tolLen,
-            bool mergeColinearSegments = true, IEnumerable<Vector3D> addictionalSplitPoints = null)
+        bool mergeColinearSegments = true, IEnumerable<Vector3D> addictionalSplitPoints = null)
         {
             segs = segs.MergeColinearSegments(tolLen).ToList();
 
