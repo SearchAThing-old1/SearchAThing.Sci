@@ -46,8 +46,9 @@ call %nuget% install OpenCover -Version 4.6.519 -OutputDirectory packages
 if not "%errorlevel%"=="0" goto failure
 
 packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:"packages\xunit.runner.console.2.2.0\tools\xunit.console.exe" -targetargs:".\tests\bin\Release\SearchAThing.Sci.Tests.dll -noshadow" -output:".\coverage.xml"
-if not "%errorlevel%"=="0" goto failure
+rem if not "%errorlevel%"=="0" goto failure
 
+echo "---> ensuring codecov"
 rem call %nuget% install Codecov -Version 1.0.1 -OutputDirectory packages
 rem if not "%errorlevel%"=="0" goto failure
 npm install codecov -g > null
