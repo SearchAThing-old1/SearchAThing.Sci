@@ -51,7 +51,7 @@ rem if not "%errorlevel%"=="0" goto failure
 echo "---> ensuring codecov"
 rem call %nuget% install Codecov -Version 1.0.1 -OutputDirectory packages
 rem if not "%errorlevel%"=="0" goto failure
-npm install codecov -g > null
+npm install codecov > null
 
 rem packages\Codecov.1.0.1\tools\codecov.exe -f coverage.xml -t %CODECOV_TOKEN%
 echo "---> running codecov -f coverage.xml"
