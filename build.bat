@@ -53,6 +53,7 @@ rem if not "%errorlevel%"=="0" goto failure
 npm install codecov
 
 rem packages\Codecov.1.0.1\tools\codecov.exe -f coverage.xml -t %CODECOV_TOKEN%
+echo "---> running codecov -f coverage.xml"
 codecov -f coverage.xml
 if not "%errorlevel%"=="0" goto failure
 
