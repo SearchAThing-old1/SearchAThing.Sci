@@ -139,7 +139,7 @@
       <Version>10.0.2</Version>
     </PackageReference>
     <PackageReference Include="Npgsql">
-      <Version>3.2.3</Version>
+      <Version>3.1.9</Version>
     </PackageReference>
     <PackageReference Include="SearchAThing.Core">
       <Version>1.0.0-CI00011</Version>
