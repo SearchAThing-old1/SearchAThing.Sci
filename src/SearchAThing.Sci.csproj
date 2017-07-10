@@ -144,6 +144,9 @@
     <PackageReference Include="SearchAThing.Core">
       <Version>1.0.0-CI00013</Version>
     </PackageReference>
+    <PackageReference Include="System.ValueTuple">
+      <Version>4.3.1</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
