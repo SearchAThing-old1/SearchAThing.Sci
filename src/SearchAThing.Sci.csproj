@@ -132,8 +132,8 @@
     <PackageReference Include="MongoDB.Bson">
       <Version>2.4.4</Version>
     </PackageReference>
-    <PackageReference Include="netdxfstd">
-      <Version>1.0.0-CI00012</Version>
+    <PackageReference Include="netDxf">
+      <Version>1.0.0-CI00002</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>10.0.2</Version>
