@@ -1,0 +1,1 @@
+Console.WriteLine($"Configuration={Environment.GetEnvironmentVariable("Configuration")}");
