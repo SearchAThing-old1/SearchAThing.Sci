@@ -238,3 +238,4 @@ _Pvt_Extensions
 __pycache__/
 .idea/
 /coverage.xml
+/report
