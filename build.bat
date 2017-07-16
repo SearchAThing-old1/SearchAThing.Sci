@@ -9,12 +9,12 @@ if "%config%" == "" (
 
 echo "config = [%config%]"
 
-set version=
+set vv=-Version 1.0.0
 if not "%PackageVersion%" == "" (
-   set version=-Version %PackageVersion%
+   set vv=-Version %PackageVersion%
 )
 
-echo "version = [%version%]"
+echo "version = [%vv%]"
 
 REM variables
 set msbuild=%ProgramFiles(x86)%\MSBuild\14.0\Bin\MSBuild.exe
@@ -40,7 +40,8 @@ echo
 echo "====================> Package"
 
 mkdir Build
-call %nuget% pack "src\SearchAThing.Sci.csproj" -symbols -o Build -p Configuration=%config% -Version %PackageVersion%
+call %nuget% pack "src\SearchAThing.Sci.csproj" -symbols -o Build -p Configuration=%config% %vv%
+goto debugend
 if not "%errorlevel%"=="0" goto failure
 
 REM Code Coverage
@@ -57,12 +58,9 @@ packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:"p
 if not "%errorlevel%"=="0" goto failure
 
 echo "---> ensuring codecov"
-rem call %nuget% install Codecov -Version 1.0.1 -OutputDirectory packages
-rem if not "%errorlevel%"=="0" goto failure
 call npm install codecov -g > nul
 if not "%errorlevel%"=="0" goto failure
 
-rem packages\Codecov.1.0.1\tools\codecov.exe -f coverage.xml -t %CODECOV_TOKEN%
 echo "---> running codecov -f coverage.xml"
 codecov -f coverage.xml
 if not "%errorlevel%"=="0" goto failure
