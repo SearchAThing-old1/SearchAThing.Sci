@@ -5,7 +5,7 @@ var Targets = System.Environment.GetEnvironmentVariable("Targets");
 var MsBuildExe = System.Environment.GetEnvironmentVariable("MsBuildExe");
 
 // EDIT : change to true for local debug
-var local_mode = true;
+var local_mode = false;
 
 var msbuild_cmd = local_mode ?
 Path.Combine(System.Environment.GetEnvironmentVariable("ProgramFiles(x86)"), @"Microsoft Visual Studio\Preview\Community\MSBuild\15.0\Bin\MSBuild.exe")
