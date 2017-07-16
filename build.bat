@@ -39,9 +39,10 @@ REM Package
 echo
 echo "====================> Package"
 
-mkdir Build
-call %nuget% pack "src\SearchAThing.Sci.csproj" -symbols -o Build -p Configuration=%config% %vv%
-if not "%errorlevel%"=="0" goto failure
+rem mkdir Build
+rem call %nuget% pack "src\SearchAThing.Sci.csproj" -symbols -o Build -p Configuration=%config% %vv%
+rem if not "%errorlevel%"=="0" goto failure
+
 
 REM Code Coverage
 echo
@@ -64,13 +65,8 @@ echo "---> running codecov -f coverage.xml"
 codecov -f coverage.xml
 if not "%errorlevel%"=="0" goto failure
 
-REM EDIT: uncommen follows exit for local debug
-rem goto debugend
-
 :success
 exit 0
 
 :failure
 exit -1
-
-:debugend
