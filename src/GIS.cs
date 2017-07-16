@@ -1,7 +1,7 @@
-﻿#region SearchAThing.Sci, Copyright(C) 2016 Lorenzo Delana, License under MIT
+﻿#region SearchAThing.Sci, Copyright(C) 2016-2017 Lorenzo Delana, License under MIT
 /*
 * The MIT License(MIT)
-* Copyright(c) 2016 Lorenzo Delana, https://searchathing.com
+* Copyright(c) 2016-2017 Lorenzo Delana, https://searchathing.com
 *
 * Permission is hereby granted, free of charge, to any person obtaining a
 * copy of this software and associated documentation files (the "Software"),
