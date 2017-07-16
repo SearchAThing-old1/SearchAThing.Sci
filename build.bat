@@ -40,7 +40,7 @@ echo
 echo "====================> Package"
 
 mkdir Build
-call %nuget% pack "src\SearchAThing.Sci.csproj" -symbols -o Build -p Configuration=%config% %version%
+call %nuget% pack "src\SearchAThing.Sci.csproj" -symbols -o Build -p Configuration=%config% -Version %version%
 if not "%errorlevel%"=="0" goto failure
 
 REM Code Coverage
