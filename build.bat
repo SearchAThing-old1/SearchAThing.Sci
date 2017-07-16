@@ -11,7 +11,7 @@ echo "config = [%config%]"
 
 set version=
 if not "%PackageVersion%" == "" (
-   set version=-Version %PackageVersion%
+   set version=%PackageVersion%
 )
 
 echo "version = [%version%]"
