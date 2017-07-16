@@ -54,7 +54,26 @@ namespace SearchAThing.Sci
         public Vector3D BaseY { get; private set; }
         public Vector3D BaseZ { get; private set; }
 
-        public static CoordinateSystem3D WCS = new CoordinateSystem3D(Vector3D.Zero, Vector3D.XAxis, Vector3D.YAxis, Vector3D.ZAxis);
+        /// <summary>
+        /// right handed XY ( Z ) : top view
+        /// </summary>
+        public static CoordinateSystem3D XY =
+            new CoordinateSystem3D(Vector3D.Zero, Vector3D.XAxis, Vector3D.YAxis, Vector3D.ZAxis);
+
+        /// <summary>
+        /// right handed XZ ( -Y ) : front view
+        /// </summary>
+        public static CoordinateSystem3D XZ =
+            new CoordinateSystem3D(Vector3D.Zero, Vector3D.XAxis, Vector3D.ZAxis, -Vector3D.YAxis);
+
+        /// <summary>
+        /// right handed YZ ( X ) : side view
+        /// </summary>
+        public static CoordinateSystem3D YZ =
+            new CoordinateSystem3D(Vector3D.Zero, Vector3D.YAxis, Vector3D.ZAxis, Vector3D.XAxis);
+
+        public static CoordinateSystem3D WCS = XY;
+
         const double aaaSmall = 1.0 / 64;
 
         public CoordinateSystem3D(Vector3D o, Vector3D normal, CoordinateSystem3DAutoEnum csAutoType = CoordinateSystem3DAutoEnum.AAA)

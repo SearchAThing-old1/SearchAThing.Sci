@@ -479,19 +479,6 @@ namespace SearchAThing
                 return new Line3D(p, p.Project(V));
             }
 
-            /// <summary>
-            /// Build a perpendicular vector to this one starting from the given point p
-            /// and with To at the intersection point betweens.
-            /// </summary>        
-            public Line3D PerpendicularToIntersection(double tol, Vector3D p)
-            {
-                //if (LineContainsPoint(tol, p)) return null;
-
-                var i = new Line3D(p, p.Project(V)).Intersect(tol, this);
-
-                return new Line3D(p, i);
-            }
-
             public bool Colinear(double tol, Line3D other)
             {
                 return
@@ -502,7 +489,10 @@ namespace SearchAThing
 
             public bool IsParallelTo(double tol, Plane3D plane)
             {
-                return V.IsParallelTo(tol, plane.CS.BaseX) && V.IsParallelTo(tol, plane.CS.BaseY);
+                var from_ = this.From.ToUCS(plane.CS);
+                var to_ = this.To.ToUCS(plane.CS);
+
+                return from_.Z.EqualsTol(tol, to_.Z);
             }
 
             /// <summary>

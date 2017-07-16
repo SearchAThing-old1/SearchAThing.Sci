@@ -185,7 +185,7 @@ namespace SearchAThing
             /// </summary>            
             public double Distance(double tol, Line3D other)
             {
-                return other.PerpendicularToIntersection(tol, this).Length;
+                return other.Perpendicular(tol, this).Length;
             }
 
             /// <summary>
@@ -203,6 +203,14 @@ namespace SearchAThing
             public double DotProduct(Vector3D other)
             {
                 return X * other.X + Y * other.Y + Z * other.Z;
+            }
+
+            /// <summary>
+            /// states is this vector is perpendicular to the given one
+            /// </summary>            
+            public bool IsPerpendicular(Vector3D other)
+            {
+                return DotProduct(other).EqualsTol(Constants.NormalizedLengthTolerance, 0);
             }
 
             /// <summary>
@@ -271,6 +279,7 @@ namespace SearchAThing
             {
                 return (this - line.From).Project(line.V) + line.From;
             }
+
 
             /// <summary>
             /// return a copy of this vector with ordinate ( 0:x 1:y 2:z ) changed
