@@ -4,13 +4,15 @@ var Configuration = System.Environment.GetEnvironmentVariable("Configuration");
 var Targets = System.Environment.GetEnvironmentVariable("Targets");
 var MsBuildExe = System.Environment.GetEnvironmentVariable("MsBuildExe");
 var NuGet = System.Environment.GetEnvironmentVariable("NuGet");
+var NpmExecPath = System.Environment.GetEnvironmentVariable("NpmExecPath");
 
-var testFramework = "net462";
+var testFramework = "net461";
 
 if (string.IsNullOrEmpty(Configuration)) Configuration = "Release";
 if (string.IsNullOrEmpty(Targets)) Targets = "Restore,Rebuild";
 if (string.IsNullOrEmpty(MsBuildExe)) MsBuildExe = Path.Combine(System.Environment.GetEnvironmentVariable("ProgramFiles(x86)"), @"Microsoft Visual Studio\Preview\Community\MSBuild\15.0\Bin\MSBuild.exe");
 if (string.IsNullOrEmpty(NuGet)) NuGet = @"c:\nuget\nuget.exe";
+if (string.IsNullOrEmpty(NpmExecPath)) NpmExecPath = @"C:\Program Files\nodejs\npm.cmd";
 
 Action<string> hdr = (msg) =>
 {
@@ -39,15 +41,18 @@ Action<string, string> run = (file, args) =>
     //
     // msbuild targets
     //
-    run(MsBuildExe, $"SearchAThing.Sci.sln " +
-        $"/t:{Targets} " +
-        $"/p:Configuration={Configuration} " +
-        $"/m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false");
+    foreach (var prj in new[] { "src/SearchAThing.Sci.csproj", "tests/SearchAThing.Sci.Tests.csproj" })
+    {
+        run(MsBuildExe, $"{prj} " +
+            $"/t:{Targets} " +
+            $"/p:Configuration={Configuration} " +
+            $"/m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false");
+    }
 }
 
-//-------------------------------COVERAGE
+//-------------------------------UNIT TEST
 {
-    hdr("COVERAGE");
+    hdr("UNIT TEST");
 
     //
     // install xunit.runner.console
@@ -63,16 +68,20 @@ Action<string, string> run = (file, args) =>
     // run codecover
     //
     run(@"packages\OpenCover.4.6.519\tools\OpenCover.Console.exe",
-        @"-register:user -target:packages\xunit.runner.console.2.2.0\tools\xunit.console.exe " +
+        @"-register:user -target:""packages\xunit.runner.console.2.2.0\tools\xunit.console.exe"" " +
         $@"-targetargs:"".\tests\bin\Release\{testFramework}\SearchAThing.Sci.Tests.dll -noshadow"" " +
-        @"-output:.\coverage.xml ""-filter:+[*]* -[*]Microsoft.Xna.*"" ");
+        @"-output:"".\coverage.xml"" " +
+        "\"-filter:+[*]* -[*]Microsoft.Xna.*\"");
+}
 
-    Console.WriteLine("codecov");
+//-------------------------------COVERAGE
+{    
+    hdr("COVERAGE");
 
     //
     // ensure codecov
     //
-    run("npm", "install codecov -g");
+    run(NpmExecPath, "install codecov -g");
 
     //
     // run codecov
