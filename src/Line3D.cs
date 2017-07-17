@@ -552,7 +552,8 @@ namespace SearchAThing
             }
 
             /// <summary>
-            /// split current segment into one or more depending on which of given split points was found on the segment
+            /// split current segment into one or more depending on which of given split points was found on the segment            
+            /// splitted segments start from begin of line
             /// TODO : not optimized
             /// </summary>            
             public IReadOnlyList<Line3D> Split(double tolLen, IReadOnlyList<Vector3D> splitPts)
@@ -604,7 +605,7 @@ namespace SearchAThing
             /// <summary>
             /// Retrieve this segment if from matches the given one
             /// or a new segment reversed
-            /// precondition: this segment must have from or to equals given from                        
+            /// precondition: this segment must have from or to equals given from
             /// </summary>            
             public Line3D EnsureFrom(double tolLen, Vector3D from)
             {

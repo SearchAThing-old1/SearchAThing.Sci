@@ -1,4 +1,5 @@
 ﻿using Xunit;
+using System.Linq;
 
 namespace SearchAThing.Sci.Tests
 {
@@ -227,40 +228,99 @@ namespace SearchAThing.Sci.Tests
         [Fact]
         public void RotateAboutAxisTest()
         {
-
+            var l = new Line3D(0, 0, 0, 10, 0, 0);
+            var axis = new Line3D(3.6969, 2.5012, 0, 2.0024, 5.8572, 10);
+            var lrot = l.RotateAboutAxis(axis, (45d).ToRad());
+            Assert.True(lrot.EqualsTol(1e-4, new Line3D(2.7475, -1.7326, 1.0470, 9.8923, 4.7402, -1.6091)));
         }
 
         [Fact]
         public void SetLengthTest()
         {
             var l = new Line3D(0, 0, 0, 10, 0, 0);
-            l.SetLength(20);
-            Assert.True(l.From.EqualsTol(1e-1, 0, 0, 0));
-            Assert.True(l.To.EqualsTol(1e-1, 20, 0, 0));
+            var l2 = l.SetLength(20);
+            Assert.True(l2.From.EqualsTol(1e-1, 0, 0, 0));
+            Assert.True(l2.To.EqualsTol(1e-1, 20, 0, 0));
         }
 
         [Fact]
         public void MoveTest()
         {
-
+            var l = new Line3D(1, 2, 3, 10, 0, 0);
+            var delta = new Vector3D(10, 20, 30);
+            var l2 = l.Move(delta);
+            Assert.True(l2.From.EqualsTol(1e-1, l.From + delta));
+            Assert.True(l2.V.EqualsTol(1e-1, l.V));
         }
 
         [Fact]
         public void MoveMidpointTest()
         {
-
+            var l = new Line3D(0, 0, 0, 10, 0, 0);
+            var l2 = l.MoveMidpoint(new Vector3D(0, 0, 0));
+            Assert.True(l2.From.EqualsTol(1e-1, -5, 0, 0));
+            Assert.True(l2.To.EqualsTol(1e-1, 5, 0, 0));
         }
 
         [Fact]
         public void SplitTest()
         {
+            {
+                var l = new Line3D(0, 0, 0, 10, 0, 0);
+                var segs = l.Split(1e-1, new[] { new Vector3D(2, 0, 0), new Vector3D(8, 0, 0) });
+                Assert.True(segs.Count() == 3);
+                Assert.True(segs.First().EqualsTol(1e-1, new Line3D(0, 0, 0, 2, 0, 0)));
+                Assert.True(segs.Skip(1).First().EqualsTol(1e-1, new Line3D(2, 0, 0, 8, 0, 0)));
+                Assert.True(segs.Last().EqualsTol(1e-1, new Line3D(8, 0, 0, 10, 0, 0)));
+            }
 
+            {
+                var l = new Line3D(0, 0, 0, 10, 0, 0);
+                var segs = l.Split(1e-1, new[]
+                {
+                    // external of extreme points skipped
+                    new Vector3D(-1,0,0), new Vector3D(0,0,0), new Vector3D(10,0,0),
+                    new Vector3D(2, 0, 0), new Vector3D(8, 0, 0)
+                });
+                Assert.True(segs.Count() == 3);
+                Assert.True(segs.First().EqualsTol(1e-1, new Line3D(0, 0, 0, 2, 0, 0)));
+                Assert.True(segs.Skip(1).First().EqualsTol(1e-1, new Line3D(2, 0, 0, 8, 0, 0)));
+                Assert.True(segs.Last().EqualsTol(1e-1, new Line3D(8, 0, 0, 10, 0, 0)));
+            }
+
+            {
+                var l = new Line3D(0, 0, 0, 10, 0, 0);
+                var segs = l.Split(1e-1, new[] { new Vector3D(8, 0, 0), new Vector3D(2, 0, 0) });
+                Assert.True(segs.Count() == 3);
+                // splitted segments start from begin of line
+                Assert.True(segs.First().EqualsTol(1e-1, new Line3D(0, 0, 0, 2, 0, 0)));
+                Assert.True(segs.Skip(1).First().EqualsTol(1e-1, new Line3D(2, 0, 0, 8, 0, 0)));
+                Assert.True(segs.Last().EqualsTol(1e-1, new Line3D(8, 0, 0, 10, 0, 0)));
+            }
         }
 
         [Fact]
         public void EnsureFromTest()
         {
+            var l = new Line3D(0, 0, 0, 10, 0, 0);
 
+            var l2 = l.EnsureFrom(1e-1, new Vector3D(0, 0, 0));
+            Assert.True(l2.EqualsTol(1e-1, new Line3D(0, 0, 0, 10, 0, 0)));
+
+            // return reversed segment
+            var l3 = l.EnsureFrom(1e-1, new Vector3D(10, 0, 0));
+            Assert.True(l3.EqualsTol(1e-1, new Line3D(10, 0, 0, 0, 0, 0)));
+
+            try
+            {
+                // exception expected
+                var l4 = l.EnsureFrom(1e-1, new Vector3D(-1, 0, 0));
+                Assert.True(false); 
+            }
+            catch
+            {
+                Assert.True(true);
+            }
         }
 
         [Fact]
@@ -298,5 +358,7 @@ namespace SearchAThing.Sci.Tests
         {
 
         }
+
     }
+
 }
