@@ -11,7 +11,7 @@
     <PackageProjectUrl>https://github.com/devel0/SearchAThing.Sci</PackageProjectUrl>
     <RepositoryUrl />
     <PackageTags>c# scientific 3d geometry</PackageTags>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>    
   </PropertyGroup>
 
   <ItemGroup>
