@@ -4,7 +4,7 @@ var Configuration = System.Environment.GetEnvironmentVariable("Configuration");
 var Targets = System.Environment.GetEnvironmentVariable("Targets");
 var MsBuildExe = System.Environment.GetEnvironmentVariable("MsBuildExe");
 var NuGet = System.Environment.GetEnvironmentVariable("NuGet");
-var NpmExePath = System.Environment.GetEnvironmentVariable("NpmExePath");
+var NpmExePath = "npm";//System.Environment.GetEnvironmentVariable("NpmExePath");
 
 var testFramework = "net461";
 
