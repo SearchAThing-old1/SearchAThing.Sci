@@ -4,7 +4,7 @@ var Configuration = System.Environment.GetEnvironmentVariable("Configuration");
 var Targets = System.Environment.GetEnvironmentVariable("Targets");
 var MsBuildExe = System.Environment.GetEnvironmentVariable("MsBuildExe");
 var NuGet = System.Environment.GetEnvironmentVariable("NuGet");
-var NpmExecPath = System.Environment.GetEnvironmentVariable("NpmExecPath");
+var NpmExePath = System.Environment.GetEnvironmentVariable("NpmExePath");
 
 var testFramework = "net461";
 
@@ -12,7 +12,7 @@ if (string.IsNullOrEmpty(Configuration)) Configuration = "Release";
 if (string.IsNullOrEmpty(Targets)) Targets = "Restore,Rebuild";
 if (string.IsNullOrEmpty(MsBuildExe)) MsBuildExe = Path.Combine(System.Environment.GetEnvironmentVariable("ProgramFiles(x86)"), @"Microsoft Visual Studio\Preview\Community\MSBuild\15.0\Bin\MSBuild.exe");
 if (string.IsNullOrEmpty(NuGet)) NuGet = @"c:\nuget\nuget.exe";
-if (string.IsNullOrEmpty(NpmExecPath)) NpmExecPath = @"C:\Program Files\nodejs\npm.cmd";
+if (string.IsNullOrEmpty(NpmExePath)) NpmExePath = @"C:\Program Files\nodejs\npm.cmd";
 
 Action<string> hdr = (msg) =>
 {
@@ -81,7 +81,7 @@ Action<string, string> run = (file, args) =>
     //
     // ensure codecov
     //
-    run(NpmExecPath, "install codecov -g");
+    run(NpmExePath, "install codecov -g");
 
     //
     // run codecov
