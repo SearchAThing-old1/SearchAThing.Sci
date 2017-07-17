@@ -185,7 +185,7 @@ namespace SearchAThing.Sci.Tests
 
         [Fact]
         public void PerpendicularTest()
-        {            
+        {
             var l = new Line3D(0, 0, 0, 10, 0, 0);
             var p = new Vector3D(5, 10, 0);
             var lperp = l.Perpendicular(1e-1, p);
@@ -199,7 +199,7 @@ namespace SearchAThing.Sci.Tests
             // two seg are perpendicular
             Assert.True(l.V.IsPerpendicular(lperp.V));
         }
-        
+
         [Fact]
         public void ColinearTest()
         {
@@ -217,8 +217,8 @@ namespace SearchAThing.Sci.Tests
         [Fact]
         public void IsParallelToTest()
         {
-            var l = new Line3D(0, 0, 0, 10, 0, 0);            
-            
+            var l = new Line3D(0, 0, 0, 10, 0, 0);
+
             Assert.True(l.IsParallelTo(1e-4, Plane3D.XY));
             Assert.True(l.IsParallelTo(1e-4, Plane3D.XZ));
             Assert.False(l.IsParallelTo(1e-4, Plane3D.YZ));
@@ -233,7 +233,10 @@ namespace SearchAThing.Sci.Tests
         [Fact]
         public void SetLengthTest()
         {
-
+            var l = new Line3D(0, 0, 0, 10, 0, 0);
+            l.SetLength(20);
+            Assert.True(l.From.EqualsTol(1e-1, 0, 0, 0));
+            Assert.True(l.To.EqualsTol(1e-1, 20, 0, 0));
         }
 
         [Fact]
