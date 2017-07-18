@@ -315,7 +315,7 @@ namespace SearchAThing.Sci.Tests
             {
                 // exception expected
                 var l4 = l.EnsureFrom(1e-1, new Vector3D(-1, 0, 0));
-                Assert.True(false); 
+                Assert.True(false);
             }
             catch
             {
@@ -326,19 +326,55 @@ namespace SearchAThing.Sci.Tests
         [Fact]
         public void ToStringTest()
         {
+            var l = new Line3D(1, 1, 1, 1.12, 2.23, 3.391);
+            // 3 digits default
+            var s = l.ToString();
+            Assert.True(s == "(1, 1, 1)-(1.12, 2.23, 3.391) L=2.692 Δ=(0.12, 1.23, 2.391)");
 
+            // 1 digits explicit
+            var s2 = l.ToString(1);
+            Assert.True(s2 == "(1, 1, 1)-(1.1, 2.2, 3.4) L=2.7 Δ=(0.1, 1.2, 2.4)");
         }
 
         [Fact]
         public void ToStringTest1()
         {
+            var l = new Line3D(1, 1, 1, 1.12, 2.23, 3.391);
+            // 1e-1 tolerance
+            var s = l.ToString(1e-1);
+            Assert.True(s == "(1, 1, 1)_(1.1, 2.2, 3.4)");
+        }
 
+        [Fact]
+        public void NormalizedTest()
+        {
+            var l = new Line3D(10, 20, 30, 40, 50, 60);
+            var ln = l.Normalized();
+            Assert.True(ln.From.EqualsTol(1e-6, 10, 20, 30));
+            Assert.True(ln.V.EqualsTol(1e-6, new Vector3D(1, 1, 1).Normalized()));
         }
 
         [Fact]
         public void DivideTest()
         {
+            var l = new Line3D(10, 20, 30, 40, 50, 60);
+            // divide 3 equal parts (default: w/out endpoints) results in 2 pts
+            {
+                var pts = l.Divide(3);
+                Assert.True(pts.Count() == 2);
+                Assert.True(pts.First().EqualsTol(1e-6, (l.Normalized() * (l.Length / 3)).To));
+                Assert.True(pts.Skip(1).First().EqualsTol(1e-6, (l.Normalized() * (l.Length / 3 * 2)).To));
+            }
 
+            // divide 3 equal parts include endpoints results in 4 pts
+            {
+                var pts = l.Divide(3, include_endpoints: true);
+                Assert.True(pts.Count() == 2 + 2);
+                Assert.True(pts.First().EqualsTol(1e-6, l.From));
+                Assert.True(pts.Skip(1).First().EqualsTol(1e-6, (l.Normalized() * (l.Length / 3)).To));
+                Assert.True(pts.Skip(2).First().EqualsTol(1e-6, (l.Normalized() * (l.Length / 3 * 2)).To));
+                Assert.True(pts.Last().EqualsTol(1e-6, l.To));
+            }
         }
 
         [Fact]

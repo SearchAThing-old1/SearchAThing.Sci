@@ -645,7 +645,15 @@ namespace SearchAThing
             /// </summary>            
             public override string ToString()
             {
-                return Invariant($"({X.ToString(3)}, {Y.ToString(3)}, {Z.ToString(3)})");
+                return this.ToString(digits: 3);
+            }
+
+            /// <summary>
+            /// string invariant representation "(x,y,z)" w/given digits
+            /// </summary>            
+            public string ToString(int digits = 3)
+            {
+                return Invariant($"({X.ToString(digits)}, {Y.ToString(digits)}, {Z.ToString(digits)})");
             }
 
             /// <summary>
@@ -653,7 +661,7 @@ namespace SearchAThing
             /// </summary>            
             public string ToString(double tol)
             {
-                return Invariant($"({X.MRound(tol)}, {Y.MRound(tol)}, {Z.MRound(3)})");
+                return Invariant($"({X.MRound(tol)}, {Y.MRound(tol)}, {Z.MRound(tol)})");
             }
 
             /// <summary>

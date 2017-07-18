@@ -650,9 +650,22 @@ namespace SearchAThing
                 return res;
             }
 
+            /// <summary>
+            /// build an invariant string representation w/3 digits
+            /// (f.x, f.y, f.z)-(t.x, t.y, t.z) L=len Δ=(v.x, v.y, v.z)
+            /// </summary>            
             public override string ToString()
             {
-                return $"{From}-{To} L={Length.ToString(2)} Δ={To - From}";
+                return this.ToString(digits: 3);
+            }
+
+            /// <summary>
+            /// build an invariant string representation w/given digits
+            /// (f.x, f.y, f.z)-(t.x, t.y, t.z) L=len Δ=(v.x, v.y, v.z)
+            /// </summary>      
+            public string ToString(int digits = 3)
+            {
+                return $"{From.ToString(digits)}-{To.ToString(digits)} L={Length.ToString(digits)} Δ={(To - From).ToString(digits)}";
             }
 
             public override IEnumerable<Vector3D> Divide(int cnt, bool include_endpoints = false)
@@ -668,6 +681,14 @@ namespace SearchAThing
                     --cnt;
                 }
                 if (include_endpoints) yield return GeomTo;
+            }
+
+            /// <summary>
+            /// build a segment with same from and vector normalized
+            /// </summary>            
+            public Line3D Normalized()
+            {
+                return new Line3D(From, V.Normalized(), Line3DConstructMode.PointAndVector);
             }
 
             /// <summary>
