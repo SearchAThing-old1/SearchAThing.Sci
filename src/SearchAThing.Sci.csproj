@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;net462</TargetFrameworks>
+    <TargetFrameworks>net46;net461;net462</TargetFrameworks>
     <Product>Scientific library for C#</Product>
     <Company />
     <Authors>Lorenzo Delana</Authors>
