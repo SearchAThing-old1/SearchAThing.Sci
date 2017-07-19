@@ -23,7 +23,7 @@
 */
 #endregion
 
-using System.Collections.Generic;
+using SearchAThing.Sci;
 using static System.Math;
 
 namespace SearchAThing.Sci
@@ -182,6 +182,11 @@ namespace SearchAThing.Sci
         }
 
     }
+
+}
+
+namespace SearchAThing
+{
 
     public static partial class Extensions
     {

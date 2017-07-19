@@ -172,7 +172,7 @@ namespace SearchAThing
                     (From.EqualsTol(tol, other.From) && To.EqualsTol(tol, other.To))
                     ||
                     (From.EqualsTol(tol, other.To) && To.EqualsTol(tol, other.From));
-            }
+            }          
 
             /// <summary>
             /// returns the common point from,to between two lines or null if not consecutives
@@ -603,15 +603,15 @@ namespace SearchAThing
             }
 
             /// <summary>
-            /// Retrieve this segment if from matches the given one
-            /// or a new segment reversed
+            /// if this segment from matches the given point returns this;
+            /// if this segment to matches the given point return this with from,to swapped;
             /// precondition: this segment must have from or to equals given from
             /// </summary>            
-            public Line3D EnsureFrom(double tolLen, Vector3D from)
+            public Line3D EnsureFrom(double tolLen, Vector3D pt)
             {
-                if (From.EqualsTol(tolLen, from)) return this;
-                if (To.EqualsTol(tolLen, from)) return Reverse();
-                throw new System.Exception($"not found valuable from-to in seg [{this}] that can satisfy from or to equals [{from}]");
+                if (From.EqualsTol(tolLen, pt)) return this;
+                if (To.EqualsTol(tolLen, pt)) return Reverse();
+                throw new System.Exception($"not found valuable from-to in seg [{this}] that can satisfy from or to equals [{pt}]");
             }
 
             public string CadScript
@@ -691,19 +691,7 @@ namespace SearchAThing
                 return new Line3D(From, V.Normalized(), Line3DConstructMode.PointAndVector);
             }
 
-            /// <summary>
-            /// if this segment share a node with the other given
-            /// return that null elsewhere
-            /// </summary>            
-            public Vector3D CommonNode(double tol_len, Line3D other)
-            {
-                if (From.EqualsTol(tol_len, other.From)) return From;
-                if (From.EqualsTol(tol_len, other.To)) return From;
-                if (To.EqualsTol(tol_len, other.From)) return To;
-                if (To.EqualsTol(tol_len, other.To)) return To;
-
-                return null;
-            }
+           
 
             /// <summary>
             /// return segment with swapped from,to

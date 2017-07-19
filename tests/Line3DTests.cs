@@ -5,6 +5,14 @@ namespace SearchAThing.Sci.Tests
 {
     public class Line3DTests
     {
+
+        double rad_tol;
+
+        public Line3DTests()
+        {
+            rad_tol = (1e-1).ToRad();
+        }
+
         [Fact]
         public void Line3DTest()
         {
@@ -378,21 +386,54 @@ namespace SearchAThing.Sci.Tests
         }
 
         [Fact]
-        public void CommonNodeTest()
-        {
-
-        }
-
-        [Fact]
         public void BBoxTest()
         {
-
+            var l = new Line3D(10, 50, -10, -10, -50, 60);
+            var bbox = l.BBox(1e-1, rad_tol);
+            Assert.True(bbox.Min.EqualsTol(1e-1, -10, -50, -10));
+            Assert.True(bbox.Max.EqualsTol(1e-1, 10, 50, 60));
         }
 
         [Fact]
         public void BisectTest()
         {
+            {
+                var l1 = new Line3D(-.2653, 6.7488, 1.4359, 1.8986, 3.1188, 1.0844);
+                var l2 = new Line3D(1.8986, 3.1188, 1.0844, 8.1864, 2.4120, 1.7818);
+                var bisect = l1.Bisect(1e-4, l2);
 
+                // bisect segment from start from the intersection point of two lines
+                var ip = l1.CommonPoint(1e-4, l2);
+                Assert.True(bisect.From.EqualsTol(1e-4, ip));
+
+                var l1_from_ip = l1.EnsureFrom(1e-4, ip);
+                var l2_from_ip = l2.EnsureFrom(1e-4, ip);
+
+                // angle from bisect toward l1 equals angle from bisect toward l2
+                var bisect_ang_l1 = bisect.V.AngleRad(1e-4, l1_from_ip.V);
+                var bisect_ang_l2 = bisect.V.AngleRad(1e-4, l2_from_ip.V);
+                Assert.True(bisect_ang_l1.EqualsTol(rad_tol, bisect_ang_l2));
+            }
+
+            {
+                var l1 = new Line3D(0, 0, 0, 10, 0, 0);
+                var l2 = new Line3D(0, 0, 0, -5, 0, 0);
+                {
+                    var bisect = l1.Bisect(1e-4, l2);
+                    // two parallel lines not form a plane, then a fallback rotation axis must be given
+                    Assert.True(bisect == null);
+                }
+                {
+                    // rotate right-hand Z+
+                    var bisect = l1.Bisect(1e-4, l2, Vector3D.ZAxis);
+                    Assert.True(bisect.EqualsTol(1e-4, new Line3D(0, 0, 0, 0, 10, 0)));
+                }
+                {
+                    // rotate right-hand Z-
+                    var bisect = l1.Bisect(1e-4, l2, -Vector3D.ZAxis);
+                    Assert.True(bisect.EqualsTol(1e-4, new Line3D(0, 0, 0, 0, -10, 0)));
+                }
+            }
         }
 
     }

@@ -26,7 +26,7 @@
 using static System.Math;
 using SearchAThing;
 
-namespace SearchAThing.Sci
+namespace SearchAThing
 {
 
     public static partial class Extensions
