@@ -57,7 +57,7 @@ namespace SearchAThing
 
             public override BBox3D BBox(double tol_len, double tol_rad)
             {
-                return new BBox3D();
+                return new BBox3D(new[] { this });
             }
 
             public override IEnumerable<Vector3D> Divide(int cnt, bool include_endpoints = false)
