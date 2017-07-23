@@ -12,6 +12,10 @@
   - imagesharp : `https://www.myget.org/F/imagesharp/api/v3/index.json`
 - pre-release package : `SearchAThing.Sci`
 
+## Usage
+
+![img](/doc/usage.gif)
+
 ## Examples
 
 Examples are available [here](https://github.com/devel0/SearchAThing.Sci.Examples)
