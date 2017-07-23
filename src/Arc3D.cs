@@ -418,7 +418,7 @@ namespace SearchAThing
         /// <summary>
         /// states if given angle is contained in from, to angle range
         /// where angle_from assumed smaller angle
-        /// and angle_to gets normalized taking in account 2*PI difference when angle_to < angle_from
+        /// and angle_to gets normalized taking in account 2*PI difference when angle_to &lt; angle_from
         /// </summary>        
         public static bool AngleInRange(this double pt_angle, double tol_rad, double angle_from, double angle_to)
         {

@@ -34,7 +34,6 @@ using netDxf.Tables;
 using System.Text;
 using System.Globalization;
 using SearchAThing;
-using SearchAThing.Sci;
 using ColorMine.ColorSpaces;
 
 namespace SearchAThing

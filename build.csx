@@ -5,7 +5,7 @@ var Targets = System.Environment.GetEnvironmentVariable("Targets");
 var MsBuildExe = System.Environment.GetEnvironmentVariable("MsBuildExe");
 var NuGet = System.Environment.GetEnvironmentVariable("NuGet");
 
-var testFramework = "net461";
+var testFramework = "net46";
 
 if (string.IsNullOrEmpty(Configuration)) Configuration = "Release";
 if (string.IsNullOrEmpty(Targets)) Targets = "Restore,Rebuild";
@@ -56,7 +56,7 @@ Action<bool, string, string> run = (shell, file, args) =>
     {
         run(false, MsBuildExe, $"{prj} " +
             $"/t:{Targets} " +
-            $"/p:Configuration={Configuration} " +
+            $"/p:Configuration={Configuration} /p:NoWarn=\"1591,1573\" " +
             $"/m /v:M /fl /flp:LogFile=msbuild.log;Verbosity=Normal /nr:false");
     }
 }

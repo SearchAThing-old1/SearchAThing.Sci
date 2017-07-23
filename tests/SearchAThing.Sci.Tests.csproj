@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;net462</TargetFrameworks>
+    <TargetFrameworks>net46;net461;net462</TargetFrameworks>
     <Product>Scientific library for C# (Unit Tests)</Product>
     <Company />
     <Authors>Lorenzo Delana</Authors>
@@ -12,12 +12,7 @@
     <RepositoryUrl />
     <PackageTags>c# scientific 3d geometry</PackageTags>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net461|AnyCPU'">
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
+  </PropertyGroup> 
 
   <ItemGroup>
     <PackageReference Include="xunit" Version="2.2.0" />

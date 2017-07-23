@@ -208,6 +208,7 @@ namespace SearchAThing.Sci
         /// <summary>
         /// Solve linear system of eq represented by this matrix
         /// defined n known term.
+        /// </summary>
         public Vector3D Solve(Vector3D n)
         {
             // Ax = B -> x = A^(-1)B

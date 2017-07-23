@@ -197,8 +197,7 @@ namespace SearchAThing
         /// https://en.wikipedia.org/wiki/Point_in_polygon
         /// By default check the point contained in the polygon perimeter.
         /// Optionally duplicate points are zapped in comparing.
-        /// </summary>        
-        /// <param name="excludePerimeter">Exclude check point contained in the perimeter</param>
+        /// </summary>                
         public static bool ContainsPoint(this IReadOnlyList<Vector3D> _pts, double tol, Vector3D _pt, bool zapDuplicates = false)
         {
             var pt = _pt.Set(OrdIdx.Z, 0);
