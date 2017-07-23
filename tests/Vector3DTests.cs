@@ -177,43 +177,65 @@ namespace SearchAThing.Sci.Tests
         [Fact]
         public void From2DCoordsTest()
         {
-
+            var v = Vector3D.From2DCoords(1, 2, 3, 4, 5, 6);
+            Assert.True(v.Count() == 3);
+            Assert.True(v.First().EqualsTol(1e-6, 1, 2, 0));
+            Assert.True(v.Skip(1).First().EqualsTol(1e-6, 3, 4, 0));
+            Assert.True(v.Skip(2).First().EqualsTol(1e-6, 5, 6, 0));
         }
 
         [Fact]
         public void From3DCoordsTest()
         {
-
+            var v = Vector3D.From3DCoords(1, 2, 3, 4, 5, 6);
+            Assert.True(v.Count() == 2);
+            Assert.True(v.First().EqualsTol(1e-6, 1, 2, 3));
+            Assert.True(v.Skip(1).First().EqualsTol(1e-6, 4, 5, 6));
         }
 
         [Fact]
         public void FromStringTest()
         {
+            var v = Vector3D.FromString("(1.2 3.4 5.6)");
+            Assert.True(v.EqualsTol(1e-6, 1.2, 3.4, 5.6));
 
+            // 2th format with comma separated
+            v = Vector3D.FromString("(1.2,3.4,5.6)");
+            Assert.True(v.EqualsTol(1e-6, 1.2, 3.4, 5.6));
         }
 
         [Fact]
         public void FromStringArrayTest()
         {
-
+            var v = Vector3D.FromStringArray("(1.2 3.4 5.6);(7.8 9.0 1.2)");
+            Assert.True(v.Count() == 2);
+            Assert.True(v.First().EqualsTol(1e-6, 1.2, 3.4, 5.6));
+            Assert.True(v.Skip(1).First().EqualsTol(1e-6, 7.8, 9.0, 1.2));
         }
 
         [Fact]
         public void GetOrdTest()
         {
-
+            var v = new Vector3D(1, 2, 3);
+            Assert.True(v.GetOrd(0).EqualsTol(1e-6, 1));
+            Assert.True(v.GetOrd(1).EqualsTol(1e-6, 2));
+            Assert.True(v.GetOrd(2).EqualsTol(1e-6, 3));
         }
 
         [Fact]
         public void IsParallelToTest()
         {
-
+            var v1 = new Vector3D(2.5101, 1.7754, -2.1324);
+            var v2 = new Vector3D(9.0365, 6.3918, -7.6768);
+            Assert.True(v1.IsParallelTo(1e-4, v2));
         }
 
         [Fact]
         public void IsPerpendicularTest()
         {
-
+            var v1 = new Vector3D(2.5101, 1.7754, -2.1324);
+            var v2 = new Vector3D(-9.7136,8.0369,-4.7428);
+            Assert.True(v1.IsPerpendicular(v2));
         }
 
         [Fact]

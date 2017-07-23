@@ -210,7 +210,7 @@ namespace SearchAThing
             /// </summary>            
             public bool IsPerpendicular(Vector3D other)
             {
-                return DotProduct(other).EqualsTol(Constants.NormalizedLengthTolerance, 0);
+                return Normalized().DotProduct(other.Normalized()).EqualsTol(Constants.NormalizedLengthTolerance, 0);
             }
 
             /// <summary>
