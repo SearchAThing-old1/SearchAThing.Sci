@@ -12,16 +12,11 @@
     <RepositoryUrl />
     <PackageTags>c# scientific 3d geometry</PackageTags>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>    
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net461|AnyCPU'">
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net46|AnyCPU'">
-    <DocumentationFile>bin\Release\net46\SearchAThing.Sci.xml</DocumentationFile>
-  </PropertyGroup>
+  </PropertyGroup>  
+  
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DocumentationFile>bin\Release\$(TargetFramework)\SearchAThing.Sci.xml</DocumentationFile>
+  </PropertyGroup>  
 
   <ItemGroup>
     <PackageReference Include="Clipper" Version="1.0.0-CI00003" />
