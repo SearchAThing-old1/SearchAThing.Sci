@@ -234,38 +234,76 @@ namespace SearchAThing.Sci.Tests
         public void IsPerpendicularTest()
         {
             var v1 = new Vector3D(2.5101, 1.7754, -2.1324);
-            var v2 = new Vector3D(-9.7136,8.0369,-4.7428);
+            var v2 = new Vector3D(-9.7136, 8.0369, -4.7428);
             Assert.True(v1.IsPerpendicular(v2));
         }
 
         [Fact]
         public void MirrorTest()
         {
-
+            var v = new Vector3D(1.5925, 1.5075, 3);
+            var v2 = v.Mirror(new Line3D(-1.5317, 1.9230, 1.5482, 3.1248, -0.9249, -1.9787));
+            Assert.True(v2.EqualsTol(1e-4, -2.316, .9075, -1.6758));
         }
 
         [Fact]
         public void NormalizedTest()
         {
-
+            var v = new Vector3D(-1, 2, 4.5);
+            var vn = v.Normalized();
+            var l = v.Length;
+            Assert.True(vn.EqualsTol(1e-6, v.X / l, v.Y / l, v.Z / l));
         }
 
         [Fact]
         public void Project1Test()
         {
+            var cs = new CoordinateSystem3D(
+                new Vector3D(6.1776, -6.3366, -5.7131), // o
+                new Vector3D(-2.8849, -7.6108, -1.8691), // v1
+                new Vector3D(-11.7294, 5.4484, 6.7873)); // v2
 
+            var v = new Vector3D(1, 2, 3);
+            var vp = v.Project(cs);
+            Assert.True(vp.EqualsTol(1e-4, -.0151, 3.0158, .4304));
         }
 
         [Fact]
         public void Project2Test()
         {
+            var v = new Vector3D(1.5925, 1.5075, 3);
+            var v2 = v.Project(new Line3D(-1.5317, 1.9230, 1.5482, 3.1248, -0.9249, -1.9787));
+            // v2 is endpoint of perp line from v to projection line
+            Assert.True(v2.EqualsTol(1e-4, -.3617, 1.2075, .6621));
+        }
 
+        [Fact]
+        public void Project3Test()
+        {
+            var v = new Vector3D(1, 2, 3);
+            var v2 = new Vector3D(4.5106, 1.8377, 0);
+            var vp = v.Project(v2);
+
+            Assert.True(v2.Colinear(1e-4, vp));
+            Assert.True(vp.EqualsTol(1e-4, 1.5565, .6341, 0));
+        }
+
+        [Fact]
+        public void Project4Test()
+        {
+            // Cusago, Italy : 45,448365 E, 9,034168 N ( geodetic system )
+            var v = new Vector3D(9.034168, 45.448365);
+
+            // epsg3003 : monte mario / italy zone 1 ( projected system )
+            var epsg3003 = CRSCatalog.CRSList["EPSG:3003"];
+
+            var q = v.Project(CRSCatalog.WGS84, epsg3003);
+            q.EqualsTol(1e-2, 1502699.63, 5032780.63);
         }
 
         [Fact]
         public void Random1Test()
         {
-
         }
 
         [Fact]
@@ -277,181 +315,270 @@ namespace SearchAThing.Sci.Tests
         [Fact]
         public void RelTest()
         {
-
+            var v = new Vector3D(1, 2, 3);
+            Assert.True(v.Rel(new Vector3D(1, 2, 3)).EqualsTol(1e-4, Vector3D.Zero));
+            Assert.True(v.Rel(new Vector3D(-1, -2, -3)).EqualsTol(1e-4, 2, 4, 6));
         }
 
         [Fact]
         public void RotateAboutAxis1Test()
         {
-
+            var v = new Vector3D(1, 2, 3);
+            var vr = v.RotateAboutAxis(new Line3D(6.1270, .9867, 2.3383, 5.2912, 5.8866, 1.3096), (16.5).ToRad());
+            Assert.True(vr.EqualsTol(1e-4, 1.4394, 2.3514, 4.3169));
         }
 
         [Fact]
         public void RotateAboutAxis2Test()
         {
-
+            var v = new Vector3D(1, 2, 3);
+            var vr = v.RotateAboutAxis(new Vector3D(2.4786, 1.9027, 3), 16.5d.ToRad());
+            Assert.True(vr.EqualsTol(1e-4, 1.0228, 1.6906, 3.1774));
         }
 
         [Fact]
         public void RotateAboutXAxisTest()
         {
-
+            var v = new Vector3D(1, 2, 3);
+            var vr = v.RotateAboutXAxis(16.5d.ToRad());
+            Assert.True(vr.EqualsTol(1e-4, 1, 1.0656, 3.4445));
         }
 
         [Fact]
         public void RotateAboutYAxisTest()
         {
-
+            var v = new Vector3D(1, 2, 3);
+            var vr = v.RotateAboutYAxis(16.5d.ToRad());
+            Assert.True(vr.EqualsTol(1e-4, 1.8109, 2, 2.5924));
         }
 
         [Fact]
         public void RotateAboutZAxisTest()
         {
-
+            var v = new Vector3D(1, 2, 3);
+            var vr = v.RotateAboutZAxis(16.5d.ToRad());
+            Assert.True(vr.EqualsTol(1e-4, .3908, 2.2017, 3));
         }
 
         [Fact]
         public void RotateAsTest()
         {
-
+            var v = new Vector3D(1, 2, 3);
+            var vr = v.RotateAs(1e-4, new Vector3D(3.0258, 2.9241, 1), new Vector3D(5.561, 2.304, 2));
+            Assert.True(vr.EqualsTol(1e-4, 1.4938, 1.146, 3.2335));
+            vr = v.RotateAs(1e-4, new Vector3D(3.0258, 2.9241, 1), new Vector3D(5.561, 2.304, 2),
+                angleFactor: 1.5);
+            Assert.True(vr.EqualsTol(1e-4, 1.6205, .6586, 3.3076));
+            vr = v.RotateAs(1e-4, new Vector3D(3.0258, 2.9241, 1), new Vector3D(5.561, 2.304, 2),
+                angleFactor: 1.5, angleAddictional: 11.2d.ToRad());
+            Assert.True(vr.EqualsTol(1e-4, 1.6602, 0.126, 3.3508));
         }
 
         [Fact]
         public void ScalarTest()
         {
-
+            var v = new Vector3D(1, 2, 3);
+            var s = new Vector3D(1.1, 2.2, 3.3);
+            var vs = v.Scalar(s.X, s.Y, s.Z);
+            Assert.True(vs.EqualsTol(1e-4, v.X * s.X, v.Y * s.Y, v.Z * s.Z));
         }
 
         [Fact]
         public void ScaleAbout1Test()
         {
-
+            var v = new Vector3D(1, 2, 3);
+            var vs = v.ScaleAbout(new Vector3D(3.1899, 1.3738, 1), 2.2);
+            Assert.True(vs.EqualsTol(1e-4, -1.6279, 2.7514, 5.4));
         }
 
         [Fact]
         public void ScaleAbout2Test()
         {
-
+            var v = new Vector3D(1, 2, 3);
+            var vs = v.ScaleAbout(new Vector3D(3.1899, 1.3738, 1), new Vector3D(1.1, 2.2, 3.3));
+            Assert.True(vs.EqualsTol(1e-4, .781, 2.7514, 7.6));
         }
 
         [Fact]
         public void SetTest()
         {
-
+            var v = new Vector3D(1, 2, 3);
+            var vv = v.Set(OrdIdx.X, 1.1);
+            Assert.True(vv.EqualsTol(1e-4, 1.1, v.Y, v.Z));
+            vv = v.Set(OrdIdx.Y, 2.2);
+            Assert.True(vv.EqualsTol(1e-4, v.X, 2.2, v.Z));
+            vv = v.Set(OrdIdx.Z, 3.3);
+            Assert.True(vv.EqualsTol(1e-4, v.X, v.Y, 3.3));
         }
 
         [Fact]
         public void StringRepresentationTest()
         {
-
+            var v = new Vector3D(1.2, 3.4, 5.6);
+            var vs = v.StringRepresentation();
+            Assert.True(vs == "(1.2, 3.4, 5.6)");
         }
 
         [Fact]
         public void ToString1Test()
         {
-
+            var v = new Vector3D(1.1234, 2.2345, 3.3456);
+            var vs = v.ToString();
+            Assert.True(vs == "(1.123, 2.235, 3.346)");
         }
 
         [Fact]
         public void ToString2Test()
         {
-
+            var v = new Vector3D(1.1234, 2.2345, 3.3456);
+            var vs = v.ToString(4);
+            Assert.True(vs == "(1.1234, 2.2345, 3.3456)");
         }
 
         [Fact]
         public void ToString3Test()
         {
-
+            var v = new Vector3D(1.1234, 2.2345, 3.3456);
+            var vs = v.ToString(1e-2);
+            Assert.True(vs == "(1.12, 2.23, 3.35)");
         }
 
         [Fact]
         public void ToSystemVector3DTest()
         {
-
+            var v = new Vector3D(1.2, 3.4, 5.6);
+            var sv = v.ToSystemVector3D();
+            Assert.True(((double)sv.X).EqualsTol(1e-4, 1.2));
+            Assert.True(((double)sv.Y).EqualsTol(1e-4, 3.4));
+            Assert.True(((double)sv.Z).EqualsTol(1e-4, 5.6));
         }
 
         [Fact]
         public void ToUCSTest()
         {
-
+            var v = new Vector3D(1, 2, 3);
+            var cs = new CoordinateSystem3D(
+                new Vector3D(1.8129, 1.8060, .2726), // origin
+                new Vector3D(1.8404, 2.0375, 1.3964), // v1
+                new Vector3D(2.8872, .2899, 1.3186)); // v2
+            var v_ = v.ToUCS(cs);
+            Assert.True(v_.EqualsTol(1e-4, .8791, -.4619, -2.6742));
         }
 
         [Fact]
         public void ToWCSTest()
         {
-
+            var v_ = new Vector3D(.8791, -.4619, -2.6742);
+            var cs = new CoordinateSystem3D(
+                new Vector3D(1.8129, 1.8060, .2726), // origin
+                new Vector3D(1.8404, 2.0375, 1.3964), // v1
+                new Vector3D(2.8872, .2899, 1.3186)); // v2
+            var v = v_.ToWCS(cs);
+            Assert.True(v.EqualsTol(1e-4, 1, 2, 3));
         }
 
         [Fact]
         public void Vector3D1Test()
         {
-
+            var v = new Vector3D();
+            Assert.True(v.EqualsTol(1e-4, Vector3D.Zero));
         }
 
         [Fact]
         public void Vector3D2Test()
         {
+            var v = new Vector3D(new[] { 1.2, 3.4 });
+            Assert.True(v.EqualsTol(1e-4, 1.2, 3.4, 0));
 
+            v = new Vector3D(new[] { 1.2, 3.4, 5.6 });
+            Assert.True(v.EqualsTol(1e-4, 1.2, 3.4, 5.6));
         }
 
         [Fact]
         public void Vector3D3Test()
         {
-
+            var v = new Vector3D(1.2, 3.4);
+            Assert.True(v.EqualsTol(1e-4, 1.2, 3.4, 0));
         }
 
         [Fact]
         public void Vector3D4Test()
         {
-
+            var v = new Vector3D(1.2, 3.4, 5.6);
+            Assert.True(v.EqualsTol(1e-4, 1.2, 3.4, 5.6));
         }
 
         [Fact]
         public void OperatorSub1Test()
         {
-
+            var v = new Vector3D(1, 2, 3);
+            var iv = -v;
+            Assert.True(iv.EqualsTol(1e-4, -v.X, -v.Y, -v.Z));
         }
 
         [Fact]
         public void OperatorSub2Test()
         {
-
+            var v1 = new Vector3D(1, 2, 3);
+            var v2 = new Vector3D(4, 5, 6);
+            var vd = v1 - v2;
+            Assert.True(vd.EqualsTol(1e-4, v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z));
         }
 
         [Fact]
         public void OperatorScalarMul1Test()
         {
-
+            var v = new Vector3D(1.2, 3.4, 5.6);
+            var s = 7.8;
+            var vs = s * v;
+            Assert.True(vs.EqualsTol(1e-4, v.X * s, v.Y * s, v.Z * s));
         }
 
         [Fact]
         public void OperatorScalarMul2Test()
         {
-
+            var v = new Vector3D(1.2, 3.4, 5.6);
+            var s = 7.8;
+            var vs = v * s;
+            Assert.True(vs.EqualsTol(1e-4, v.X * s, v.Y * s, v.Z * s));
         }
 
         [Fact]
         public void OperatorMulTest()
         {
-
+            var v1 = new Vector3D(1.2, 3.4, 5.6);
+            var v2 = new Vector3D(7.8, 9.0, 1.2);
+            var vs = v1 * v2;
+            Assert.True(vs.EqualsTol(1e-4, v1.X * v2.X, v1.Y * v2.Y, v1.Z * v2.Z));
         }
 
         [Fact]
         public void OperatorDivide1Test()
         {
-
+            var v = new Vector3D(1.2, 3.4, 5.6);
+            var s = 7.8;
+            var vs = s / v;
+            Assert.True(vs.EqualsTol(1e-4, s / v.X, s / v.Y, s / v.Z));
         }
 
         [Fact]
         public void OperatorDivide2Test()
         {
-
+            var v = new Vector3D(1.2, 3.4, 5.6);
+            var s = 7.8;
+            var vs = v / s;
+            Assert.True(vs.EqualsTol(1e-4, v.X / s, v.Y / s, v.Z / s));
         }
 
         [Fact]
         public void OperatorSumTest()
         {
-
+            var v1 = new Vector3D(1.2, 3.4, 5.6);
+            var v2 = new Vector3D(7.8, 9.0, 1.2);
+            var vs1 = v1 + v2;
+            var vs2 = v2 + v1;
+            Assert.True(vs1.EqualsTol(1e-4, vs2));
+            Assert.True(vs1.EqualsTol(1e-4, v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z));
         }
 
     }

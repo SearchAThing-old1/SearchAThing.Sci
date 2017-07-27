@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26621.2
+VisualStudioVersion = 15.0.26720.2
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchAThing.Sci", "src\SearchAThing.Sci.csproj", "{F9D7F0EE-D4FF-4455-87BE-08539D2D1982}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchAThing.Sci", "src\SearchAThing.Sci.csproj", "{F9D7F0EE-D4FF-4455-87BE-08539D2D1982}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchAThing.Sci.Tests", "tests\SearchAThing.Sci.Tests.csproj", "{7B599D15-7F57-41F3-A4CD-BEAAED56825F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchAThing.Sci.Tests", "tests\SearchAThing.Sci.Tests.csproj", "{7B599D15-7F57-41F3-A4CD-BEAAED56825F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
