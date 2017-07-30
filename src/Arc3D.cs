@@ -422,6 +422,8 @@ namespace SearchAThing
         /// </summary>        
         public static bool AngleInRange(this double pt_angle, double tol_rad, double angle_from, double angle_to)
         {
+            pt_angle = pt_angle.NormalizeAngle2PI();
+
             if (pt_angle.LessThanTol(tol_rad, angle_from)) pt_angle += 2 * PI;
 
             var upper_bound_angle = angle_to;

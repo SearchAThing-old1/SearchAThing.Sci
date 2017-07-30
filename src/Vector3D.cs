@@ -35,6 +35,7 @@ using System.Windows;
 using System.Linq;
 using static System.FormattableString;
 using Newtonsoft.Json;
+using netDxf;
 
 namespace SearchAThing
 {
@@ -670,6 +671,56 @@ namespace SearchAThing
             public string StringRepresentation()
             {
                 return Invariant($"({X}, {Y}, {Z})");
+            }
+
+            public string CadScript
+            {
+                get
+                {
+                    return string.Format(CultureInfo.InvariantCulture, "_POINT {0},{1},{2}\r\n", X, Y, Z);
+                }
+            }
+
+            public string CadScriptLineFrom
+            {
+                get
+                {
+                    return string.Format(CultureInfo.InvariantCulture, "_LINE {0},{1},{2}\r\n", X, Y, Z);
+                }
+            }
+
+            public override BBox3D BBox(double tol_len, double tol_rad)
+            {
+                return new BBox3D(new[] { this });
+            }
+
+            public override IEnumerable<Vector3D> Divide(int cnt, bool include_endpoints = false)
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            /// convert given Vector2 to a Vector3D ( with z=0 )
+            /// </summary>            
+            public static implicit operator Vector3D(Vector2 v)
+            {
+                return new Vector3D(v.X, v.Y, 0);
+            }
+
+            /// <summary>
+            /// Convert given Vector3 to Vector3D
+            /// </summary>            
+            public static implicit operator Vector3D(Vector3 v)
+            {
+                return new Vector3D(v.X, v.Y, v.Z);
+            }
+
+            /// <summary>
+            /// Convert given Vector3D to Vector3
+            /// </summary>            
+            public static implicit operator Vector3(Vector3D v)
+            {
+                return new Vector3(v.X, v.Y, v.Z);
             }
 
         }
