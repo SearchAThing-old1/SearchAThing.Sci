@@ -482,6 +482,10 @@ namespace SearchAThing.Sci.Tests
                 Assert.True(pts.ContainsPoint(tolLen, new Vector3D(28.173, 275.518, 0)));
                 Assert.False(pts.ContainsPoint(tolLen, new Vector3D(78.044, 312.565, 0)));
 
+                // on perimeter
+                Assert.True(Vector3D.From3DCoords(1.36144026245989, 99.1876096460911, 0, 85.8743599084552, 6.25033248506968, 0, 64.2455555332105, 2.86368127114311, 0)
+                    .ContainsPoint(1e-1, new Vector3D(64.245555533210535, 2.8636812711431094, 0)));
+
                 // on right segment
                 Assert.True(pts.ContainsPoint(tolLen, new Vector3D(b, (H + 2 * h) / 2, 0)));
 

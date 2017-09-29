@@ -123,6 +123,20 @@ namespace SearchAThing
                 }
             }
 
+            /// <summary>
+            /// retrieve the component (0:X, 1:Y, 2:Z)
+            /// </summary>        
+            public double GetOrd(OrdIdx ord)
+            {
+                switch (ord)
+                {
+                    case OrdIdx.X: return X;
+                    case OrdIdx.Y: return Y;
+                    case OrdIdx.Z: return Z;
+                    default: throw new ArgumentException($"invalid ord {ord}. Must between one of 0,1,2");
+                }
+            }
+
             public IEnumerable<double> Coordinates
             {
                 get
@@ -594,16 +608,16 @@ namespace SearchAThing
 
             /// <summary>
             /// Span a set of qty vector3d with random coord between given range.
-            /// Optionally a seed can be specified for rand.
+            /// Optionally a seed can be specified for rand or Random obj directly ( in latter case seed aren't used )
             /// </summary>        
             public static IEnumerable<Vector3D> Random(int qty,
-                double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, int seed = 0)
+                double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, int seed = 0, Random random = null)
             {
                 var dx = xmax - xmin;
                 var dy = ymax - ymin;
                 var dz = zmax - zmin;
 
-                var rnd = new Random(seed);
+                var rnd = (random == null) ? new Random(seed) : random;
                 for (int i = 0; i < qty; ++i)
                 {
                     yield return new Vector3D(

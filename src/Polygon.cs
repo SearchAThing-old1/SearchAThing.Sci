@@ -224,6 +224,8 @@ namespace SearchAThing
             }
             var segs = ptsFiltered.PolygonSegments(tol);
 
+            if (_pts.Any(w => _pt.EqualsTol(tol, w))) return true;
+
             var ray = new Line3D(pt, Vector3D.XAxis, Line3DConstructMode.PointAndVector);
             var conflictVertex = false;
             do

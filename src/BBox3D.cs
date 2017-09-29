@@ -227,7 +227,7 @@ namespace SearchAThing
     {
 
         public static BBox3D BBox(this IEnumerable<Vector3D> pts)
-        {
+        {            
             return new BBox3D(pts);
         }
 
