@@ -35,7 +35,7 @@ namespace SearchAThing
 
     public static partial class Extensions
     {
-        
+
         internal class DummyConvexHullPoint
         {
             public Vector3D point;
@@ -137,7 +137,7 @@ namespace SearchAThing
                         }).ToList();
 
                         // retrieve winner
-                        var qwin = q.OrderBy(w => w.dp.elevation / w.off).First();
+                        var qwin = q.OrderBy(w => Abs(w.dp.elevation - pivot.elevation) / Abs(w.off - pivot_off)).First();
 
                         // update ordered side pts
                         list_add_element(qwin.dp);
