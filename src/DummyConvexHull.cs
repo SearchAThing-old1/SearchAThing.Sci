@@ -53,7 +53,7 @@ namespace SearchAThing
         /// <summary>
         /// dummy 2d convex hull
         /// </summary>        
-        public static IReadOnlyList<Vector3D> DummyConvexHull(this IEnumerable<Vector3D> pts, double tol)
+        public static IReadOnlyList<Vector3D> DummyConvexHull(this IEnumerable<Vector3D> pts, double tol, netDxf.DxfDocument debug = null)
         {
             if (pts.Any(w => !w.Z.EqualsTol(tol, 0))) throw new System.Exception($"Z must zero for convex hull");
 
@@ -167,8 +167,15 @@ namespace SearchAThing
             }
 
             // glue sides            
+            var previous_bbox_seg = bbox_perimeter.First();
+
             foreach (var bp in bbox_perimeter)
             {
+                if (debug != null)
+                {
+                    bp.convex_pts.Segments(tol).Foreach(w => debug.AddEntity(w, new netDxf.Tables.Layer("debug")));
+                }
+
                 var cpts = bp.convex_pts;
                 if (cpts.Count == 0) throw new Exception("invalid convex side pts count=0");
 
@@ -176,11 +183,16 @@ namespace SearchAThing
                 var cpts_begin = 0;
                 var cpts_end = cpts.Count - 1;
 
-                if (res.Count > 0 && res.Last().Distance(cpts[cpts_begin]).GreatThanTol(tol, res.Last().Distance(cpts[cpts_end])))
+                if (res.Count > 0)
                 {
-                    cpts_step = -1;
-                    cpts_begin = cpts.Count - 1;
-                    cpts_end = 0;
+                    var bbox_seg_cp = previous_bbox_seg.seg.CommonPoint(tol, bp.seg);
+
+                    if (bbox_seg_cp.Distance(cpts[cpts_begin]).GreatThanTol(tol, bbox_seg_cp.Distance(cpts[cpts_end])))
+                    {
+                        cpts_step = -1;
+                        cpts_begin = cpts.Count - 1;
+                        cpts_end = 0;
+                    }
                 }
 
                 var i = cpts_begin;
@@ -199,6 +211,8 @@ namespace SearchAThing
                     if (i == cpts_end) break;
                     i += cpts_step;
                 }
+
+                previous_bbox_seg = bp;
             }
 
             return res;
