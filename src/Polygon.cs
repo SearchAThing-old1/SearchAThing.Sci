@@ -402,44 +402,6 @@ namespace SearchAThing
             yield break;
         }
 
-        /*
-        /// <summary>
-        /// build 2d dxf polyline.
-        /// note: use RepeatFirstAtEnd extension to build a closed polyline
-        /// </summary>        
-        public static netDxf.Entities.LwPolyline ToLwPolyline(this IEnumerable<Vector3D> _pts, double tolLen, IReadOnlyDictionary<Line3D, Arc3D> dummy_arcs = null)
-        {
-            if (dummy_arcs == null)
-                return new netDxf.Entities.LwPolyline(_pts.Select(r => r.ToVector2()).ToList(), true);
-            else
-            {
-                var pvtx = new List<netDxf.Entities.LwPolylineVertex>();
-
-                var pts = _pts.ToList();
-                for (int i = 0; i < pts.Count; ++i)
-                {
-                    Vector3D nextPt = null;
-                    if (i == pts.Count - 1)
-                        nextPt = pts[0];
-                    else
-                        nextPt = pts[i + 1];
-
-                    Arc3D arc = null;
-                    if (dummy_arcs.TryGetValue(new Line3D(pts[i], nextPt), out arc))
-                    {
-                        var lwpv = new netDxf.Entities.LwPolylineVertex(pts[i].ToVector2(), arc.Bulge(tolLen, pts[i], nextPt));
-                        pvtx.Add(lwpv);
-                    }
-                    else
-                    {
-                        pvtx.Add(new netDxf.Entities.LwPolylineVertex(pts[i].ToVector2()));
-                    }
-                }
-
-                return new netDxf.Entities.LwPolyline(pvtx, isClosed: true);
-            }
-        }*/
-
         /// <summary>
         /// build 2d dxf polyline.
         /// note: use RepeatFirstAtEnd extension to build a closed polyline
@@ -591,6 +553,16 @@ namespace SearchAThing
             var res = sol.Select(s => s.Select(si => new Vector3D(intmap.FromInt64(si.X), intmap.FromInt64(si.Y), 0)));
 
             return res;
+        }
+
+        /// <summary>
+        /// compute convex hull using LoycCore
+        /// https://github.com/qwertie/LoycCore
+        /// </summary>        
+        public static IEnumerable<Vector3D> ConvexHull2D(this IEnumerable<Vector3D> pts)
+        {
+            return Loyc.Geometry.PointMath.ComputeConvexHull(pts.Select(w => new Loyc.Geometry.Point<double>(w.X, w.Y)))
+                .Select(w => new Vector3D(w.X, w.Y));
         }
 
     }

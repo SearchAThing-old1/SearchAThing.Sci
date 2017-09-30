@@ -29,6 +29,7 @@
     <PackageReference Include="CsvHelper" Version="2.16.3" />
     <PackageReference Include="DocX" Version="1.0.0-CI00000" />
     <PackageReference Include="DotSpatial.Projections" Version="1.0.0-CI00001" />
+    <PackageReference Include="LoycCore" Version="24.3.0" />
     <PackageReference Include="MongoDB.Bson" Version="2.4.4" />
     <PackageReference Include="netDxf" Version="1.0.0-CI00001" />
     <PackageReference Include="SearchAThing.Core" Version="1.0.0-CI00004" />
