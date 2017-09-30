@@ -36,7 +36,7 @@ namespace SearchAThing
     public static partial class Extensions
     {
 
-        internal class DummyConvexHullPoint
+        internal class BPolyPoint
         {
             public Vector3D point;
             /// <summary>
@@ -51,14 +51,14 @@ namespace SearchAThing
         }
 
         /// <summary>
-        /// dummy 2d convex hull
+        /// compute bounding polygon
         /// </summary>        
-        public static IReadOnlyList<Vector3D> DummyConvexHull(this IEnumerable<Vector3D> pts, double tol, netDxf.DxfDocument debug = null)
+        public static IReadOnlyList<Vector3D> BPoly(this IEnumerable<Vector3D> pts, double tol, netDxf.DxfDocument debug = null)
         {
-            if (pts.Any(w => !w.Z.EqualsTol(tol, 0))) throw new System.Exception($"Z must zero for convex hull");
+            if (pts.Any(w => !w.Z.EqualsTol(tol, 0))) throw new System.Exception($"Z must zero for bounding poly");
 
             var pts_count = pts.Count();
-            if (pts_count < 3) throw new System.Exception($"need at least 3 pts for convex hull");
+            if (pts_count < 3) throw new System.Exception($"need at least 3 pts for bounding poly");
             if (pts_count == 3) return pts.ToList();
 
             var res = new List<Vector3D>();
@@ -68,8 +68,8 @@ namespace SearchAThing
             {
                 seg = l,
                 is_vertical = l.V.X.EqualsTol(tol, 0),
-                pts = new List<DummyConvexHullPoint>(),
-                convex_pts = new List<Vector3D>()
+                pts = new List<BPolyPoint>(),
+                bounding_pts = new List<Vector3D>()
             }).ToList();
 
             // assign pts to bbox sides
@@ -89,7 +89,7 @@ namespace SearchAThing
                 })
                 .OrderBy(w => w.dst).First().Action((bs) =>
                 {
-                    bs.bbox_seg.pts.Add(new DummyConvexHullPoint()
+                    bs.bbox_seg.pts.Add(new BPolyPoint()
                     {
                         point = p,
                         elevation = bs.dst
@@ -98,7 +98,7 @@ namespace SearchAThing
 
                 foreach (var bp in bbox_perimeter)
                 {
-                    if (bp.seg.SegmentContainsPoint(tol, p) && !bp.pts.Any(w => w.point.EqualsTol(tol, p))) bp.pts.Add(new DummyConvexHullPoint()
+                    if (bp.seg.SegmentContainsPoint(tol, p) && !bp.pts.Any(w => w.point.EqualsTol(tol, p))) bp.pts.Add(new BPolyPoint()
                     {
                         point = p,
                         elevation = 0
@@ -117,8 +117,8 @@ namespace SearchAThing
 
                 Action<
                     Func<double, double, bool>,
-                    Action<DummyConvexHullPoint>,
-                    Func<IEnumerable<DummyConvexHullPoint>, DummyConvexHullPoint>> process_side =
+                    Action<BPolyPoint>,
+                    Func<IEnumerable<BPolyPoint>, BPolyPoint>> process_side =
                     (compare_off, list_add_element, ordered_list_get_pivot) =>
                 {
                     while (true)
@@ -163,7 +163,7 @@ namespace SearchAThing
                     (olst) => olst.Last());
 
                 // transfer processed winner points to the side contanier
-                bs.convex_pts.AddRange(ordered_side_pts.Select(w => w.point));
+                bs.bounding_pts.AddRange(ordered_side_pts.Select(w => w.point));
             }
 
             // glue sides            
@@ -173,43 +173,43 @@ namespace SearchAThing
             {
                 if (debug != null)
                 {
-                    bp.convex_pts.Segments(tol).Foreach(w => debug.AddEntity(w, new netDxf.Tables.Layer("debug")));
+                    bp.bounding_pts.Segments(tol).Foreach(w => debug.AddEntity(w, new netDxf.Tables.Layer("debug")));
                 }
 
-                var cpts = bp.convex_pts;
-                if (cpts.Count == 0) throw new Exception("invalid convex side pts count=0");
+                var bpts = bp.bounding_pts;
+                if (bpts.Count == 0) throw new Exception("invalid bounding side pts count=0");
 
-                var cpts_step = 1;
-                var cpts_begin = 0;
-                var cpts_end = cpts.Count - 1;
+                var bpts_step = 1;
+                var bpts_begin = 0;
+                var bpts_end = bpts.Count - 1;
 
                 if (res.Count > 0)
                 {
                     var bbox_seg_cp = previous_bbox_seg.seg.CommonPoint(tol, bp.seg);
 
-                    if (bbox_seg_cp.Distance(cpts[cpts_begin]).GreatThanTol(tol, bbox_seg_cp.Distance(cpts[cpts_end])))
+                    if (bbox_seg_cp.Distance(bpts[bpts_begin]).GreatThanTol(tol, bbox_seg_cp.Distance(bpts[bpts_end])))
                     {
-                        cpts_step = -1;
-                        cpts_begin = cpts.Count - 1;
-                        cpts_end = 0;
+                        bpts_step = -1;
+                        bpts_begin = bpts.Count - 1;
+                        bpts_end = 0;
                     }
                 }
 
-                var i = cpts_begin;
+                var i = bpts_begin;
                 while (true)
                 {
                     // skip, if any, initial side point if already present in res
-                    if (i == cpts_begin && res.Count > 0 && res.Last().EqualsTol(tol, cpts[i]))
+                    if (i == bpts_begin && res.Count > 0 && res.Last().EqualsTol(tol, bpts[i]))
                     {
-                        if (i == cpts_end) break;
-                        i += cpts_step;
+                        if (i == bpts_end) break;
+                        i += bpts_step;
                         continue;
                     }
 
-                    res.Add(cpts[i]);
+                    res.Add(bpts[i]);
 
-                    if (i == cpts_end) break;
-                    i += cpts_step;
+                    if (i == bpts_end) break;
+                    i += bpts_step;
                 }
 
                 previous_bbox_seg = bp;
