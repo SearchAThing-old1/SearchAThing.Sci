@@ -757,13 +757,11 @@ namespace SearchAThing
 
         public class Line3DEqualityComparer : IEqualityComparer<Line3D>
         {
-            double tol;
-            double tolHc;
+            double tol;            
 
             public Line3DEqualityComparer(double _tol)
             {
-                tol = _tol;
-                tolHc = 10 * tol; // to avoid rounding
+                tol = _tol;                
             }
 
             public bool Equals(Line3D x, Line3D y)
@@ -773,10 +771,7 @@ namespace SearchAThing
 
             public int GetHashCode(Line3D obj)
             {
-                return (int)(Round((
-                    (obj.From.X + obj.To.X) / 2 +
-                    (obj.From.Y + obj.To.Y) / 2 +
-                    (obj.From.Z + obj.To.Z) / 2) / tolHc));
+                return 0;
             }
 
         }

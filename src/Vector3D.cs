@@ -741,13 +741,11 @@ namespace SearchAThing
 
         public class Vector3DEqualityComparer : IEqualityComparer<Vector3D>
         {
-            double tol;
-            double tolHc;
+            double tol;            
 
             public Vector3DEqualityComparer(double _tol)
             {
-                tol = _tol;
-                tolHc = 10 * tol; // to avoid rounding
+                tol = _tol;                
             }
 
             public bool Equals(Vector3D x, Vector3D y)
@@ -757,7 +755,7 @@ namespace SearchAThing
 
             public int GetHashCode(Vector3D obj)
             {
-                return (int)(Math.Round((obj.X + obj.Y + obj.Z) / tolHc));
+                return 0;
             }
         }
 

@@ -437,14 +437,12 @@ namespace SearchAThing
     public class Arc3DEqualityComparer : IEqualityComparer<Arc3D>
     {
         double tolLen;
-        double tolRad;
-        double tolHc;
+        double tolRad;        
 
         public Arc3DEqualityComparer(double _tolLen, double _tolRad)
         {
             tolLen = _tolLen;
-            tolRad = _tolRad;
-            tolHc = 10 * tolLen; // to avoid rounding
+            tolRad = _tolRad;            
         }
 
         public bool Equals(Arc3D x, Arc3D y)
@@ -454,7 +452,7 @@ namespace SearchAThing
 
         public int GetHashCode(Arc3D obj)
         {
-            return (int)(Round((obj.Center.X + obj.Center.Y + obj.Center.Z) / tolHc));
+            return 0;
         }
 
     }

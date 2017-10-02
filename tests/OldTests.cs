@@ -16,6 +16,15 @@ namespace SearchAThing.Sci.Tests
 
         IModel model = new SampleModel();
 
+        [Fact(DisplayName = "DoubleEqualityComparer")]
+        public void DoubleEqualityComparerTest()
+        {
+            var dcmp = new DoubleEqualityComparer(1e-4);
+            var a = -0.00050000000000000044;
+            var b = -0.000499999999999997;
+            Assert.True(dcmp.Equals(a, b) && dcmp.GetHashCode(a) == dcmp.GetHashCode(b));
+        }
+
         [Fact(DisplayName = "Vector3D")]
         public void Vector3DTest()
         {

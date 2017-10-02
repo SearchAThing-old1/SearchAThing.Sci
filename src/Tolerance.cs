@@ -35,13 +35,11 @@ namespace SearchAThing
         public class DoubleEqualityComparer : IEqualityComparer<double>
         {
 
-            double tol;
-            double tolHc;
+            double tol;            
 
             public DoubleEqualityComparer(double _tol)
             {
-                tol = _tol;
-                tolHc = 10 * tol; // to avoid rounding
+                tol = _tol;                
             }
 
             public bool Equals(double x, double y)
@@ -51,7 +49,7 @@ namespace SearchAThing
 
             public int GetHashCode(double obj)
             {
-                return (int)(Round(obj / tolHc));
+                return 0;
             }
         }
 
