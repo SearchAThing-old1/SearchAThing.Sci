@@ -25,6 +25,20 @@ namespace SearchAThing.Sci.Tests
             Assert.True(dcmp.Equals(a, b) && dcmp.GetHashCode(a) == dcmp.GetHashCode(b));
         }
 
+        [Fact(DisplayName = "Reduce")]
+        public void ReduceTest()
+        {
+            var tol = .1;
+            var input = new[] { -1.1, -0.5, -0.55, -1.17, -1.21, 2, 2.1, 2.2, 2.3, 2.46, 2.5, 5 };
+            var q = input.Thin(tol);
+            var expected_res = new[] { -1.21, -1.1, -0.5, 2, 2.1, 2.2, 2.46, 5 };
+            Assert.True(q.Count == expected_res.Length);
+            for (int i = 0; i < expected_res.Length; ++i)
+            {
+                Assert.True(q[i].EqualsTol(tol, expected_res[i]));
+            }
+        }
+
         [Fact(DisplayName = "Vector3D")]
         public void Vector3DTest()
         {

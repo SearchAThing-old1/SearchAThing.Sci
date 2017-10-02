@@ -25,6 +25,9 @@
 
 using static System.Math;
 using SearchAThing;
+using System.Collections.Generic;
+using System.Linq;
+using SearchAThing.Sci;
 
 namespace SearchAThing
 {
@@ -42,6 +45,47 @@ namespace SearchAThing
             var excess = (n != 0) ? (n.Sign() * 2 * PI) : 0;
 
             return angle_rad - excess;
+        }
+
+        /// <summary>
+        /// retrieve min,max w/single sweep
+        /// </summary>        
+        public static (double min, double max) MinMax(this IEnumerable<double> input)
+        {
+            double? _min = null;
+            double? _max = null;
+
+            foreach (var x in input)
+            {
+                if (_min.HasValue) _min = Min(_min.Value, x); else _min = x;
+                if (_max.HasValue) _max = Max(_max.Value, x); else _max = x;
+            }
+
+            return (_min.Value, _max.Value);
+        }
+
+        /// <summary>
+        /// retrieve given input set ordered with only distinct values after comparing through tolerance
+        /// in this case result set contains only values from the input set (default) or rounding to given tol if maintain_original_values is false;
+        /// if keep_ends true (default) min and max already exists at begin/end of returned sequence
+        /// </summary>        
+        public static List<double> Thin(this IEnumerable<double> input, double tol, bool keep_ends = true, bool maintain_original_values = true)
+        {
+            var res = new List<double>();
+
+            var dcmp = new DoubleEqualityComparer(tol);
+
+            if (maintain_original_values)
+                res = input.Distinct(dcmp).OrderBy(w => w).ToList();
+            else
+                res = input.Select(w => w.MRound(tol)).Distinct(dcmp).OrderBy(w => w).ToList();
+
+            var minmax = input.MinMax();
+
+            if (!res.First().EqualsTol(tol, minmax.min)) res.Insert(0, minmax.min);
+            if (!res.Last().EqualsTol(tol, minmax.max)) res.Add(minmax.max);
+
+            return res;
         }
 
     }
