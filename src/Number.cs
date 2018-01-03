@@ -1,7 +1,7 @@
-﻿#region SearchAThing.Sci, Copyright(C) 2016-2017 Lorenzo Delana, License under MIT
+﻿#region SearchAThing.Sci, Copyright(C) 2016-2018 Lorenzo Delana, License under MIT
 /*
 * The MIT License(MIT)
-* Copyright(c) 2016-2017 Lorenzo Delana, https://searchathing.com
+* Copyright(c) 2016-2018 Lorenzo Delana, https://searchathing.com
 *
 * Permission is hereby granted, free of charge, to any person obtaining a
 * copy of this software and associated documentation files (the "Software"),
@@ -28,6 +28,7 @@ using SearchAThing;
 using System.Collections.Generic;
 using System.Linq;
 using SearchAThing.Sci;
+using System;
 
 namespace SearchAThing
 {
@@ -86,6 +87,92 @@ namespace SearchAThing
             if (!res.Last().EqualsTol(tol, minmax.max)) res.Add(minmax.max);
 
             return res;
+        }
+
+        /// <summary>
+        /// compares two list tuples
+        /// </summary>        
+        public static bool EqualsTol(this IEnumerable<(double, double)> tuple_list1, IEnumerable<(double, double)> tuple_list2, double tol1, double tol2)
+        {
+            var en1 = tuple_list1.GetEnumerator();
+            var en2 = tuple_list2.GetEnumerator();
+
+            while (en1.MoveNext())
+            {
+                var a = en1.Current;
+                if (!en2.MoveNext()) return false;// diff cnt
+                var b = en2.Current;
+
+                if (!a.Item1.EqualsTol(tol1, b.Item1) || !a.Item2.EqualsTol(tol2, b.Item2)) return false;
+            }
+
+            if (en2.MoveNext()) return false; // diff cnt
+
+            return true;
+        }
+
+        /// <summary>
+        /// retrieve a list of N pairs (value,presence)
+        /// with value between min and max of inputs and presence between 0..1 that represents the percent of presence of the value
+        /// 
+        /// examples:
+        ///
+        /// inputs = ( 1, 2, 3 ), N = 3
+        /// results: ( (1, .33), (2, .33), (3, .33) )
+        /// 
+        /// inputs = ( 1, 2.49, 3), N = 3
+        /// results: ( (1, .33), (2, .169), (3, .497) )
+        /// 
+        /// inputs = ( 1, 2, 3), N = 4
+        /// results: ( (1, .33), (1.6, .16), (2.3, .16), (3, .33) )
+        /// 
+        /// </summary>        
+        public static (double off, double weight)[] WeightedDistribution(this IEnumerable<double> inputs, int N)
+        {
+            var input_cnt = inputs.Count();
+            var minmax = inputs.MinMax();
+            var min = minmax.min;
+            var dst = minmax.max - minmax.min;
+            var step = dst / (N - 1);
+            var half_step = step / 2;
+
+            var wcnt = new(double off, double w_hits)[N];
+            {
+                var pos = min;
+                for (int i = 0; i < N; ++i, pos += step)
+                {
+                    wcnt[i].off = pos;
+                }
+            }
+
+            var sorted_inputs = inputs.OrderBy(w => w).ToList();
+
+            var w_hits_sum = 0d;
+
+            for (int si = 0; si < sorted_inputs.Count; ++si)
+            {
+                var x = sorted_inputs[si];
+
+                var widx_left = (int)((x - min) / step);
+
+                var wleft_off = wcnt[widx_left].off;
+                var wleft_hit = 1d - (x - wleft_off) / step;
+                w_hits_sum += wleft_hit;
+                wcnt[widx_left].w_hits += wleft_hit;
+
+                if (widx_left < N - 1)
+                {
+                    var wright_off = wcnt[widx_left + 1].off;
+                    var wright_hig = 1d - (wright_off - x) / step;
+                    w_hits_sum += wright_hig;
+                    wcnt[widx_left + 1].w_hits += wright_hig;
+                }
+            }
+
+            // normalize
+            for (int i = 0; i < N; ++i) wcnt[i].w_hits /= w_hits_sum;
+
+            return wcnt;
         }
 
     }
