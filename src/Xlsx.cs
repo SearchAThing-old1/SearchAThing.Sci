@@ -28,6 +28,7 @@ using System.Text;
 using System.Linq;
 using ClosedXML.Excel;
 using System.Dynamic;
+using System;
 
 namespace SearchAThing
 {
@@ -132,6 +133,7 @@ namespace SearchAThing
             return res;
         }
 
+
     }
 
     public class ImportXlsxDataSheet
@@ -144,6 +146,122 @@ namespace SearchAThing
         {
             SheetName = sheetName;
             Rows = rows;
+        }
+
+    }
+
+    //-------------- xlsx fixed parser
+
+    public enum XlsxColumnDataType
+    {
+        type_string,
+        type_number
+    }
+
+    public class XlsxColumn
+    {
+        public string Name { get; set; }
+        public XlsxColumnDataType DataType { get; set; }
+        public int ColumnIndex { get; internal set; } = -1;
+    }
+
+    public class XlsxParseData
+    {
+        public XlsxParseData() { }
+        public XlsxParseData(string val) { data_string = val; }
+        public XlsxParseData(double val) { data_number = val; }
+        public string data_string { get; private set; }
+        public double? data_number { get; private set; }
+    }
+
+    public class XlsxParser
+    {
+        public IEnumerable<XlsxColumn> Columns { get; private set; }
+
+        IXLWorksheet ws;
+
+        public int RowCount { get; private set; }
+
+        /// <summary>
+        /// parse fixed type workbook ; if worksheet_name specific it will locate the matching one
+        /// </summary>        
+        public XlsxParser(XLWorkbook wb, IEnumerable<XlsxColumn> required_columns,
+            bool column_name_match_case = false,
+            string worksheet_name = null, bool worksheet_name_matchcase = false)
+        {
+            Columns = required_columns;
+            if (worksheet_name != null)
+                ws = wb.Worksheets.First(w => string.Equals(w.Name, worksheet_name, worksheet_name_matchcase ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase));
+            else
+                ws = wb.Worksheets.First();
+
+            var header = ws.Row(1);
+            foreach (var cell in header.CellsUsed())
+            {
+                if (cell.Value == null || !(cell.Value is string)) continue;
+                var val = cell.Value as string;
+                foreach (var r in required_columns.Where(t => t.ColumnIndex != -1))
+                {
+                    if (string.Equals(r.Name, val, column_name_match_case ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        r.ColumnIndex = cell.WorksheetColumn().ColumnNumber();
+                        continue;
+                    }
+                }
+                var q = required_columns.FirstOrDefault(w => w.ColumnIndex == -1);
+                if (q != null) throw new Exception($"can't find required column [{q.Name}]");
+            }
+
+            RowCount = ws.RowCount();
+        }
+
+        /// <summary>
+        /// parse data, row must greather than 1 to avoid parse header itself
+        /// </summary>        
+        public IReadOnlyDictionary<XlsxColumn, XlsxParseData> Parse(int row)
+        {
+            var dict = new Dictionary<XlsxColumn, XlsxParseData>();
+
+            foreach (var c in Columns)
+            {
+                var cell = ws.Cell(row, c.ColumnIndex);
+                var val = cell.Value;
+                if (val == null)
+                {
+                    dict.Add(c, new XlsxParseData());
+                    continue;
+                }
+                switch (c.DataType)
+                {
+                    case XlsxColumnDataType.type_number:
+                        {
+                            if (!(val is double))
+                                throw new Exception($"wrong data type at row={row} col={c.ColumnIndex}. found [{val.GetType()}] instead of expected number");
+                            dict.Add(c, new XlsxParseData((double)val));
+                        }
+                        break;
+
+                    case XlsxColumnDataType.type_string:
+                        {
+                            if (!(val is string))
+                                throw new Exception($"wrong data type at row={row} col={c.ColumnIndex}. found [{val.GetType()}] instead of expected string");
+                            dict.Add(c, new XlsxParseData((string)val));
+                        }
+                        break;
+                }
+            }
+
+            return dict;
+        }
+
+    }
+
+    public static partial class Extensions
+    {
+
+        public static XlsxParser Parse(this XLWorkbook wb, IEnumerable<XlsxColumn> required_columns)
+        {
+            return new XlsxParser(wb, required_columns);
         }
 
     }
