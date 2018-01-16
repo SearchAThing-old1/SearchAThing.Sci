@@ -168,6 +168,10 @@ namespace SearchAThing
         public string Name { get; private set; }
         public XlsxColumnDataType DataType { get; private set; }
         public int ColumnIndex { get; internal set; } = -1;
+        public override string ToString()
+        {
+            return $"{Name} [idx:{ColumnIndex}]";
+        }
     }
 
     public class XlsxParseData
@@ -177,6 +181,13 @@ namespace SearchAThing
         public XlsxParseData(double val) { data_number = val; }
         public string data_string { get; private set; }
         public double? data_number { get; private set; }
+
+        public override string ToString()
+        {
+            if (data_string != null) return data_string;
+            else if (data_number.HasValue) return data_number.Value.ToString();
+            else return "(null)";
+        }
     }
 
     public class XlsxParser
@@ -205,17 +216,17 @@ namespace SearchAThing
             {
                 if (cell.Value == null || !(cell.Value is string)) continue;
                 var val = cell.Value as string;
-                foreach (var r in required_columns.Where(t => t.ColumnIndex != -1))
+                foreach (var r in required_columns.Where(t => t.ColumnIndex == -1))
                 {
                     if (string.Equals(r.Name, val, column_name_match_case ? StringComparison.CurrentCulture : StringComparison.CurrentCultureIgnoreCase))
                     {
                         r.ColumnIndex = cell.WorksheetColumn().ColumnNumber();
                         continue;
                     }
-                }
-                var q = required_columns.FirstOrDefault(w => w.ColumnIndex == -1);
-                if (q != null) throw new Exception($"can't find required column [{q.Name}]");
+                }                
             }
+            var q = required_columns.FirstOrDefault(w => w.ColumnIndex == -1);
+            if (q != null) throw new Exception($"can't find required column [{q.Name}]");
 
             RowCount = ws.RowCount();
         }
