@@ -223,7 +223,7 @@ namespace SearchAThing
                         r.ColumnIndex = cell.WorksheetColumn().ColumnNumber();
                         continue;
                     }
-                }                
+                }
             }
             var q = required_columns.FirstOrDefault(w => w.ColumnIndex == -1);
             if (q != null) throw new Exception($"can't find required column [{q.Name}]");
@@ -242,7 +242,7 @@ namespace SearchAThing
             {
                 var cell = ws.Cell(row, c.ColumnIndex);
                 var val = cell.Value;
-                if (val == null)
+                if (val == null || (val is string && string.IsNullOrEmpty((string)val)))
                 {
                     dict.Add(c, new XlsxParseData());
                     continue;
