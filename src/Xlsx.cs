@@ -228,7 +228,7 @@ namespace SearchAThing
             var q = required_columns.FirstOrDefault(w => w.ColumnIndex == -1);
             if (q != null) throw new Exception($"can't find required column [{q.Name}]");
 
-            RowCount = ws.RowCount();
+            RowCount = ws.RangeUsed().RowCount();
         }
 
         /// <summary>
