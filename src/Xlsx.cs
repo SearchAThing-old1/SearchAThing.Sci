@@ -160,8 +160,13 @@ namespace SearchAThing
 
     public class XlsxColumn
     {
-        public string Name { get; set; }
-        public XlsxColumnDataType DataType { get; set; }
+        public XlsxColumn(string name, XlsxColumnDataType type)
+        {
+            Name = name;
+            DataType = type;
+        }
+        public string Name { get; private set; }
+        public XlsxColumnDataType DataType { get; private set; }
         public int ColumnIndex { get; internal set; } = -1;
     }
 
