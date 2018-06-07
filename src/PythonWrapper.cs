@@ -78,8 +78,13 @@ matplotlib.use('Agg')
 
         Thread th_pipe = null;
 
+        /// <summary>
+        /// custom_python_args="-i" (unix)
+        /// custom_python_args="-i -q" (windows)
+        /// some windows python requires custom_python_args="-i" because -q not supported
+        /// </summary>        
         public PythonPipe(string initial_imports = "", Action<string> _debug = null, string tempFolder = null, bool delete_tmp_files = true,
-            string custom_python_executable = null)
+            string custom_python_executable = null, string custom_python_args = null)
         {
             DeleteTmpFiles = delete_tmp_files;
             TempFolder = tempFolder;
@@ -95,9 +100,9 @@ matplotlib.use('Agg')
                     process = new Process();
                     process.StartInfo.FileName = custom_python_executable == null ? PythonExePathfilename : custom_python_executable;
                     if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
-                        process.StartInfo.Arguments = "-i";
+                        process.StartInfo.Arguments = (custom_python_args == null) ? "-i" : custom_python_args;
                     else
-                        process.StartInfo.Arguments = "-i -q";
+                        process.StartInfo.Arguments = (custom_python_args == null) ? "-i -q" : custom_python_args;
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.ErrorDialog = false;
                     process.StartInfo.CreateNoWindow = true;
@@ -143,6 +148,8 @@ matplotlib.use('Agg')
 
                             process.CancelOutputRead();
                             process.CancelErrorRead();
+
+                            if (hasErr) throw new Exception($"python init err [{sberr}]");
                         }
                         catch (Exception ex)
                         {
