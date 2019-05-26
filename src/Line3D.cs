@@ -476,7 +476,9 @@ namespace SearchAThing
             {
                 if (LineContainsPoint(tol, p)) return null;
 
-                return new Line3D(p, p.Project(V));
+                var pRelVProj = (p - From).Project(V);
+
+                return new Line3D(p, From + pRelVProj);
             }
 
             public bool Colinear(double tol, Line3D other)
