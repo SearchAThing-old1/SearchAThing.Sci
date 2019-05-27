@@ -52,7 +52,7 @@ Action<bool, string, string> run = (shell, file, args) =>
     //
     // msbuild targets
     //
-    foreach (var prj in new[] { "src/SearchAThing.Sci.csproj", "tests/SearchAThing.Sci.Tests.csproj" })
+    foreach (var prj in new[] { "src/OLDSearchAThing.Sci.csproj", "tests/OLDSearchAThing.Sci.Tests.csproj" })
     {
         run(false, MsBuildExe, $"{prj} " +
             $"/t:{Targets} " +
@@ -80,7 +80,7 @@ Action<bool, string, string> run = (shell, file, args) =>
     //
     run(false, @"packages\OpenCover.4.6.519\tools\OpenCover.Console.exe",
         @"-register:user -target:""packages\xunit.runner.console.2.2.0\tools\xunit.console.exe"" " +
-        $@"-targetargs:"".\tests\bin\Release\{testFramework}\SearchAThing.Sci.Tests.dll -noshadow"" " +
+        $@"-targetargs:"".\tests\bin\Release\{testFramework}\OLDSearchAThing.Sci.Tests.dll -noshadow"" " +
         @"-output:"".\coverage.xml"" " +
         "\"-filter:+[*]* -[*]Microsoft.Xna.*\"");
 }

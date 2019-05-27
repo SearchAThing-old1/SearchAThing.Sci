@@ -20,7 +20,7 @@
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <DocumentationFile>bin\Release\$(TargetFramework)\SearchAThing.Sci.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\$(TargetFramework)\OLDSearchAThing.Sci.xml</DocumentationFile>
   </PropertyGroup>  
 
   <ItemGroup>
