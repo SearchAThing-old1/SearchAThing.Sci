@@ -24,7 +24,7 @@
 #endregion
 
 using System.Collections.Generic;
-using SearchAThing.Sci;
+using OLDSearchAThing.Sci;
 using System.Text;
 using System.Globalization;
 using System.Linq;
@@ -33,7 +33,7 @@ using netDxf.Entities;
 using Newtonsoft.Json;
 using System;
 
-namespace SearchAThing
+namespace OLDSearchAThing
 {
 
     namespace Sci

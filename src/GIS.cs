@@ -24,12 +24,12 @@
 #endregion
 
 using DotSpatial.Projections;
-using SearchAThing.Sci;
+using OLDSearchAThing.Sci;
 using System;
 using System.Collections.Generic;
 using static System.FormattableString;
 
-namespace SearchAThing
+namespace OLDSearchAThing
 {
 
     namespace Sci

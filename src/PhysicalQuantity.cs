@@ -32,7 +32,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Windows.Data;
 
-namespace SearchAThing.Sci
+namespace OLDSearchAThing.Sci
 {
 
     public enum MeasureUnitConversionTypeEnum

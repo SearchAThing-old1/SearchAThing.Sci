@@ -30,7 +30,7 @@ using System.Linq;
 using System.Reflection;
 using static System.Math;
 
-namespace SearchAThing.Sci
+namespace OLDSearchAThing.Sci
 {
 
     public static class MUCollection

@@ -23,11 +23,11 @@
 */
 #endregion
 
-using SearchAThing.Sci;
+using OLDSearchAThing.Sci;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SearchAThing
+namespace OLDSearchAThing
 {
 
     namespace Sci

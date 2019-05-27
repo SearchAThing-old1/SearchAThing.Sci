@@ -25,7 +25,7 @@
 
 using static System.Math;
 using System.Collections.Generic;
-using SearchAThing.Sci;
+using OLDSearchAThing.Sci;
 using System.Linq;
 using System.Text;
 using System;
@@ -33,7 +33,7 @@ using netDxf.Entities;
 using netDxf;
 using netDxf.Tables;
 
-namespace SearchAThing
+namespace OLDSearchAThing
 {
 
     namespace Sci

@@ -30,7 +30,7 @@ using ClosedXML.Excel;
 using System.Dynamic;
 using System;
 
-namespace SearchAThing
+namespace OLDSearchAThing
 {
 
     public static partial class Extensions

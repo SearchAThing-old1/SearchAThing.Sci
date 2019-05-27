@@ -24,7 +24,7 @@
 #endregion
 
 using MongoDB.Bson.Serialization.Attributes;
-using SearchAThing.Core;
+using OLDSearchAThing.Core;
 using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.Serialization;
@@ -34,7 +34,7 @@ using static System.Math;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace SearchAThing.Sci
+namespace OLDSearchAThing.Sci
 {
 
     [BsonIgnoreExtraElements]

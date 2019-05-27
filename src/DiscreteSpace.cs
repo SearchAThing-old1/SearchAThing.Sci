@@ -28,7 +28,7 @@ using System.Linq;
 using static System.Math;
 using System.Collections.Generic;
 
-namespace SearchAThing.Sci
+namespace OLDSearchAThing.Sci
 {
 
     public class DiscreteSpaceItem<T>

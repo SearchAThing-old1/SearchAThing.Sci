@@ -1,7 +1,7 @@
 ﻿using Xunit;
 using System.Linq;
 
-namespace SearchAThing.Sci.Tests
+namespace OLDSearchAThing.Sci.Tests
 {
     public class Arc3DTests
     {

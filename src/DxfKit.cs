@@ -27,16 +27,16 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using netDxf.Entities;
-using SearchAThing.Sci;
+using OLDSearchAThing.Sci;
 using netDxf;
 using netDxf.Blocks;
 using netDxf.Tables;
 using System.Text;
 using System.Globalization;
-using SearchAThing;
+using OLDSearchAThing;
 using ColorMine.ColorSpaces;
 
-namespace SearchAThing
+namespace OLDSearchAThing
 {
 
     namespace Sci

@@ -26,7 +26,7 @@
 using static System.Math;
 using System.Collections.Generic;
 
-namespace SearchAThing
+namespace OLDSearchAThing
 {
 
     namespace Sci

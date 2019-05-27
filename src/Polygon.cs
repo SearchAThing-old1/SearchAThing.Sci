@@ -27,13 +27,13 @@ using System;
 using System.Linq;
 using static System.Math;
 using System.Collections.Generic;
-using SearchAThing.Sci;
+using OLDSearchAThing.Sci;
 using System.Drawing.Drawing2D;
 using netDxf;
-using SearchAThing;
+using OLDSearchAThing;
 using ClipperLib;
 
-namespace SearchAThing
+namespace OLDSearchAThing
 {
 
     namespace Sci

@@ -25,7 +25,7 @@
 
 using System;
 
-namespace SearchAThing.Sci
+namespace OLDSearchAThing.Sci
 {
 
     public class SampleModel : IModel

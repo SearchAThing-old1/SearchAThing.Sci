@@ -23,7 +23,7 @@
 */
 #endregion
 
-namespace SearchAThing.Sci
+namespace OLDSearchAThing.Sci
 {
 
     public class Plane3D

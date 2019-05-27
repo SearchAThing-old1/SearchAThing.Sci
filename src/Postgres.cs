@@ -29,7 +29,7 @@ using Npgsql;
 using ClosedXML.Excel;
 using CsvHelper;
 
-namespace SearchAThing
+namespace OLDSearchAThing
 {
 
     public static partial class Extensions

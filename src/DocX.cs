@@ -24,7 +24,7 @@
 #endregion
 
 using Novacode;
-using SearchAThing.Sci;
+using OLDSearchAThing.Sci;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -33,7 +33,7 @@ using System.IO;
 // extensions to the https://github.com/devel0/DocX
 //
 
-namespace SearchAThing
+namespace OLDSearchAThing
 {
 
     public static partial class Extensions

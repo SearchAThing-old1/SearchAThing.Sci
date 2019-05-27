@@ -24,13 +24,13 @@
 #endregion
 
 using static System.Math;
-using SearchAThing;
+using OLDSearchAThing;
 using System.Collections.Generic;
 using System.Linq;
-using SearchAThing.Sci;
+using OLDSearchAThing.Sci;
 using System;
 
-namespace SearchAThing
+namespace OLDSearchAThing
 {
 
     public static partial class Extensions

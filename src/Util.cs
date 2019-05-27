@@ -26,9 +26,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
-using SearchAThing.Sci;
+using OLDSearchAThing.Sci;
 
-namespace SearchAThing
+namespace OLDSearchAThing
 {
 
     public static partial class Extensions

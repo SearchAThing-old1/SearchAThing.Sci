@@ -7,7 +7,7 @@ using System;
 using System.Globalization;
 using ClipperLib;
 
-namespace SearchAThing.Sci.Tests
+namespace OLDSearchAThing.Sci.Tests
 {
     public class OldTests
     {

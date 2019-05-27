@@ -24,7 +24,7 @@
 #endregion
 
 using MongoDB.Bson.Serialization.Attributes;
-using SearchAThing.Sci;
+using OLDSearchAThing.Sci;
 using System;
 using System.Runtime.Serialization;
 using static System.Math;
@@ -32,7 +32,7 @@ using System.Linq;
 using System.Collections.Generic;
 using MongoDB.Bson;
 
-namespace SearchAThing
+namespace OLDSearchAThing
 {
 
     namespace Sci

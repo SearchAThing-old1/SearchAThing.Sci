@@ -26,10 +26,10 @@
 using System;
 using System.Collections.Generic;
 
-using SearchAThing.Core;
+using OLDSearchAThing.Core;
 using System.Runtime.Serialization;
 
-namespace SearchAThing.Sci
+namespace OLDSearchAThing.Sci
 {
 
     [DataContract(IsReference = true)]

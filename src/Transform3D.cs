@@ -26,10 +26,10 @@
 using sVector3D = Microsoft.Xna.Framework.Vector3;//System.Windows.Media.Media3D.Vector3D;
 using sMatrix3D = Microsoft.Xna.Framework.Matrix;//System.Windows.Media.Media3D.Matrix3D;
 using sQuaternion = Microsoft.Xna.Framework.Quaternion;//System.Windows.Media.Media3D.Quaternion;
-using SearchAThing;
+using OLDSearchAThing;
 using Microsoft.Xna.Framework;
 
-namespace SearchAThing.Sci
+namespace OLDSearchAThing.Sci
 {
 
     public class Transform3D

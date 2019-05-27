@@ -26,7 +26,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SearchAThing.Sci
+namespace OLDSearchAThing.Sci
 {
 
     // https://en.wikipedia.org/wiki/List_of_physical_quantities

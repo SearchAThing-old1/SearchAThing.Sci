@@ -25,9 +25,9 @@
 
 using System;
 using System.Linq;
-using SearchAThing.Core;
+using OLDSearchAThing.Core;
 
-namespace SearchAThing.Sci
+namespace OLDSearchAThing.Sci
 {
 
     public static class Constants

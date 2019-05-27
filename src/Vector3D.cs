@@ -29,7 +29,7 @@ using static System.Math;
 using sVector3D = Microsoft.Xna.Framework.Vector3;// System.Windows.Media.Media3D.Vector3D;
 using System.Globalization;
 using System.Collections.Generic;
-using SearchAThing.Sci;
+using OLDSearchAThing.Sci;
 using System.Text;
 using System.Windows;
 using System.Linq;
@@ -37,7 +37,7 @@ using static System.FormattableString;
 using Newtonsoft.Json;
 using netDxf;
 
-namespace SearchAThing
+namespace OLDSearchAThing
 {
 
     namespace Sci

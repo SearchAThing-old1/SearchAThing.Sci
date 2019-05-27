@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace SearchAThing.Sci.Tests
+namespace OLDSearchAThing.Sci.Tests
 {
     public class NumberTests
     {

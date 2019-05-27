@@ -30,9 +30,9 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Windows.Data;
 using System.Globalization;
-using SearchAThing.Sci;
+using OLDSearchAThing.Sci;
 
-namespace SearchAThing
+namespace OLDSearchAThing
 {
 
     namespace Sci

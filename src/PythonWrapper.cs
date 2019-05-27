@@ -29,7 +29,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.IO;
 
-namespace SearchAThing
+namespace OLDSearchAThing
 {
 
     #region python pipe

@@ -3,7 +3,7 @@ using System.Linq;
 using static System.Math;
 using System;
 
-namespace SearchAThing.Sci.Tests
+namespace OLDSearchAThing.Sci.Tests
 {
     public class Vector3DTests
     {

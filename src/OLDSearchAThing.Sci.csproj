@@ -32,7 +32,7 @@
     <PackageReference Include="LoycCore" Version="24.3.0" />
     <PackageReference Include="MongoDB.Bson" Version="2.4.4" />
     <PackageReference Include="netDxf" Version="1.0.0-CI00001" />
-    <PackageReference Include="SearchAThing.Core" Version="1.0.0-CI00004" />
+    <PackageReference Include="OLDSearchAThing.Core" Version="1.0.0-CI00010" />
     <PackageReference Include="System.ValueTuple" Version="4.3.1" />
   </ItemGroup>
 
